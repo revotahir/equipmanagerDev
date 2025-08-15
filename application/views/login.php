@@ -3,196 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="<?=base_url()?>assets/images/favicon.png" type="image/png" />
-    <title>Metro Foods</title>
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
-    ></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
-    ></script>
-    <link rel="stylesheet" href="<?=base_url()?>assets/css/style.css" />
-    <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css">
+    <link rel="icon" href="<?=base_url()?>/<?=base_url()?>/assets/images/logo-icon.png" type="image/png" />
+    <link rel="stylesheet" href="<?=base_url()?>/assets/css/style.css" />
+    <title>Login</title>
   </head>
   <body>
-    <!-- ============================================= -->
-    <!-- Header starts here -->
-    <!-- ============================================= -->
-    <header class="mainBox">
-      <div class="container">
-        <div class="row">
-          <a href="#">
-            <img src="<?=base_url()?>assets/images/logo.png" alt="Logo" />
-          </a>
-        </div>
-      </div>
-    </header>
-    <!-- ============================================= -->
-    <!-- Header end here -->
-    <!-- ============================================= -->
-
-    <!-- ============================================= -->
-    <!-- Hero section starts here -->
-    <!-- ============================================= -->
-    <section class="hero-mainBox">
-      <!-- <img src="assets/images/leaf.png" alt="leaf" /> -->
-      <div class="container">
-        <div class="row">
-          <div class="hero-section">
-            <h1>Login</h1>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- ============================================= -->
-    <!-- Hero section end here -->
-    <!-- ============================================= -->
-
-    <!-- ============================================= -->
-    <!-- Form section starts here -->
-    <!-- ============================================= -->
-    <section class="form-mainBox">
-      <div class="container">
-        <div class="row">
-          <form method="post" action="<?=base_url('login-data')?>">
-            <h2>Login</h2>
-            <span
-              >Metro Food Customer Login Portal</span
-            >
-            <input
-              type="email"
-              name="email-address"
-              id="email-address"
-              placeholder="Email Address"
-              required
-            />
-            <div class="password-wrapper">
-              <input
-                type="password"
-                name="email-password"
-                id="email-password"
-                placeholder="Password"
-                required
-              />
-              <ion-icon id="toggle-password" name="eye"></ion-icon>
-            </div>
-            <div class="button-area">
-              <button type="submit">
-                Login <ion-icon name="chevron-forward-outline"></ion-icon>
-              </button>
+    <section class="reg-page">
+      <div class="containers">
+        <div class="inner-login">
+          <form method="post" class="form">
+            <div class="main-box">
+              <div class="img">
+                <svg
+                  width="72"
+                  height="72"
+                  viewBox="0 0 72 72"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M72 36C72 55.8889 55.8889 72 36 72C27.9444 72 20.5 69.3611 14.4722 64.8611L19 60.3333C19.5833 59.75 20.5 59.6667 21.1944 60.1111C25.6111 62.9167 30.8611 64.5278 36.4722 64.5278C52.3333 64.5278 65.1667 51.6944 65.1667 35.8333C65.1667 35.25 65.1389 34.6389 65.1111 34.0556C65.0556 33.1389 64.2778 32.4167 63.3611 32.4167H58.3611C57.3611 32.4167 56.5278 33.2778 56.6111 34.3056C56.6667 34.8611 56.6667 35.4167 56.6667 36C56.6667 47.25 47.5556 56.3611 36.3056 56.3611C32.4722 56.3611 28.8889 55.3056 25.8333 53.4722C23.1389 51.8611 20.8333 49.6111 19.1667 46.9722C17.1389 43.8056 15.9722 40.0278 15.9722 36C15.9722 34.7778 16.0833 33.6111 16.2778 32.4444C17.9722 22.8889 26.3056 15.6389 36.3333 15.6389C39.4722 15.6389 42.4722 16.3611 45.1389 17.6389C46.2222 18.1667 46.4722 19.6111 45.6389 20.4444L40.6111 25.5L33.6944 32.4444L26.75 39.3889C26.1944 39.9444 26.0833 40.8056 26.4722 41.4722C27.6111 43.5 29.3333 45.1667 31.4444 46.1667C32.1111 46.5 32.9167 46.3611 33.4445 45.8333L46.8333 32.4167L47.0278 32.2222L53.7778 25.4444L58.8611 20.3611C59.4722 19.7222 59.5556 18.7222 59 18.0278C57.3889 16 55.5 14.1667 53.4167 12.6389C48.6667 9.16667 42.8333 7.11111 36.5 7.11111C21.8056 7.11111 9.69444 18.1667 8 32.3889C7.86111 33.5 7.80556 34.6389 7.80556 35.8056C7.80556 41.6667 9.55556 47.1111 12.5556 51.6389C13 52.3333 12.9167 53.25 12.3333 53.8333L7.94445 58.2222C7.88889 58.2778 7.86111 58.3333 7.80556 58.3889C2.91667 52.25 0 44.4722 0 36C0 16.1111 16.1111 0 36 0C55.8889 0 72 16.1111 72 36Z"
+                    fill="#34FF67"
+                  />
+                </svg>
+              </div>
+              <h5 class="heading">Welcome Back</h5>
+              <span class="sub-heading"
+                >Sign in to access your account and continue your journey.</span
+              >
+              <div class="inputs">
+                <label for="email">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Enter Your Email"
+                />
+              </div>
+              <div class="inputs">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Enter Your Password"
+                />
+              </div>
+              <div class="fot-pass">
+                <a href="#"> Forgot Password </a> | <a href="<?=base_url('register')?>"> Sign Up </a>
+              </div>
+              <div>
+                <input type="submit" value="Login Now" class="btn-login" />
+              </div>
             </div>
           </form>
         </div>
       </div>
     </section>
-    <!-- ============================================= -->
-    <!-- Form section end here -->
-    <!-- ============================================= -->
-
-    <!-- ============================================= -->
-    <!-- info section starts here -->
-    <!-- ============================================= -->
-    <section class="mainBox">
-      <div class="container">
-        <div class="row box-shadow">
-          <div class="info-box">
-            <img src="<?=base_url()?>assets/images/map.svg" alt="Map" />
-            <span>2800 Wegworth Ln. Baltimore, MD 21230 United States</span>
-          </div>
-          <div class="info-box border-line">
-            <a href="mailto:sales@freshcreativecuisine.com">
-              <img src="<?=base_url()?>assets/images/env.svg" alt="Mail" />
-              <span>sales@freshcreativecuisine.com</span>
-            </a>
-          </div>
-          <div class="info-box">
-            <a href="tel:855-969-3338">
-              <img src="<?=base_url()?>assets/images/phone.svg" alt="Phone" />
-              <span>855-969-3338</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- ============================================= -->
-    <!-- info section end here -->
-    <!-- ============================================= -->
-
-    <!-- ============================================= -->
-    <!-- footer section starts here -->
-    <!-- ============================================= -->
-    <header class="footer-mainBox">
-      <div class="container">
-        <div class="row">
-          <!-- <div> -->
-          <a href="#">
-            <img src="assets/images/logo.png" alt="Logo" />
-          </a>
-          <p>
-            Our recipes and fresh foods are prepared by our very own in-house
-            chefs using the finest “fresh & local” ingredients available.
-          </p>
-          <!-- </div> -->
-        </div>
-      </div>
-    </header>
-    <!-- ============================================= -->
-    <!-- footer section end here -->
-    <!-- ============================================= -->
   </body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
-    <?php
-    if ($this->session->flashdata('error') != '') {
-    ?>
-    <script type="text/javascript">
-    toastr.options = {
-        "closeButton": true,
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-    }
-    toastr.error('Invalid Login!');
-    </script>
-    <?php
-    }
-    ?>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.querySelectorAll("input[required]").forEach((input) => {
-        input.addEventListener("input", () => validateField(input));
-      });
-
-      document
-        .getElementById("toggle-password")
-        .addEventListener("click", function () {
-          const passwordField = document.getElementById("email-password");
-          if (passwordField.type === "password") {
-            passwordField.type = "text";
-            this.setAttribute("name", "eye");
-          } else {
-            passwordField.type = "password";
-            this.setAttribute("name", "eye-off");
-          }
-        });
-
-      function validateField(field) {
-        if (field.type === "email") validateEmail(field);
-        else validateRequired(field);
-      }
-
-      function validateRequired(field) {
-        field.style.borderBottom = field.value.trim()
-          ? "1px solid green"
-          : "1px solid red";
-      }
-
-      function validateEmail(field) {
-        field.style.borderBottom = /@.+\./.test(field.value)
-          ? "1px solid green"
-          : "1px solid red";
-      }
-    });
-  </script>
 </html>

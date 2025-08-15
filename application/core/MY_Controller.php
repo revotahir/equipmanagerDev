@@ -8,6 +8,11 @@ class MY_Controller extends CI_Controller {
            $excluded_pages = array(
             'welcome', // Exclude the default Welcome controller (base URL)
             'welcome/LoginData', // Exclude the login page
+            'welcome/RegisterView', // Exclude the login page
+            'welcome/comapnyRegisterationData', // Exclude the login page
+            'welcome/VerifyAccount', // Exclude the login page
+            'welcome/TestMail', // Exclude the login page
+            'welcome/VerifyAccountData', // Exclude the login page
         );
          // Get the current controller and method
          $current_controller = $this->router->fetch_class();
@@ -18,6 +23,7 @@ class MY_Controller extends CI_Controller {
         if(!$is_base_url){
         // Check if the user is logged in
         if (!in_array($current_page, $excluded_pages) && !$this->session->userdata('loginData')) {
+            die('You are not logged in. Please log in to access this page.');
             redirect(base_url()); // Redirect to the login page or home page
         }
         $this->load->library('email');
@@ -25,7 +31,7 @@ class MY_Controller extends CI_Controller {
     }
     }
     public function send_email($to, $subject, $message) {
-        $this->email->from('order@mymetrofoods.com', 'MyMetroFoods');
+        $this->email->from('info@nexphi.com', 'Equip Manager');
         $this->email->to($to);
         $this->email->subject($subject);
         $this->email->message($message);
