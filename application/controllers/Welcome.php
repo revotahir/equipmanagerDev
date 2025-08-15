@@ -1,16 +1,18 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Welcome extends CI_Controller
+class Welcome extends MY_Controller
 {
-
 	function __construct()
 	{
-
 		parent::__construct();
 		$this->load->helper('file');
 		$this->load->model('Generic_model', 'generic');
+		if (isset($this->session->userdata['loginData']['userID'])) {
+			$this->data['cartCount'] = $this->generic->GetCount('cart', 'cartID', array('customerID' => $this->session->userdata['loginData']['userID'], 'cartStatus' => 0));
+		}
 	}
+
 	/**
 	 * Index Page for this controller.
 	 *
@@ -30,517 +32,467 @@ class Welcome extends CI_Controller
 	{
 		$this->load->view('login');
 	}
-	public function loginData()
+	// <!-- ============================================================== -->
+	// <!-- Login function -->
+	// <!-- ============================================================== -->
+	public function LoginData()
 	{
-		$email = $this->input->post('emailaddress');
-		$pass = $this->input->post('password');
-		$user_info = $this->generic->LoginData($email, $pass);
-		//inicializing session
-		if ($user_info) {
-			$this->session->set_userdata('loginData', $user_info[0]);
-				//check client or admins
-				if($user_info[0]['userType']!=3){
-			$this->session->set_flashdata('logedin', 1);
-			redirect(base_url('dashboard'));
-				}else{
-					redirect(base_url('client-dashboard'));
-				}
-		} else {
-			$this->session->set_flashdata('error_msg', 1);
-			redirect(base_url());
-		}
-	}
-	public function Dashboard()
-	{
-		if ($this->session->userdata('loginData')) {
-			//manage users
-			if ($this->session->userdata['loginData']['userType'] == 1 || $this->session->userdata['loginData']['userType'] == 2) {
-				$this->load->view('dashboard');
-			}
-		} else {
-			redirect(base_url());
-		}
-	}
-
-	//manager module admin side 
-	public function addNewManager()
-	{
-		if ($this->session->userdata('loginData')) {
-			$this->load->view('add-new-manager');
-		} else {
-			redirect(base_url());
-		}
-	}
-	public function addNewManagerData()
-	{
-		if ($this->session->userdata('loginData')) {
-			$name = $this->input->post('mName');
-			$email = $this->input->post('mEmail');
-			$pass = $this->input->post('pass2');
-			$phone = $this->input->post('mPhone');
-			$emailcheck = $this->generic->GetData('users', array('userEmail' => $email));
-			if ($emailcheck) {
-				$this->session->set_flashdata('EmailError', 1);
-				redirect(base_url('add-new-manager'));
+		$email = $this->input->post('email-address');
+		$pass = $this->input->post('email-password');
+		// get user 
+		$user = $this->generic->GetData('users', array('userEmail' => $email, 'userPass' => $pass, 'userStatus' => 1));
+		if ($user) {
+			$this->session->set_userdata('loginData', $user[0]);
+			if ($user[0]['userType'] == 1) {
+				redirect(base_url('dashboard'));
 			} else {
-				$data = array(
-					'userName' => $name,
-					'userEmail' => $email,
-					'userPhone' => $phone,
-					'userPass' => $pass,
-					'userType' => 2,
-					'userStatus' => 1,
-				);
-				$this->generic->InsertData('users', $data);
-				$this->session->set_flashdata('managerAdded', 1);
-				redirect(base_url('add-new-manager'));
+				redirect(base_url('customer-dashboard'));
 			}
 		} else {
+			$this->session->set_flashdata('error', 1);
 			redirect(base_url());
 		}
 	}
-	public function managerList()
-	{
-		if ($this->session->userdata('loginData')) {
-			$this->data['managerList'] = $this->generic->GetData('users', array('userType' => 2));
-			$this->load->view('managerList', $this->data);
-		} else {
-			redirect(base_url());
-		}
-	}
-	public function deletManager()
-	{
-		if ($this->session->userdata('loginData')) {
-			//manager jobs tranfer to other manager panding
 
-			$this->generic->Delet('users', array('userID' => $this->uri->segment(2)));
-			$this->session->set_flashdata('mangerDeleted', 1);
-			redirect(base_url('manager-list'));
-		} else {
-			redirect(base_url());
-		}
-	}
-	public function editManager()
-	{
-		if ($this->session->userdata('loginData')) {
-			$this->data['managerData'] = $this->generic->GetData('users', array('userID' => $this->uri->segment(2)));
-			$this->load->view('edit-manager', $this->data);
-		} else {
-			redirect(base_url());
-		}
-	}
-	public function editManagerData()
-	{
-		if ($this->session->userdata('loginData')) {
-			$name = $this->input->post('mName');
-			$email = $this->input->post('mEmail');
-			$pass = $this->input->post('pass2');
-			$phone = $this->input->post('mPhone');
+	// <!-- ============================================================== -->
+	// <!-- redirect to dashboard -->
+	// <!-- ============================================================== -->
 
-			$data = array(
-				'userName' => $name,
-				'userEmail' => $email,
-				'userPhone' => $phone,
-				'userPass' => $pass,
+	// redirect to page with check
+	public function AdminDashboard()
+	{
+		if ($this->session->userdata('loginData')) {
+			$this->load->view('dashboard-admin');
+		} else {
+			redirect(base_url());
+		}
+	}
+
+
+	// <!-- ============================================================== -->
+	// <!-- vendor redirect and insert function -->
+	// <!-- ============================================================== -->
+
+	// redirect to page with check
+	public function AdminVendors()
+	{
+		if ($this->session->userData('loginData')) {
+			$this->load->view('add-vendors');
+		} else {
+			redirect(base_url());
+		}
+	}
+	// add vendor
+	public function AddAdminVendors()
+	{
+		$userName = $this->input->post('user-name');
+		$userEmail = $this->input->post('user-email');
+		$userPhone = $this->input->post('user-phone');
+		$userPassword = $this->input->post('user-password');
+
+		$this->db->where('userEmail', $userEmail);
+		$query = $this->db->get('users');
+		if ($query->num_rows() > 0) {
+			$this->session->set_flashdata('alreadyRegistered', 1);
+			redirect(base_url('vendors'));
+		} else {
+			$VendorUserData = array(
+				'userName' => $userName,
+				'userEmail' => $userEmail,
+				'userPhone' => $userPhone,
+				'userPass' => $userPassword,
+				'userType' => 3,
+			);
+			$this->generic->InsertData('users', $VendorUserData);
+			$this->session->set_flashdata('successfullyRegistered', 1);
+			redirect(base_url('vendors'));
+		}
+	}
+	// show vendor data
+	public function AllAdminVendors()
+	{
+		if ($this->session->userData('loginData')) {
+			$this->data['vendorsList'] = $this->generic->GetData('users', array('userType' => 3));
+			$this->load->view('vendors-data', $this->data);
+		} else {
+			redirect(base_url());
+		}
+	}
+	// deactive vendor 
+	public function deactivateVendor()
+	{
+		$this->generic->Update('users', array('userID' => $this->uri->segment(2)), array('userStatus' => 0));
+		$this->session->set_flashdata('vendorDeactivated', 1);
+		redirect(base_url('all-vendor'));
+	}
+	// active vendor
+	public function activateVendor()
+	{
+		$this->generic->Update('users', array('userID' => $this->uri->segment(2)), array('userStatus' => 1));
+		$this->session->set_flashdata('vendorActivated', 1);
+		redirect(base_url('all-vendor'));
+	}
+	// delete vendor
+	public function deleteVendor()
+	{
+		$this->generic->Delete('users', array('userID' => $this->uri->segment(2)));
+		$this->session->set_flashdata('vendorDeleted', 1);
+		redirect(base_url('all-vendor'));
+	}
+	// update vendor
+	public function updateVendor()
+	{
+		$this->data['vendor'] = $this->generic->GetData('users', array('userID' => $this->uri->segment(2)));
+		$this->load->view('update-vendor', $this->data);
+	}
+	public function updateVendorData()
+	{
+		$userName = $this->input->post('user-name');
+		$userEmail = $this->input->post('user-email');
+		$userPhone = $this->input->post('user-phone');
+		$userPassword = $this->input->post('user-password');
+		$VendorUserData = array(
+			'userName' => $userName,
+			'userEmail' => $userEmail,
+			'userPhone' => $userPhone,
+			'userPass' => $userPassword,
+		);
+		$this->generic->Update('users', array('userID' => $this->uri->segment(2)), $VendorUserData);
+		$this->session->set_flashdata('VendorUpdated', 1);
+		redirect(base_url('all-vendor'));
+	}
+
+	// <!-- ============================================================== -->
+	// <!-- customer redirect and insert function -->
+	// <!-- ============================================================== -->
+
+	// redirect to page with check
+	public function AdminCustomers()
+	{
+		if ($this->session->userData('loginData')) {
+			$this->load->view('add-customers');
+		} else {
+			redirect(base_url());
+		}
+	}
+
+	// add customer
+	public function AddAdminCustomers()
+	{
+		$userName = $this->input->post('cstm-user-name');
+		$userEmail = $this->input->post('cstm-user-email');
+		$userPhone = $this->input->post('cstm-user-phone');
+		$userPassword = $this->input->post('cstm-user-password');
+
+		$this->db->where('userEmail', $userEmail);
+		$query = $this->db->get('users');
+		if ($query->num_rows() > 0) {
+			$this->session->set_flashdata('alreadyRegistered', 1);
+			redirect(base_url('customers'));
+		} else {
+			$customerUserData = array(
+				'userName' => $userName,
+				'userEmail' => $userEmail,
+				'userPhone' => $userPhone,
+				'userPass' => $userPassword,
 				'userType' => 2,
-				'userStatus' => 1,
 			);
-			$this->generic->Update('users', array('userID' => $this->uri->segment(2)), $data);
-			$this->session->set_flashdata('managerUpdated', 1);
-			redirect(base_url('manager-list'));
+			$this->generic->InsertData('users', $customerUserData);
+			$this->session->set_flashdata('successfullyRegistered', 1);
+			redirect('customers');
+		}
+	}
+	// show customer data
+	public function AllAdminCustomers()
+	{
+		if ($this->session->userData('loginData')) {
+			$this->data['customersList'] = $this->generic->GetData('users', array('userType' => 2));
+			$this->load->view('customers-data', $this->data);
 		} else {
 			redirect(base_url());
 		}
+	}
+	// deactive customer
+	public function deactivateCustomers()
+	{
+		$this->generic->Update('users', array('userID' => $this->uri->segment(2)), array('userStatus' => 0));
+		$this->session->set_flashdata('customerDeactivated', 1);
+		redirect(base_url('all-customer'));
+	}
+	// active customer
+	public function activateCustomers()
+	{
+		$this->generic->Update('users', array('userID' => $this->uri->segment(2)), array('userStatus' => 1));
+		$this->session->set_flashdata('customerActivated', 1);
+		redirect(base_url('all-customer'));
+	}
+	// delete customer
+	public function deleteCustomers()
+	{
+		$this->generic->Delete('users', array('userID' => $this->uri->segment(2)));
+		$this->session->set_flashdata('customerDeleted', 1);
+		redirect(base_url('all-customer'));
+	}
+	// update customer
+	public function updateCustomers()
+	{
+		$this->data['customer'] = $this->generic->GetData('users', array('userID' => $this->uri->segment(2)));
+		$this->load->view('update-customer', $this->data);
+	}
+	public function updateCustomerData()
+	{
+		$userName = $this->input->post('cstm-user-name');
+		$userEmail = $this->input->post('cstm-user-email');
+		$userPhone = $this->input->post('cstm-user-phone');
+		$userPassword = $this->input->post('cstm-user-password');
+		$customerUserData = array(
+			'userName' => $userName,
+			'userEmail' => $userEmail,
+			'userPhone' => $userPhone,
+			'userPass' => $userPassword,
+		);
+		$this->generic->Update('users', array('userID' => $this->uri->segment(2)), $customerUserData);
+		$this->session->set_flashdata('CustomerUpdated', 1);
+		redirect(base_url('all-customer'));
 	}
 
-	//client module admin side 
-	public function addNewClient()
+
+
+	// <!-- ============================================================== -->
+	// <!-- category function -->
+	// <!-- ============================================================== -->
+	// redirect category page
+	public function AdminCategory()
 	{
-		if ($this->session->userdata('loginData')) {
-			$this->load->view('add-new-client');
-		} else {
-			redirect(base_url());
-		}
+		$this->data['categoryList'] = $this->generic->GetData('productcategory');
+		$this->load->view('category', $this->data);
 	}
-	public function addNewClientData()
+	// add category
+	public function AddAdminCategory()
 	{
-		if ($this->session->userdata('loginData')) {
-			$name = $this->input->post('mName');
-			$email = $this->input->post('mEmail');
-			$phone = $this->input->post('mPhone');
-			$emailcheck = $this->generic->GetData('users', array('userEmail' => $email));
-			if ($emailcheck) {
-				$this->session->set_flashdata('EmailError', 1);
-				redirect(base_url('add-new-client'));
+		$catData = array(
+			'catName' => $this->input->post('cat-name'),
+		);
+		$this->generic->InsertData('productcategory', $catData);
+		$this->session->set_flashdata('successfullyAdded', 1);
+		redirect(base_url('category'));
+	}
+	//delete category
+	public function deleteCategory()
+	{
+		$this->generic->Delete('productcategory', array('catID' => $this->uri->segment(2)));
+		$this->session->set_flashdata('categoryDeleted', 1);
+		redirect(base_url('category'));
+	}
+	// update category
+	public function updateCategory()
+	{
+		$this->data['category'] = $this->generic->GetData('productcategory', array('catID' => $this->uri->segment(2)));
+		$this->load->view('update-category', $this->data);
+	}
+	public function updateCategoryData()
+	{
+		$catData = array(
+			'catName' => $this->input->post('cat-name'),
+		);
+		$this->generic->Update('productcategory', array('catID' => $this->uri->segment(2)), $catData);
+		$this->session->set_flashdata('CategoryUpdated', 1);
+		redirect(base_url('category'));
+	}
+
+
+	// <!-- ============================================================== -->
+	// <!-- product function -->
+	// <!-- ============================================================== -->
+	//redirect product page
+	public function AddAdminProduct()
+	{
+		$this->data['vendors'] = $this->generic->GetData('users', array('userType' => 3, 'userStatus' => 1));
+		$this->data['categories'] = $this->generic->GetData('productcategory');
+		$this->load->view('products/add-products', $this->data);
+	}
+	public function AddAdminProductData()
+	{
+		// Handle image upload
+		$config['upload_path'] = './assets/productimages/';
+		$config['allowed_types'] = 'gif|jpg|png|jpeg';
+		$config['max_size'] = 2048; // 2MB max
+		$config['encrypt_name'] = TRUE; // Encrypt the file name
+
+		$this->load->library('upload', $config);
+
+		// if (!$this->upload->do_upload('productImage')) {
+		// 	// If upload fails, show error
+		// 	$error = $this->upload->display_errors();
+		// 	$this->session->set_flashdata('uploadError', $error);
+		// 	redirect(base_url('add-new-product'));
+		// } else {
+		// If upload is successful, get the file data
+		$upload_data = $this->upload->data();
+
+		// Prepare data for database insertion
+		$data = array(
+			'userID' => $this->input->post('vendorID'),
+			'catID' => $this->input->post('catID'),
+			'productName' => $this->input->post('product-name'),
+			'productPrice' => $this->input->post('price'),
+			'productCuisineItem' => $this->input->post('cuisine-item'),
+			'productCuisineUpc' => $this->input->post('cuisine-upc'),
+			'productLength' => $this->input->post('product-length'),
+			'productHeight' => $this->input->post('product-height'),
+			'productWidth' => $this->input->post('product-width'),
+			'productWeight' => $this->input->post('product-weight'),
+			'productDesp' => $this->input->post('Description'),
+			'productImage' => $upload_data['file_name']
+		);
+
+		// Insert data into the database
+		$this->generic->InsertData('products', $data);
+		$this->session->set_flashdata('productUploaded', 1);
+		// Redirect or show success message
+		redirect(base_url('add-new-product')); // Replace with your success route
+		// }
+	}
+
+	public function manageProducts()
+	{
+		$this->data['products'] = $this->generic->GetProductList();
+		$this->load->view('products/manageProduct', $this->data);
+	}
+	public function DeactivateProduct()
+	{
+		$this->generic->Update('products', array('productID' => $this->uri->segment(2)), array('productStatus' => 0));
+		$this->session->set_flashdata('ProductDeactivated', 1);
+		redirect(base_url('manage-Products'));
+	}
+	public function activateProduct()
+	{
+		$this->generic->Update('products', array('productID' => $this->uri->segment(2)), array('productStatus' => 1));
+		$this->session->set_flashdata('PRoductActivate', 1);
+		redirect(base_url('manage-Products'));
+	}
+	public function DeleteProduct()
+	{
+		$this->generic->Delete('products', array('productID' => $this->uri->segment(2)));
+		$this->session->set_flashdata('productDeleted', 1);
+		redirect(base_url('manage-Products'));
+	}
+	public function EditProduct()
+	{
+		$this->data['product'] = $this->generic->GetData('products', array('productID' => $this->uri->segment(2)));
+		$this->data['vendors'] = $this->generic->GetData('users', array('userType' => 3, 'userStatus' => 1));
+		$this->data['categories'] = $this->generic->GetData('productcategory');
+		$this->load->view('products/edit-products', $this->data);
+	}
+	public function EditProductData()
+	{
+		$data = array(
+			'userID' => $this->input->post('vendorID'),
+			'catID' => $this->input->post('catID'),
+			'productName' => $this->input->post('product-name'),
+			'productPrice' => $this->input->post('price'),
+			'productDesp' => $this->input->post('Description'),
+		);
+		if (isset($_FILES['productImage']) && !empty($_FILES['productImage']['name'])) {
+			// Handle image upload
+			$config['upload_path'] = './assets/productimages/';
+			$config['allowed_types'] = 'gif|jpg|png|jpeg';
+			$config['max_size'] = 2048; // 2MB max
+			$config['encrypt_name'] = TRUE; // Encrypt the file name
+
+			$this->load->library('upload', $config);
+
+			if (!$this->upload->do_upload('productImage')) {
+				// If upload fails, show error
+				$error = $this->upload->display_errors();
+				$this->session->set_flashdata('uploadError', $error);
+				redirect(base_url('edit-product/' . $this->uri->segment(2)));
 			} else {
-				$data = array(
-					'userName' => $name,
-					'userEmail' => $email,
-					'userPhone' => $phone,
-					'userType' => 3,
-					'userStatus' => 0,
-				);
-				$this->generic->InsertData('users', $data);
-				//assign auth code for password setup
-				//get recently add user 
-				$userID = $this->generic->GetMaxID('users', 'userID');
-				$userID = $userID[0]['result'];
-				//add data in auth table
-				$authData = array(
-					'userID' => $userID,
-					'authCode' => password_hash($userID, PASSWORD_DEFAULT),
-				);
-				$this->generic->InsertData('clientsauth', $authData);
-
-				//send email
-
-				$this->session->set_flashdata('clientAdded', 1);
-				redirect(base_url('add-new-client'));
+				// If upload is successful, get the file data
+				$upload_data = $this->upload->data();
+				$data['productImage'] = $upload_data['file_name'];
 			}
-		} else {
-			redirect(base_url());
 		}
+		$this->generic->Update('products', array('productID' => $this->uri->segment(2)), $data);
+		$this->session->set_flashdata('ProductUpdated', 1);
+		redirect(base_url('manage-Products'));
 	}
-	public function ClientList()
+
+	//assign product
+	public function assignProductView()
 	{
-		if ($this->session->userdata('loginData')) {
-			$this->data['clients'] = $this->generic->GetData('users', array('userType' => 3));
-			$this->load->view('ClientList', $this->data);
+		$this->data['customers'] = $this->generic->GetData('users', array('userType' => 2, 'userStatus' => 1));
+		if (isset($_GET['customerID'])) {
+			$this->data['products'] = $this->generic->GetUnassignedProducts($_GET['customerID']);
 		} else {
-			redirect(base_url());
+			$this->data['products'] = false;
 		}
+		$this->load->view('products/assignProduct', $this->data);
 	}
-	public function dltClient()
+	// assign product ajax
+	public function assignProductDataAjax()
 	{
-		if ($this->session->userdata('loginData')) {
-			//Delet Jobs
+		$data = array(
+			'customerID' => $this->input->post('customerID'),
+			'productID' => $this->input->post('productID'),
+			'newPrice' => $this->input->post('newPRice'),
+		);
+		$this->generic->InsertData('assignproduct', $data);
+		echo 'productAssign';
+	}
+	public function assignProductEditDataAjax()
+	{
+		$data = array(
 
-			$this->generic->Delet('users', array('userID' => $this->uri->segment(2)));
-			$this->session->set_flashdata('clientDeleted', 1);
-			redirect(base_url('client-list'));
+			'newPrice' => $this->input->post('newPRice'),
+		);
+		$this->generic->Update('assignproduct', array(
+			'customerID' => $this->input->post('customerID'),
+			'productID' => $this->input->post('productID')
+		), $data);
+		echo 'productedited';
+	}
+	//manage assign products
+	public function manageAssignProducts()
+	{
+		$this->data['customers'] = $this->generic->GetData('users', array('userType' => 2, 'userStatus' => 1));
+		if (isset($_GET['customerID'])) {
+			$this->data['products'] = $this->generic->GetAssignedProducts($_GET['customerID']);
 		} else {
-			redirect(base_url());
+			$this->data['products'] = false;
 		}
+		$this->load->view('products/manageAssignProduct', $this->data);
 	}
-	public function EditClient()
+	public function ManageAdminProducts()
 	{
-		if ($this->session->userdata('loginData')) {
-			$this->data['clientData'] = $this->generic->GetData('users', array('userID' => $this->uri->segment(2)));
-			$this->load->view('edit-client', $this->data);
+		$this->data['allorders'] = $this->generic->GetOrderListByCusotmer();
+		$this->load->view('orderHistoryByAdmin', $this->data);
+	}
+	public function UpdateOrderStatus()
+	{
+		$this->generic->Update('checkout', array('checkoutID' => $this->uri->segment(2)), array('orderStatus' => $this->input->post('orderstatus')));
+		$this->session->set_flashdata('orderStatusUpdated', 1);
+		redirect(base_url('manage-admin-orders'));
+	}
+	public function TestMail()
+	{
+		$email = 'revotahir@gmail.com';
+		$subject = 'Test Email';
+		$message = '<p>This is test Email</p>';
+
+		$result = $this->send_email($email, $subject, $message);
+
+		if ($result === true) {
+			die("Email sent successfully.") ;
 		} else {
-			redirect(base_url());
-		}
-	}
-	public function EditClientData()
-	{
-		if ($this->session->userdata('loginData')) {
-			$name = $this->input->post('mName');
-			$email = $this->input->post('mEmail');
-
-			$data = array(
-				'userName' => $name,
-				'userEmail' => $email,
-				'userPhone' => $phone,
-			);
-			$this->generic->Update('users', array('userID' => $this->uri->segment(2)), $data);
-			$this->session->set_flashdata('clientUpdated', 1);
-			redirect(base_url('client-list'));
-		} else {
-			redirect(base_url());
+			die("Email failed: " . $result);
 		}
 	}
 
-
-	////client auth and passsetup
-	public function newClientPassSetup()
-	{
-		$authCode = $_GET['user'];
-		//check auth code existence
-		$authCHeck = $this->generic->GetData('clientsauth', array('authCode' => $authCode));
-		if ($authCHeck) {
-			if ($authCHeck[0]['authStatus'] == 0) {
-				$this->data['userDetail'] = $this->generic->GetData('users', array('userID' => $authCHeck[0]['userID']));
-				$this->load->view('setNewPassword', $this->data);
-			} else {
-				$this->session->set_flashdata('AuthcodeExpired', 1);
-				redirect(base_url());
-			}
-		} else {
-			redirect(base_url('invalid-url'));
-		}
-	}
-
-	public function newClientPassSetupData()
-	{
-		$pass = $this->input->post('password');
-		$this->generic->Update('users', array('userID' => $this->uri->segment(2)), array('userStatus' => 1, 'userPass' => $pass,));
-		$this->generic->Update('clientsauth', array('userID' => $this->uri->segment(2)), array('authStatus' => 1));
-		redirect(base_url());
-	}
-
-
-	//manage jobs module 
-	public function addNewJob()
-	{
-		if ($this->session->userdata('loginData')) {
-			$this->data['clients'] = $this->generic->GetData('users', array('userType' => 3, 'userStatus' => 1));
-			$this->data['managers'] = $this->generic->GetData('users', array('userType' => 2, 'userStatus' => 1));
-			//load view
-			$this->load->view('jobs/addNewJob', $this->data);
-		} else {
-			redirect(base_url());
-		}
-	}
-	public function addNewJobData()
-	{
-		if ($this->session->userdata('loginData')) {
-			$data = array(
-				'mangerID' => $this->input->post('manager'),
-				'clientID' => $this->input->post('client'),
-				'location' => $this->input->post('loc'),
-				'firstInterectionDate' => $this->input->post('interactionDate'),
-				'workScope' => $this->input->post('workScope'),
-				'addInformation' => $this->input->post('addInfo'),
-			);
-			$this->generic->InsertData('jobs', $data);
-			//get max job id
-			$maxJobId = $this->generic->GetMaxID('jobs', 'jobID');
-
-			//add data in job status 
-			$jobStatusData = array(
-				'jobID' => $maxJobId[0]['result'],
-			);
-			$this->generic->InsertData('jobstatus', $jobStatusData);
-			$this->session->set_flashdata('newJobAdded', 1);
-			redirect(base_url('add-new-job'));
-		} else {
-			redirect(base_url());
-		}
-	}
-
-	public function jobList()
-	{
-		if ($this->session->userdata('loginData')) {
-			$this->data['jobList'] = $this->generic->GetJobList();
-			$this->load->view('jobs/jobList', $this->data);
-		} else {
-			redirect(base_url());
-		}
-	}
-	public function jobEditView()
-	{
-		if ($this->session->userdata('loginData')) {
-			$this->data['clients'] = $this->generic->GetData('users', array('userType' => 3, 'userStatus' => 1));
-			$this->data['managers'] = $this->generic->GetData('users', array('userType' => 2, 'userStatus' => 1));
-			$this->data['job'] = $this->generic->GetData('jobs',array('jobID'=>$this->uri->segment(2)));
-			$this->load->view('jobs/editJob', $this->data);
-		} else {
-			redirect(base_url());
-		}
-	}
-	public function jobEditData(){
-		if ($this->session->userdata('loginData')) {
-			$data = array(
-				'mangerID' => $this->input->post('manager'),
-				'clientID' => $this->input->post('client'),
-				'location' => $this->input->post('loc'),
-				'firstInterectionDate' => $this->input->post('interactionDate'),
-				'workScope' => $this->input->post('workScope'),
-				'addInformation' => $this->input->post('addInfo'),
-			);
-			$this->generic->Update('jobs',array('jobID' => $this->uri->segment(2)), $data);
-			$this->session->set_flashdata('jobUpdated', 1);
-			redirect(base_url('job-list'));
-		}else{
-			redirect(base_url());
-		}
-	}
-
-	public function DeletJob(){
-		if ($this->session->userdata('loginData')) {
-			$this->generic->Delet('jobs',array('jobID'=>$this->uri->segment(2)));
-			$this->generic->Delet('jobstatus',array('jobID'=>$this->uri->segment(2)));
-			$this->generic->Delet('jobmaterialdelivery',array('jobID'=>$this->uri->segment(2)));
-			$this->generic->Delet('jobmanagerreview',array('jobID'=>$this->uri->segment(2)));
-			$this->generic->Delet('jobinstallation',array('jobID'=>$this->uri->segment(2)));
-			$this->generic->Delet('jobfinancing',array('jobID'=>$this->uri->segment(2)));
-			$this->generic->Delet('jobfeedback',array('jobID'=>$this->uri->segment(2)));
-			$this->session->set_flashdata('jobDeleted', 1);
-			redirect(base_url('job-list'));
-		}else{
-			redirect(base_url());
-		}
-	}
-	public function adminJobView(){
-		if ($this->session->userdata('loginData')) {
-			$this->data['jobDetail']=$this->generic->GetJobList(array('j.jobID'=>$this->uri->segment(2)));
-			$this->data['jobStatus']=$this->generic->GetData('jobstatus',array('jobID'=>$this->uri->segment(2)));
-			//get financiung details if any
-			if($this->data['jobStatus'][0]['financing']!=0){
-				$this->data['financingDetail']=$this->generic->GetData('jobfinancing',array('jobID'=>$this->uri->segment(2)));
-			}
-			//get material data
-			if($this->data['jobStatus'][0]['materialDelivery']==2){
-				$this->data['DeliveryData']=$this->generic->GetData('jobmaterialdelivery',array('jobID'=>$this->uri->segment(2)));
-			}
-			//get installation data
-			if($this->data['jobStatus'][0]['install']==2){
-				$this->data['installation']=$this->generic->GetData('jobinstallation',array('jobID'=>$this->uri->segment(2)));
-			}
-			//get review date and client additional question data
-			if($this->data['jobStatus'][0]['managerReview']!=0){
-				$this->data['managerReview']=$this->generic->GetData('jobmanagerreview',array('jobID'=>$this->uri->segment(2)));
-				//calculate if form to show
-				$formDisplay=false;
-				if($this->data['managerReview']){
-					if($this->data['managerReview'][0]['reviewDate']==null){
-						$formDisplay=true;
-					}
-				}
-				if(!$this->data['managerReview']){
-					$formDisplay=true;
-				}
-				$this->data['reviewDateFormDisplay']=$formDisplay;
-			}
-			// get job feed back data
-			if($this->data['jobStatus'][0]['feedback']!=0){
-				$this->data['jobFeedback']=$this->generic->GetData('jobfeedback',array('jobID'=>$this->uri->segment(2)));
-			}
-			$this->load->view('jobs/adminJobView',$this->data);
-		}else{
-			redirect(base_url());
-		}
-	}
-	public function signOnComplete(){
-		if ($this->session->userdata('loginData')) {
-			$this->generic->Update('jobstatus',array('jobID' => $this->uri->segment(2)),array('initialVisit'=>2,'initialVisitDate'=>date('Y-m-d'),'financing'=>1));
-			$this->session->set_flashdata('signoncomplete', 1);
-			redirect(base_url('admin-view-job/').$this->uri->segment(2));
-		}else{
-			redirect(base_url());
-		}
-	}
-	public function materialDeliveryData(){
-		if ($this->session->userdata('loginData')) {
-			$data=array(
-				'jobID'=>$this->uri->segment(2),
-				'jobScheduled'=>$this->input->post('jobScheduledDate'),
-				'materialDeliveryETA'=>$this->input->post('materialDelivery'),
-			);
-			$this->generic->InsertData('jobmaterialdelivery',$data);
-			//initial repain and install step
-			$this->generic->Update('jobstatus',array('jobID'=>$this->uri->segment(2)),array('install'=>1,'materialDelivery'=>2));
-			$this->session->set_flashdata('MaterialDeliverySet', 1);
-			redirect(base_url('admin-view-job/').$this->uri->segment(2));
-		}else{
-			redirect(base_url());
-		}
-	}
-	public function installationImgUpload(){
-		if ($this->session->userdata('loginData')) {
-			// Load necessary libraries
-			$this->load->library('upload');
-			$this->load->helper('file');
-		
-			// Configuration for file upload
-			$config['upload_path'] = './assets/uploads/'; // Set your upload path
-			$config['allowed_types'] = 'jpg|jpeg|png|gif|webp';
-			$config['max_size'] = 25048; // 2MB max size
-		
-			// Initialize the upload library with the config
-			$this->upload->initialize($config);
-		
-			// Array to store file names
-			$fileNames = array_fill(0, 10, null); // Initialize with null values
-		
-			// Loop through each file and upload
-			foreach ($_FILES['imgs']['name'] as $key => $name) {
-				if ($_FILES['imgs']['error'][$key] == 0) {
-					$_FILES['file']['name'] = $_FILES['imgs']['name'][$key];
-					$_FILES['file']['type'] = $_FILES['imgs']['type'][$key];
-					$_FILES['file']['tmp_name'] = $_FILES['imgs']['tmp_name'][$key];
-					$_FILES['file']['error'] = $_FILES['imgs']['error'][$key];
-					$_FILES['file']['size'] = $_FILES['imgs']['size'][$key];
-		
-						// Generate a new file name
-						$originalFileName = $_FILES['file']['name'];
-						$newFileName = 'installation_' . time().'_'.$_FILES['file']['name'];
-						$_FILES['file']['name'] = $newFileName;
-
-					if ($this->upload->do_upload('file')) {
-						$fileData = $this->upload->data();
-						$fileNames[$key] = $fileData['file_name']; // Store the file name
-					} else {
-						// Handle upload error
-						$error = $this->upload->display_errors();
-						// You can log the error or show it to the user
-						die($error);
-					}
-				}
-			}
-		
-			// Prepare data for database insertion
-			$data = array(
-				'jobID' => $this->uri->segment(2),
-				'img1' => $fileNames[0],
-				'img2' => $fileNames[1],
-				'img3' => $fileNames[2],
-				'img4' => $fileNames[3],
-				'img5' => $fileNames[4],
-				'img6' => $fileNames[5],
-				'img7' => $fileNames[6],
-				'img8' => $fileNames[7],
-				'img9' => $fileNames[8],
-				'img10' => $fileNames[9],
-			);
-		
-			// Insert data into the database
-			$this->generic->InsertData('jobinstallation', $data);
-		
-			//update status
-			$this->generic->update('jobstatus',array('jobID'=>$this->uri->segment(2)),array('install'=>2,'managerReview'=>1));
-			// Redirect or show success message
-			$this->session->set_flashdata('imagesuploaded', 1);
-			redirect(base_url('admin-view-job/').$this->uri->segment(2));
-
-		}else{
-			redirect(base_url());
-		}
-	}
-	public function managerfainalReviewDate(){
-		if ($this->session->userdata('loginData')) {
-			//check if entry available
-			$checkEntry=$this->generic->GetData('jobmanagerreview',array('jobID'=>$this->uri->segment(2)));
-			if($checkEntry){
-				//update entry
-				$this->generic->Update('jobmanagerreview',array('jobID'=>$this->uri->segment(2)),array('reviewDate'=>$this->input->post('jobReviewDate')) );
-			}else{
-				//insert new entry
-				$this->generic->InsertData('jobmanagerreview',array('reviewDate'=>$this->input->post('jobReviewDate'),'jobID'=>$this->uri->segment(2)) );
-				
-				
-			}
-			//update to job close to in progress
-			$this->generic->update('jobstatus',array('jobID'=>$this->uri->segment(2)),array('managerReview'=>2,'jobClose'=>1));
-			$this->session->set_flashdata('jobReviewadded', 1);
-			redirect(base_url('admin-view-job/').$this->uri->segment(2));
-		}else{
-			redirect(base_url());
-		}
-	}
-	public function managerMarkJobClose(){
-		if ($this->session->userdata('loginData')) {
-				$this->generic->Update('jobstatus',array('jobID'=>$this->uri->segment(2)),array('jobClose'=>2,'jobCloseDate'=>date('Y-m-d'),'feedback'=>1));
-				$this->session->set_flashdata('jobmarkclose', 1);
-			redirect(base_url('admin-view-job/').$this->uri->segment(2));
-		}else{
-			redirect(base_url());
-		}
-	}
-
-
-	//logout all session
-	public function Logout()
+	// <!-- ============================================================== -->
+	// <!-- logout function -->
+	// <!-- ============================================================== -->
+	public function LogOut()
 	{
 		$this->session->unset_userdata('loginData');
 		redirect(base_url());

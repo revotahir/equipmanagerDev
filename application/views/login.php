@@ -1,133 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <title>Log In | Amen Roofing Group</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   
-
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="<?=base_url()?>assets/images/fav.png">
-
-    <!-- Vendor css -->
-    <link href="<?=base_url()?>assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- App css -->
-    <link href="<?=base_url()?>assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
-
-    <!-- Icons css -->
-    <link href="<?=base_url()?>assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="<?=base_url()?>assets/images/favicon.png" type="image/png" />
+    <title>Metro Foods</title>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <link rel="stylesheet" href="<?=base_url()?>assets/css/style.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css">
-    <!-- Theme Config Js -->
-    <script src="<?=base_url()?>assets/js/config.js"></script>
-    
-</head>
-
-<body class="authentication-bg bg-primary authentication-bg-pattern d-flex align-items-center pb-0 vh-100">
-
-    <div class="home-btn d-none d-sm-block position-absolute top-0 end-0 m-3">
-        <a href="https://amenroofinggroup.com/"><i class="fas fa-home h2 text-white"></i></a>
-    </div>
-
-    <div class="account-pages w-100 mt-5 mb-5">
-        <div class="container">
-
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6 col-xl-5">
-                    <div class="card mb-0">
-
-                        <div class="card-body p-4">
-
-                            <div class="account-box">
-                                <div class="account-logo-box">
-                                    <div class="text-center">
-                                        <a href="https://amenroofinggroup.com/">
-                                            <img src="<?=base_url()?>assets/images/logo.webp" alt="" height="100">
-                                        </a>
-                                    </div>
-                                    <h5 class="text-uppercase mb-1 mt-4 fw-semibold">Sign In</h5>
-                                    <p class="mb-0">Login to your account</p>
-                                </div>
-
-                                <div class="account-content mt-4">
-                                    <form class="form-horizontal" method="post" action="<?=base_url('login-submit-data')?>">
-
-                                        <div class="form-group row">
-                                            <div class="col-12">
-                                                <label for="emailaddress">Email address</label>
-                                                <input class="form-control" type="email" id="emailaddress" name="emailaddress" required="" placeholder="john@deo.com">
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <div class="col-12">
-                                                <a href="page-recoverpw.html" class="text-muted float-end"><small>Forgot your password?</small></a>
-                                                <label for="password">Password</label>
-                                                <input class="form-control" type="password" required="" id="password" name="password" placeholder="Enter your password">
-                                            </div>
-                                        </div>
-
-                                     
-
-                                        <div class="form-group row text-center mt-2">
-                                            <div class="col-12">
-                                                <button class="btn btn-md btn-block btn-primary waves-effect waves-light w-100" type="submit">Sign In</button>
-                                            </div>
-                                        </div>
-
-                                    </form>
-
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- end card-body -->
-                </div>
-                <!-- end card -->
+  </head>
+  <body>
+    <!-- ============================================= -->
+    <!-- Header starts here -->
+    <!-- ============================================= -->
+    <header class="mainBox">
+      <div class="container">
+        <div class="row">
+          <a href="#">
+            <img src="<?=base_url()?>assets/images/logo.png" alt="Logo" />
+          </a>
         </div>
-        <!-- end row -->
-    </div>
-    <!-- end container -->
-    </div>
-    <!-- end page -->
+      </div>
+    </header>
+    <!-- ============================================= -->
+    <!-- Header end here -->
+    <!-- ============================================= -->
 
-    <!-- Vendor js -->
-    <script src="<?=base_url()?>assets/js/vendor.min.js"></script>
+    <!-- ============================================= -->
+    <!-- Hero section starts here -->
+    <!-- ============================================= -->
+    <section class="hero-mainBox">
+      <!-- <img src="assets/images/leaf.png" alt="leaf" /> -->
+      <div class="container">
+        <div class="row">
+          <div class="hero-section">
+            <h1>Login</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============================================= -->
+    <!-- Hero section end here -->
+    <!-- ============================================= -->
 
-    <!-- App js -->
-    <script src="<?=base_url()?>assets/js/app.js"></script>
+    <!-- ============================================= -->
+    <!-- Form section starts here -->
+    <!-- ============================================= -->
+    <section class="form-mainBox">
+      <div class="container">
+        <div class="row">
+          <form method="post" action="<?=base_url('login-data')?>">
+            <h2>Login</h2>
+            <span
+              >Metro Food Customer Login Portal</span
+            >
+            <input
+              type="email"
+              name="email-address"
+              id="email-address"
+              placeholder="Email Address"
+              required
+            />
+            <div class="password-wrapper">
+              <input
+                type="password"
+                name="email-password"
+                id="email-password"
+                placeholder="Password"
+                required
+              />
+              <ion-icon id="toggle-password" name="eye"></ion-icon>
+            </div>
+            <div class="button-area">
+              <button type="submit">
+                Login <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+    <!-- ============================================= -->
+    <!-- Form section end here -->
+    <!-- ============================================= -->
+
+    <!-- ============================================= -->
+    <!-- info section starts here -->
+    <!-- ============================================= -->
+    <section class="mainBox">
+      <div class="container">
+        <div class="row box-shadow">
+          <div class="info-box">
+            <img src="<?=base_url()?>assets/images/map.svg" alt="Map" />
+            <span>2800 Wegworth Ln. Baltimore, MD 21230 United States</span>
+          </div>
+          <div class="info-box border-line">
+            <a href="mailto:sales@freshcreativecuisine.com">
+              <img src="<?=base_url()?>assets/images/env.svg" alt="Mail" />
+              <span>sales@freshcreativecuisine.com</span>
+            </a>
+          </div>
+          <div class="info-box">
+            <a href="tel:855-969-3338">
+              <img src="<?=base_url()?>assets/images/phone.svg" alt="Phone" />
+              <span>855-969-3338</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ============================================= -->
+    <!-- info section end here -->
+    <!-- ============================================= -->
+
+    <!-- ============================================= -->
+    <!-- footer section starts here -->
+    <!-- ============================================= -->
+    <header class="footer-mainBox">
+      <div class="container">
+        <div class="row">
+          <!-- <div> -->
+          <a href="#">
+            <img src="assets/images/logo.png" alt="Logo" />
+          </a>
+          <p>
+            Our recipes and fresh foods are prepared by our very own in-house
+            chefs using the finest “fresh & local” ingredients available.
+          </p>
+          <!-- </div> -->
+        </div>
+      </div>
+    </header>
+    <!-- ============================================= -->
+    <!-- footer section end here -->
+    <!-- ============================================= -->
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
     <?php
-    if ($this->session->flashdata('error_msg') != '') {
+    if ($this->session->flashdata('error') != '') {
     ?>
-        <script type="text/javascript">
-            toastr.options = {
-                "closeButton": true,
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            }
-            toastr.error('Invalid Login!');
-        </script>
+    <script type="text/javascript">
+    toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+    toastr.error('Invalid Login!');
+    </script>
     <?php
     }
     ?>
-    <?php
-    if ($this->session->flashdata('AuthcodeExpired') != '') {
-    ?>
-        <script type="text/javascript">
-            toastr.options = {
-                "closeButton": true,
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            }
-            toastr.info('Already password setuped, Please Login!');
-        </script>
-    <?php
-    }
-    ?>
-</body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("input[required]").forEach((input) => {
+        input.addEventListener("input", () => validateField(input));
+      });
 
+      document
+        .getElementById("toggle-password")
+        .addEventListener("click", function () {
+          const passwordField = document.getElementById("email-password");
+          if (passwordField.type === "password") {
+            passwordField.type = "text";
+            this.setAttribute("name", "eye");
+          } else {
+            passwordField.type = "password";
+            this.setAttribute("name", "eye-off");
+          }
+        });
+
+      function validateField(field) {
+        if (field.type === "email") validateEmail(field);
+        else validateRequired(field);
+      }
+
+      function validateRequired(field) {
+        field.style.borderBottom = field.value.trim()
+          ? "1px solid green"
+          : "1px solid red";
+      }
+
+      function validateEmail(field) {
+        field.style.borderBottom = /@.+\./.test(field.value)
+          ? "1px solid green"
+          : "1px solid red";
+      }
+    });
+  </script>
 </html>

@@ -49,62 +49,79 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['login-submit-data']='welcome/loginData';
-//Dashboard
-$route['dashboard']='welcome/Dashboard';
-
-//manager module admin side 
-$route['add-new-manager']='welcome/addNewManager';
-$route['add-manager-data']='welcome/addNewManagerData';
-$route['manager-list']='welcome/managerList';
-$route['delete-manger/:any']='welcome/deletManager';
-$route['edit-manager/:any']='welcome/editManager';
-$route['edit-manager-data/:any']='welcome/editManagerData';
-//client module admin side 
-$route['add-new-client']='welcome/addNewClient';
-$route['add-client-data']='welcome/addNewClientData';
-$route['client-list']='welcome/ClientList';
-$route['delete-client/:any']='welcome/dltClient';
-$route['edit-client/:any']='welcome/EditClient';
-$route['edit-client-data/:any']='welcome/EditClientData';
-
-//client auth and passsetup
-$route['setup-password']='welcome/newClientPassSetup';
-$route['new-password-data/:any']='welcome/newClientPassSetupData';
-
-//manage jobs module 
-$route['add-new-job']='welcome/addNewJob';
-$route['add-new-job-data']='welcome/addNewJobData';
-$route['job-list']='welcome/jobList';
-$route['edit-job/:any']='welcome/jobEditView';
-$route['update-job-data/:any']='welcome/jobEditData';
-$route['delete-job/:any']='welcome/DeletJob';
-//-- admin job view
-$route['admin-view-job/:any']='welcome/adminJobView';
-$route['mark-sign-on-complete/:any']='welcome/signOnComplete';
-//----admin job view material delivery
-$route['add-material-delivery-data/:any']='welcome/materialDeliveryData';
-//----admin installation images upload
-$route['add-installation-imgs-data/:any']='welcome/installationImgUpload';
-//----admin manager review
-$route['add-manager-review-date-data/:any']='welcome/managerfainalReviewDate';
-//----admin mark job close
-$route['mark-job-close-complete/:any']='welcome/managerMarkJobClose';
 
 
-//client dashboard
-$route['client-dashboard']='client/clientDashboard';
-$route['client-view-job/:any']='client/clientJobView';
-//--job detail fainancing
-$route['mark-fainancing-will-be-financed-by-us/:any']='client/markFinancingUs';
-$route['insurance-detailed-filled/:any']='client/markFinancingAlreadyFormData';
-//---job additional questions
-$route['additional-question-data/:any']='client/AdditionalQuestions';
-//---job feedback
-$route['client-feed-back/:any']='client/SubmitFeedbackData';
+$route['login-data'] = 'welcome/LoginData';
+$route['dashboard'] = 'welcome/AdminDashboard'; //admin Dashboard
 
 
-$route['logout'] = 'welcome/Logout';
+// vendors route
+$route['vendors'] = 'welcome/AdminVendors'; 
+$route['add-vendor']= 'welcome/AddAdminVendors';
+$route['all-vendor']= 'welcome/AllAdminVendors';
+$route['deactivate-vendor/:any']= 'welcome/deactivateVendor';
+$route['activate-vendor/:any']= 'welcome/activateVendor';
+$route['delete-vendor/:any']= 'welcome/deleteVendor';
+$route['edit-vendor/:any']= 'welcome/updateVendor';
+$route['update-vender-data/:any']= 'welcome/updateVendorData';
+
+
+// customers route
+$route['customers'] = 'welcome/AdminCustomers'; 
+$route['add-customer'] = 'welcome/AddAdminCustomers'; 
+$route['all-customer'] = 'welcome/AllAdminCustomers'; 
+$route['deactivate-customer/:any'] = 'welcome/deactivateCustomers'; 
+$route['activate-customer/:any'] = 'welcome/activateCustomers'; 
+$route['delete-customer/:any'] = 'welcome/deleteCustomers'; 
+$route['edit-customer/:any'] = 'welcome/updateCustomers'; 
+$route['update-customer-data/:any'] = 'welcome/updateCustomerData';
+//--Customer product assign 
+$route['assign-product']='welcome/assignProductView'; 
+$route['assign-price-tocustomer']='welcome/assignProductDataAjax'; //ajax call for price update 
+$route['assign-price-tocustomer-update']='welcome/assignProductEditDataAjax'; //ajax call for price edit from manage assign product price 
+$route['manage-assign-product']='welcome/manageAssignProducts';
+
+// category route
+$route['category'] = 'welcome/AdminCategory';
+$route['add-category'] = 'welcome/AddAdminCategory';
+$route['delete-category/:any'] = 'welcome/deleteCategory';
+$route['edit-category/:any'] = 'welcome/updateCategory';
+$route['update-category-data/:any'] = 'welcome/updateCategoryData';
+
+
+
+// product route
+$route['add-new-product'] = 'welcome/AddAdminProduct';
+$route['add-product-data'] = 'welcome/AddAdminProductData';
+$route['manage-Products'] = 'welcome/manageProducts';
+$route['deactivate-product/:any'] = 'welcome/DeactivateProduct';
+$route['activate-product/:any'] = 'welcome/activateProduct';
+$route['delete-product/:any'] = 'welcome/DeleteProduct';
+$route['edit-product/:any'] = 'welcome/EditProduct';
+$route['update-product-data/:any'] = 'welcome/EditProductData';
+
+
+//order managment
+$route['manage-admin-orders']='welcome/ManageAdminProducts';
+$route['update-order-status/:any']='welcome/UpdateOrderStatus';
+//---------Customer routes
+$route['customer-dashboard']='customer/Dashboard';
+//order now
+$route['order-now']='customer/OrderNow';
+$route['add-to-cart-data']='customer/addToCartData'; //--ajax call
+$route['delet-cart-item']='customer/DeletCartItem'; //--ajax call
+$route['cart']='customer/cart';
+$route['update-cart-qty']='customer/UpdateQuanityFromCart'; //--ajax call
+$route['checkout']='customer/CheckOut'; 
+$route['checkout-data']='customer/CheckOutData'; 
+$route['order-history']='customer/OrderHistory'; 
+$route['order-invoice/:any']='customer/OrderInvoice'; 
+
+//test email
+$route['test-mail']='welcome/TestMail'; 
+
+
+$route['logout'] = 'welcome/LogOut';
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
