@@ -128,6 +128,9 @@
                     <a href="#">Terms & Conditions and Privacy Policy.</a>
                   </span>
                 </div>
+                <div class="fot-pass mt-10">
+                <span> Already have account? <a href="<?=base_url()?>">Login Here</a></span>
+              </div>
                 <div>
                   <input type="submit" value="Sign Up" class="btn-login" />
                 </div>
@@ -135,9 +138,9 @@
             </form>
 
             <!-- company Form End here -->
-
-            <!-- user Form start here -->
-            <div id="userForm" style="display: none">
+          <form action="<?=base_url('user-registeration-data')?>" name="userForm" id="userForm" method="post" style="display: none">
+             <!-- user Form start here -->
+            <div id="userForm" >
               <div class="inputs mt-10">
                 <label for="usrName">User Name</label>
                 <input
@@ -147,41 +150,51 @@
                   placeholder="Enter User Name" />
               </div>
               <div class="inputs mt-10">
-                <label for="cPhone">Phone</label>
+                <label for="UPhone">Phone</label>
                 <input
                   type="tel"
-                  name="cPhone"
-                  id="cPhone"
+                  name="UPhone"
+                  id="UPhone"
                   placeholder="Enter Phone number" />
               </div>
               <div class="inputs mt-10">
-                <label for="email">Email</label>
+                <label for="uemail">Email</label>
                 <input
                   type="email"
-                  name="email"
-                  id="email"
+                  name="uemail"
+                  id="uemail"
                   placeholder="Enter Your Email" />
               </div>
               <div class="inputs mt-10">
                 <label for="password">Password</label>
                 <input
                   type="password"
-                  name="password"
-                  id="password"
+                  name="upassword"
+                  id="upassword"
                   placeholder="Enter Your Password" />
               </div>
+              
               <div class="fot-pass mt-10">
-                <input type="checkbox" name="cCbox" id="cCbox" />
+                
+                <input type="checkbox" name="uCbox" id="uCbox" />
                 <span>
                   I agree to the
-                  <a href="#">Terms & Conditions and Privacy Policy.</a>
-                </span>
+                  <a href="#">Terms & Conditions and Privacy Policy.</a><br>
+                  
+                </span><br>
+                
+               
+              </div>
+              <div class="fot-pass mt-10">
+                <span> Already have account? <a href="<?=base_url()?>">Login Here</a></span>
               </div>
               <div>
                 <input type="submit" value="Sign Up" class="btn-login" />
               </div>
             </div>
             <!-- user Form End here -->
+          </form>
+           
           </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ class MY_Controller extends CI_Controller {
             'welcome/VerifyAccount', // Exclude the login page
             'welcome/TestMail', // Exclude the login page
             'welcome/VerifyAccountData', // Exclude the login page
+            'welcome/resendVerificationEmail', // Exclude the login page
         );
          // Get the current controller and method
          $current_controller = $this->router->fetch_class();

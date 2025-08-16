@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="<?=base_url()?>/<?=base_url()?>/assets/images/logo-icon.png" type="image/png" />
-    <link rel="stylesheet" href="<?=base_url()?>/assets/css/style.css" />
+    <link rel="icon" href="<?=base_url()?>assets/images/logo-icon.png" type="image/png" />
+    <link rel="stylesheet" href="<?=base_url()?>assets/css/style.css" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-    <title>Login</title>
+    <title>Forgot Password</title>
   </head>
   <body>
     <section class="reg-page">
       <div class="containers">
         <div class="inner-login">
-          <form method="post" class="form" action="<?= base_url('login-data') ?>">
+          <form method="post" class="form" action="<?=base_url('forgot-password-data')?>">
             <div class="main-box">
               <div class="img">
                 <svg
@@ -28,70 +28,30 @@
                   />
                 </svg>
               </div>
-              <h5 class="heading">Welcome Back</h5>
+              <h5 class="heading">Forgot Password</h5>
               <span class="sub-heading"
-                >Sign in to access your account and continue your journey.</span
+                >Enter your email for verification code!</span
               >
+              
               <div class="inputs">
-                <label for="email">Email</label>
+                <label for="password">Enter Email</label>
                 <input
                   type="email"
-                  name="email"
-                  id="email"
-                  placeholder="Enter Your Email"
+                  name="femail"
+                  id="femail"
+                  placeholder="Enter email to reset password"
                 />
-              </div>
-              <div class="inputs">
-                <label for="password">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="Enter Your Password"
-                />
-              </div>
-              <div class="fot-pass">
-                <a href="<?=base_url('forgot-password')?>"> Forgot Password </a> | <a href="<?=base_url('register')?>"> Sign Up </a>
               </div>
               <div>
-                <input type="submit" value="Login Now" class="btn-login" />
+                <input type="submit" value="Send Code" class="btn-login" />
               </div>
             </div>
           </form>
         </div>
       </div>
     </section>
-  </body>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
-<?php
-if ($this->session->flashdata('passwordupdates') != '') {
-?>
-  <script type="text/javascript">
-    toastr.options = {
-      "closeButton": true,
-      "showMethod": "fadeIn",
-      "hideMethod": "fadeOut"
-    }
-    toastr.success('Password Changed!');
-  </script>
-<?php
-}
-?>
-<?php
-if ($this->session->flashdata('successRegister') != '') {
-?>
-  <script type="text/javascript">
-    toastr.options = {
-      "closeButton": true,
-      "showMethod": "fadeIn",
-      "hideMethod": "fadeOut"
-    }
-    toastr.success('Registeration Completed!');
-  </script>
-<?php
-}
-?>
 <?php
 if ($this->session->flashdata('error') != '') {
 ?>
@@ -101,9 +61,24 @@ if ($this->session->flashdata('error') != '') {
       "showMethod": "fadeIn",
       "hideMethod": "fadeOut"
     }
-    toastr.error('Invalid Login!');
+    toastr.error('Email not Registered!');
   </script>
 <?php
 }
 ?>
+<?php
+if ($this->session->flashdata('newcodeSend') != '') {
+?>
+  <script type="text/javascript">
+    toastr.options = {
+      "closeButton": true,
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+    toastr.success('New Code is sent to your Email!');
+  </script>
+<?php
+}
+?>
+  </body>
 </html>

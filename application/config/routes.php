@@ -55,6 +55,13 @@ $route['register'] = 'welcome/RegisterView';
 $route['company-registeration-data'] = 'welcome/comapnyRegisterationData';
 $route['verify-account'] = 'welcome/VerifyAccount';
 $route['verif-account-data'] = 'welcome/VerifyAccountData';
+$route['resend-verification-email'] = 'welcome/resendVerificationEmail';
+$route['user-registeration-data'] = 'welcome/userRegistersationData';
+$route['forgot-password'] = 'welcome/forgotpassword';
+$route['forgot-password-data'] = 'welcome/forgotpasswordData';
+$route['reset-password'] = 'welcome/resetPassword';
+$route['reset-password-data'] = 'welcome/resetPasswordData';
+$route['login-data'] = 'welcome/loginData';
 
 
 
