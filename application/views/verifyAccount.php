@@ -62,7 +62,6 @@
                             <?php
               }
               ?>
-                            <input type="hidden" name="forgotcheck" id="forgotcheck" value="1">
                         </div>
                         <div class="fot-pass">
                             <?php

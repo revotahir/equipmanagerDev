@@ -39,17 +39,22 @@ class Welcome extends MY_Controller
 		$password = md5($this->input->post('password'));
 		//check if email and password exists
 		$user = $this->generic->GetData('users', array('userEmail' => $email, 'userPass' => $password, 'userStatus' => 1));
+		$this->session->set_userdata('loginData', $user[0]);
 		if ($user) {
+			$this->session->set_userdata('loginData', $user[0]);
 			//check if user is admin or vendor
 			if ($user[0]['userType'] == 1) {
 				//if admin then redirect to admin dashboard
 				redirect(base_url('admin-dashboard'));
 			} elseif ($user[0]['userType'] == 2) {
+				//get cpmpany details
+				$companyDetails = $this->generic->GetData('companydetail', array('userId' => $user[0]['userID']));
+				$this->session->set_userdata('companyDetails', $companyDetails[0]);
 				//if vendor then redirect to vendor dashboard	
-				redirect(base_url('vendor-dashboard'));
+				redirect(base_url('company-dashboard'));
 			} elseif ($user[0]['userType'] == 3) {
-				//if user then redirect to user dashboard	
-				redirect(base_url('user-dashboard'));
+				//if user then redirect to company manager dashboard	
+				redirect(base_url('manager-dashboard'));
 			} elseif ($user[0]['userType'] == 4) {
 				//if user then redirect to user dashboard	
 				redirect(base_url('user-dashboard'));
@@ -178,7 +183,8 @@ class Welcome extends MY_Controller
 		$authcode = $_GET['auth'];
 		//check if auth code exists
 		$checkAuth = $this->generic->GetData('userauth', array('authTocken' => $authcode, 'userID' => $_GET['userID'], 'authStatus' => 0));
-		if ($checkAuth or isset($_GET['forgot'])) {
+		if ($checkAuth || isset($_GET['forgot'])) {
+			// die('a');
 			$this->load->view('verifyAccount');
 		} else {
 			$this->session->set_flashdata('authExpire', 1);
@@ -240,7 +246,7 @@ class Welcome extends MY_Controller
 			if (isset($_GET['forgot'])) {
 				redirect(base_url('verify-account?auth=' . $authTocken . '&userID=' . $_GET['userID'] . '&forgot=1'));
 			} else {
-				redirect(base_url('verify-account?auth=' . $authTocken));
+				redirect(base_url('verify-account?auth=' . $authTocken. '&userID=' . $_GET['userID']));
 			}
 		} else {
 			redirect(base_url('register'));
@@ -317,55 +323,18 @@ public function resetPasswordData()
 	// <!-- redirect to dashboard -->
 	// <!-- ============================================================== -->
 
-	// redirect to page with check
-	public function AdminDashboard()
+	
+
+
+	public function companyDashboard()
 	{
-		if ($this->session->userdata('loginData')) {
-			$this->load->view('dashboard-admin');
-		} else {
-			redirect(base_url());
-		}
-	}
-
-
-	// <!-- ============================================================== -->
-	// <!-- vendor redirect and insert function -->
-	// <!-- ============================================================== -->
-
-	// redirect to page with check
-	public function AdminVendors()
-	{
-		if ($this->session->userData('loginData')) {
-			$this->load->view('add-vendors');
-		} else {
-			redirect(base_url());
-		}
-	}
-	// add vendor
-	public function AddAdminVendors()
-	{
-		$userName = $this->input->post('user-name');
-		$userEmail = $this->input->post('user-email');
-		$userPhone = $this->input->post('user-phone');
-		$userPassword = $this->input->post('user-password');
-
-		$this->db->where('userEmail', $userEmail);
-		$query = $this->db->get('users');
-		if ($query->num_rows() > 0) {
-			$this->session->set_flashdata('alreadyRegistered', 1);
-			redirect(base_url('vendors'));
-		} else {
-			$VendorUserData = array(
-				'userName' => $userName,
-				'userEmail' => $userEmail,
-				'userPhone' => $userPhone,
-				'userPass' => $userPassword,
-				'userType' => 3,
-			);
-			$this->generic->InsertData('users', $VendorUserData);
-			$this->session->set_flashdata('successfullyRegistered', 1);
-			redirect(base_url('vendors'));
-		}
+			//check if user is vendor
+			if ($this->session->userdata('loginData')['userType'] == 2) {
+				$this->load->view('dashboards/companydashboard');
+			} else {
+				redirect(base_url());
+			}
+		
 	}
 	public function TestMail()
 	{
@@ -383,6 +352,9 @@ public function resetPasswordData()
 	public function LogOut()
 	{
 		$this->session->unset_userdata('loginData');
+		if ($this->session->userdata('loginData')['userType'] == 2) {
+			$this->session->unset_userdata('companyDetails');
+		}
 		redirect(base_url());
 	}
 }

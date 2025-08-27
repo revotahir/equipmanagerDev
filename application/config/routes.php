@@ -63,7 +63,23 @@ $route['reset-password'] = 'welcome/resetPassword';
 $route['reset-password-data'] = 'welcome/resetPasswordData';
 $route['login-data'] = 'welcome/loginData';
 
+//dashboards
+$route['company-dashboard'] = 'welcome/companyDashboard';
 
+
+//manage workforce company
+//--maage skill
+$route['manage-workforce-skill']='workforce/ManageWorkforceSkill';
+$route['add-skill-data']='workforce/addSkillData';
+$route['delet-skill/:any']='workforce/DeleteSkill';
+$route['update-skill-data/:any']='workforce/UpdateSkillData';
+//--add workforce
+$route['add-workforce']='workforce/addWorkforce';
+$route['add-skill-data-ajax']='workforce/addSkillDataAjax';
+$route['add-work-force-data']='workforce/addWorkForceData';
+$route['all-workforce']='workforce/allWorkforce';
+$route['delete-person/:any']='workforce/DeletePerson';
+$route['edit-work-force/:any']='workforce/editWorkForce';
 
 $route['login-data'] = 'welcome/LoginData';
 

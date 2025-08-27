@@ -82,12 +82,52 @@ class Generic_model extends CI_Model
             return false;
         }
     }
-    function LoginData($email, $pass)
+    function GetLoginData($email, $pass)
     {
         $this->db->select('*');
-        $this->db->from('wp_users');
+        $this->db->from('users as u');
         $this->db->where('user_email', $email);
         $this->db->where('user_pass', $pass);
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
+    function GetWorkforcewithSkill($filters,$where = false)
+    {
+        $this->db->select('*');
+        $this->db->from('workforce as w');
+        $this->db->join('skills  as s', 'w.skillID=s.skillID', 'inner');
+          $this->db->order_by('w.workforceID', 'DESC');
+          
+    if ($filters && is_array($filters)) {
+        // Exact matches
+        if (isset($filters['companyID'])) {
+            $this->db->where('w.companyID', $filters['companyID']);
+        }
+        if (isset($filters['skillID']) && $filters['skillID'] != '') {
+            $this->db->where('w.skillID', $filters['skillID']);
+        }
+        if (isset($filters['personPhone']) && $filters['personPhone'] != '') {
+            $this->db->where('w.personPhone', $filters['personPhone']);
+        }
+        if (isset($filters['personEmail']) && $filters['personEmail'] != '') {
+            $this->db->where('w.personEmail', $filters['personEmail']);
+        }
+        if (isset($filters['personStatus']) && $filters['personStatus'] != '') {
+            $this->db->where('w.personStatus', $filters['personStatus']);
+        }
+        // LIKE match for name
+        if (isset($filters['personName']) && $filters['personName'] != '') {
+            $this->db->like('w.personName', $filters['personName']);
+        }
+    }
+        if($where){
+            $this->db->where($where);
+        }
         $q = $this->db->get();
         //    die($this->db->last_query());
         if ($q->num_rows() > 0) {

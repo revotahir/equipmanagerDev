@@ -25,6 +25,7 @@ class MY_Controller extends CI_Controller {
          $current_page = $current_controller . '/' . $current_method;
          // Check if the current request is for the base URL
          $is_base_url = ($this->uri->uri_string() === '');
+        //  var_dump($this->session->userdata('loginData')); 
         if(!$is_base_url){
         // Check if the user is logged in
         if (!in_array($current_page, $excluded_pages) && !$this->session->userdata('loginData')) {
