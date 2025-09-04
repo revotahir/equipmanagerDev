@@ -81,6 +81,23 @@ $route['all-workforce']='workforce/allWorkforce';
 $route['delete-person/:any']='workforce/DeletePerson';
 $route['edit-work-force/:any']='workforce/editWorkForce';
 
+
+//manage equipment company
+//--manage category
+$route['manage-category']='equipment/ManageCategory';
+$route['equipment-category-data']='equipment/CategoryData';
+$route['delete-category/:any']='equipment/deletCategory';
+$route['update-category-data/:any']='equipment/CategoryUpdateData';
+//--add equipment
+$route['add-equipment']='equipment/AddEquipment';
+$route['add-equipment-data']='equipment/AddEquipmentData';
+$route['add-equipment-category-jax']='equipment/AddEquipmentAjaxData';
+//--all equipment
+$route['all-equipment']='equipment/AllEquipment';
+$route['delete-equipment/:any']='equipment/DeleteEquipment';
+$route['edit-equipment/:any']='equipment/EditEquipment';
+$route['update-equipment-data/:any']='equipment/UpdateEquipmentData';
+
 $route['login-data'] = 'welcome/LoginData';
 
 //test email

@@ -8,6 +8,8 @@
   <link rel="icon" href="<?= base_url() ?>assets/images/logo-icon.png" type="image/png" />
   <!--plugins-->
   <link href="<?= base_url() ?>assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+  <link href="<?= base_url() ?>assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+  <link href="<?= base_url() ?>assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
   <link
     href="<?= base_url() ?>assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css"
     rel="stylesheet" />
@@ -39,10 +41,14 @@
   <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
 
+
   <title>All Workforce</title>
 </head>
 
 <body>
+  <script src="<?= base_url() ?>assets/js/jquery.min.js"></script>
+  <script src="<?= base_url() ?>assets/plugins/select2/js/select2.min.js"></script>
+  <script src="<?= base_url() ?>assets/js/form-select2.js"></script>
   <!--start wrapper-->
   <div class="wrapper">
     <?php $this->load->view('components/header'); ?>
@@ -70,18 +76,18 @@
                     <label class="form-label">Skill</label>
                     <select name="personSkill" id="personSkill" class="form-control">
                       <option value="">Select Skill</option>
-                      <?php 
+                      <?php
                       if ($skills) {
                         foreach ($skills as $skill) {
                       ?>
-                      <option 
-                      <?php 
-                      if(isset($_GET['personSkill']) && $_GET['personSkill']==$skill['skillID']){
-                        echo "selected";
-                      }
-                      ?>
-                      
-                      value="<?=$skill['skillID']?>"><?=$skill['skillName']?></option>
+                          <option
+                            <?php
+                            if (isset($_GET['personSkill']) && $_GET['personSkill'] == $skill['skillID']) {
+                              echo "selected";
+                            }
+                            ?>
+
+                            value="<?= $skill['skillID'] ?>"><?= $skill['skillName'] ?></option>
                       <?php
                         }
                       }
@@ -94,7 +100,9 @@
                       type="text"
                       name="personName"
                       id="personName"
-                      value="<?php if(isset($_GET['personName'])){ echo $_GET['personName']; } ?>"
+                      value="<?php if (isset($_GET['personName'])) {
+                                echo $_GET['personName'];
+                              } ?>"
                       class="form-control"
                       placeholder="Enter Person Name" />
                   </div>
@@ -104,7 +112,9 @@
                     <input
                       type="number"
                       name="personPhone"
-                      value="<?php if(isset($_GET['personPhone'])){ echo $_GET['personPhone']; } ?>"
+                      value="<?php if (isset($_GET['personPhone'])) {
+                                echo $_GET['personPhone'];
+                              } ?>"
                       id="personPhone"
                       class="form-control"
                       placeholder="Enter Phone Number" />
@@ -114,7 +124,9 @@
                     <input
                       type="email"
                       class="form-control"
-                      value="<?php if(isset($_GET['personEmail'])){ echo $_GET['personEmail']; } ?>"
+                      value="<?php if (isset($_GET['personEmail'])) {
+                                echo $_GET['personEmail'];
+                              } ?>"
                       name="personEmail"
                       id="personEmail"
                       placeholder="Enter Email Address" />
@@ -123,31 +135,31 @@
                     <label class="form-label">Status</label>
                     <select name="status" id="status" class="form-control">
                       <option value="">Select Status</option>
-                      <option 
-                      <?php 
+                      <option
+                        <?php
 
-                      if(isset($_GET['status']) && $_GET['status']==1){
-                        echo "selected";
-                      }
-                      ?>
-                      value="1">Available</option>
-                      <option 
-                       <?php 
+                        if (isset($_GET['status']) && $_GET['status'] == 1) {
+                          echo "selected";
+                        }
+                        ?>
+                        value="1">Available</option>
+                      <option
+                        <?php
 
-                      if(isset($_GET['status']) && $_GET['status']==2){
-                        echo "selected";
-                      }
-                      ?>
-                      value="2">Allocated</option>
+                        if (isset($_GET['status']) && $_GET['status'] == 2) {
+                          echo "selected";
+                        }
+                        ?>
+                        value="2">Allocated</option>
                     </select>
                   </div>
                   <div class="col-12">
                     <div class="d-grid">
-                      <?php 
-                      if(isset($_GET['personSkill'])){
-                        ?>
-                      <a href="<?=base_url('all-workforce')?>" style="color:#0f2f2c;margin-bottom:10px"><i class="bi bi-x-lg"></i> Clear Filter</a>
-                      <?php 
+                      <?php
+                      if (isset($_GET['personSkill'])) {
+                      ?>
+                        <a href="<?= base_url('all-workforce') ?>" style="color:#0f2f2c;margin-bottom:10px"><i class="bi bi-x-lg"></i> Clear Filter</a>
+                      <?php
                       }
                       ?>
                       <button type="submit" class="btn btn-primary btn-clash">
@@ -188,7 +200,7 @@
                       Add Skills
                     </button>
                   </div>
-                  
+
                 </div>
               </div>
               <div class="table-responsive mt-3">
@@ -206,6 +218,7 @@
                   <tbody>
                     <?php
                     if (!empty($workforces)) {
+
                       foreach ($workforces as $workforce) {
                     ?>
 
@@ -226,7 +239,49 @@
                           </td>
                           <td><?= $workforce['personEmail'] ?></td>
                           <td><?= $workforce['personPhone'] ?></td>
-                          <td><?= $workforce['skillName'] ?></td>
+                          <?php
+                          $skillsArr = array_map('trim', explode(',', $workforce['skillNames']));
+                          $maxToShow = 2;
+                          ?>
+                          <td>
+                            <?php
+                            // Show first two skills
+                            for ($i = 0; $i < min($maxToShow, count($skillsArr)); $i++) {
+                              echo '<span class="badge bg-secondary me-1">' . htmlspecialchars($skillsArr[$i]) . '</span>';
+                            }
+
+                            // If more than two, show "View More" link
+                            if (count($skillsArr) > $maxToShow) {
+                              $hiddenSkills = array_slice($skillsArr, $maxToShow);
+                              $hiddenHtml = '';
+                              foreach ($hiddenSkills as $skill) {
+                                $hiddenHtml .= '<span class="badge bg-secondary me-1">' . htmlspecialchars($skill) . '</span>';
+                              }
+                              $uniqueId = 'skills_' . $workforce['workforceID'];
+                              $viewMoreId = 'viewMore_' . $workforce['workforceID'];
+                              $viewLessId = 'viewLess_' . $workforce['workforceID'];
+
+                              // View More link
+                              echo '<a id="' . $viewMoreId . '" href="javascript:void(0);" style="color:#0b2523;" 
+            onclick="document.getElementById(\'' . $uniqueId . '\').style.display = \'inline\'; 
+                     this.style.display = \'none\'; 
+                     document.getElementById(\'' . $viewLessId . '\').style.display = \'inline\';">
+            View More
+          </a>';
+                              echo '<br>';
+                              // Hidden skills with "View Less"
+                              echo '<span id="' . $uniqueId . '" style="display:none;">' . $hiddenHtml . '</span>';
+
+                              // View Less link
+                              echo '<a id="' . $viewLessId . '" href="javascript:void(0);" style="color:#0b2523; display:none;" 
+            onclick="document.getElementById(\'' . $uniqueId . '\').style.display = \'none\'; 
+                     this.style.display = \'none\'; 
+                     document.getElementById(\'' . $viewMoreId . '\').style.display = \'inline\';">
+            View Less
+          </a>';
+                            }
+                            ?>
+                          </td>
                           <td>
                             <?php
                             if ($workforce['personStatus'] == 1) {
@@ -292,18 +347,17 @@
                                                 </div>
                                                 <div class="col-12">
                                                   <label class="form-label">Skill</label>
-                                                  <select name="personSkill" id="personSkill" class="form-control">
+                                                  <!-- <select name="personSkill" id="personSkill" class="form-control"> -->
+                                                  <select class="multiple-select" id="personSkill" name="personSkill[]" data-placeholder="Choose anything" multiple="multiple">
                                                     <option value="">Select Skill</option>
                                                     <?php
                                                     if ($skills) {
+                                                      $selectedSkills = array_map('trim', explode(',', $workforce['skillNames']));
+
                                                       foreach ($skills as $skill) {
                                                     ?>
                                                         <option
-                                                          <?php
-                                                          if ($skill['skillID'] == $workforce['skillID']) {
-                                                            echo "selected";
-                                                          }
-                                                          ?>
+                                                          <?php if (in_array($skill['skillName'], $selectedSkills)) echo 'selected'; ?>
 
                                                           value="<?= $skill['skillID'] ?>"><?= $skill['skillName'] ?></option>
                                                     <?php
@@ -374,7 +428,16 @@
                                 </div>
                               </div>
 
-
+                              <script>
+                                $('#exampleModal_<?= $workforce['workforceID'] ?>').on('shown.bs.modal', function() {
+                                  $(this).find('.multiple-select').select2({
+                                    dropdownParent: $('#exampleModal_<?= $workforce['workforceID'] ?>'),
+                                    theme: 'bootstrap4', // Use the Select2 Bootstrap 4 theme
+                                    width: '100%',
+                                    placeholder: "Select Skills"
+                                  });
+                                });
+                              </script>
 
                               <a
                                 href="<?= base_url('delete-person/' . $workforce['workforceID']) ?>"
@@ -446,7 +509,8 @@
                       </div>
                       <div class="col-12">
                         <label class="form-label">Skill</label>
-                        <select name="personSkill" id="personSkill" class="form-control">
+                        <!-- <select name="personSkill" id="personSkill" class="form-control"> -->
+                        <select class="multiple-select" id="personSkill" name="personSkill[]" data-placeholder="Choose anything" multiple="multiple">
                           <option value="">Select Skill</option>
                           <?php
                           if ($skills) {
@@ -629,7 +693,7 @@
   <!-- Bootstrap bundle JS -->
   <script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
   <!--plugins-->
-  <script src="<?= base_url() ?>assets/js/jquery.min.js"></script>
+
   <script src="<?= base_url() ?>assets/plugins/simplebar/js/simplebar.min.js"></script>
   <script src="<?= base_url() ?>assets/plugins/metismenu/js/metisMenu.min.js"></script>
   <script src="<?= base_url() ?>assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
@@ -637,9 +701,20 @@
   <script src="<?= base_url() ?>assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
   <script src="<?= base_url() ?>assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
   <script src="<?= base_url() ?>assets/js/table-datatable.js"></script>
+
   <!--app-->
   <script src="<?= base_url() ?>assets/js/app.js"></script>
   <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+  <script>
+    $('#exampleModal').on('shown.bs.modal', function() {
+      $(this).find('.multiple-select').select2({
+        dropdownParent: $('#exampleModal'),
+        theme: 'bootstrap4', // Use the Select2 Bootstrap 4 theme
+        width: '100%',
+        placeholder: "Select Skills"
+      });
+    });
+  </script>
   <?php
   if ($this->session->flashdata('success-added') != '') {
   ?>
@@ -664,6 +739,20 @@
         "hideMethod": "fadeOut"
       }
       toastr.success('Skill Added!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('emailExist') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.error('Email Already Registered!');
     </script>
   <?php
   }

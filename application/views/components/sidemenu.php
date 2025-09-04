@@ -31,7 +31,7 @@
           </li>
           <li>
               <a href="javascript:;" class="has-arrow">
-                  <div class="parent-icon"><i class="bx bx-user-pin"></i></div>
+                  <div class="parent-icon"><i class="bi bi-people-fill"></i></div>
                   <div class="menu-title font-clash">Manage Workforce</div>
               </a>
               <ul>
@@ -48,26 +48,26 @@
           </li>
 
           <!-- manage Equipment -->
-          <!-- <li>
+          <li>
               <a class="has-arrow" href="javascript:;">
                   <div class="parent-icon">
-                      <i class="bx bx-message-detail"></i>
+                      <i class="bi bi-tools"></i>
                   </div>
                   <div class="menu-title font-clash">Manage Equipment</div>
               </a>
               <ul>
 
                   <li>
-                      <a href=""><i class="bi bi-arrow-right-short"></i>Add Equipment</a>
+                      <a href="<?=base_url('add-equipment')?>"><i class="bi bi-arrow-right-short"></i>Add Equipment</a>
                   </li>
                   <li>
-                      <a href=""><i class="bi bi-arrow-right-short"></i>All Equipment </a>
+                      <a href="<?=base_url('all-equipment')?>"><i class="bi bi-arrow-right-short"></i>All Equipment </a>
                   </li>
                   <li>
-                      <a href=""><i class="bi bi-arrow-right-short"></i>Manage Category</a>
+                      <a href="<?=base_url('manage-category')?>"><i class="bi bi-arrow-right-short"></i>Manage Category</a>
                   </li>
               </ul>
-          </li> -->
+          </li>
           <!-- mannage  Equipment end here-->
           <!-- manage Project -->
           <!-- <li>

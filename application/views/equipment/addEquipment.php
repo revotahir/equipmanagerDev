@@ -8,8 +8,6 @@
   <link rel="icon" href="<?= base_url() ?>assets/images/logo-icon.png" type="image/png" />
   <!--plugins-->
   <link href="<?= base_url() ?>assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
-  <link href="<?= base_url() ?>assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
-  <link href="<?= base_url() ?>assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
   <link
     href="<?= base_url() ?>assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css"
     rel="stylesheet" />
@@ -38,13 +36,8 @@
   <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
 
-  <title>Add Workforce</title>
+  <title>Add Equiprnent</title>
 </head>
-<style>
-  .select2-container {
-    width: 100% !important;
-  }
-</style>
 
 <body>
   <!--start wrapper-->
@@ -52,13 +45,12 @@
     <?php $this->load->view('components/header'); ?>
     <?php $this->load->view('components/sidemenu'); ?>
 
-
     <!--start content-->
     <main class="page-content">
       <!--breadcrumb-->
       <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3" style="border: none">
-          Add Workforce
+          Add Equipment
         </div>
       </div>
       <!--end breadcrumb-->
@@ -68,22 +60,22 @@
           <div class="card">
             <div class="card-body">
               <div class="border p-3 rounded">
-                <h6 class="mb-0 text-uppercase">Add workforce</h6>
+                <h6 class="mb-0 text-uppercase">Add Equipment</h6>
                 <hr />
-                <form class="row g-3" method="post" action="<?= base_url('add-work-force-data') ?>" enctype="multipart/form-data">
+                <form class="row g-3" method="post" action="<?= base_url('add-equipment-data') ?>" enctype="multipart/form-data">
                   <div class="col-12">
-                    <label class="form-label">Person Name</label>
+                    <label class="form-label">Equipment Name</label>
                     <input
                       type="text"
-                      class="form-control"
-                      name="personName"
-                      id="personName"
+                      id="equipName"
+                      name="equipName"
                       required
-                      placeholder="Enter Person Name" />
+                      class="form-control"
+                      placeholder="Enter Equipment Name" />
                   </div>
                   <div class="col-12">
                     <div class="d-flex align-items-center gap-20 mb-3">
-                      <label class="form-label mb-0">Skill</label>
+                      <label class="form-label mb-0"> Equipment Category</label>
 
                       <!-- Button trigger modal -->
                       <button
@@ -91,70 +83,56 @@
                         class="btn btn-primary btn-clash-sm"
                         data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
-                        Add Skills
+                        Add New Equipment Category
                       </button>
                     </div>
-                    <!-- <select name="personSkill" id="personSkill" required class="form-control" multiple> -->
-                    <select class="multiple-select" id="personSkill" name="personSkill[]" data-placeholder="Choose anything" multiple="multiple">
-                      <option value="">Select Skill</option>
+                    <select name="equipCat" required id="equipCat" class="form-control">
+                      <option value="">Select  Equipment Category</option>
                       <?php
-                      if (!empty($skills)) {
-                        foreach ($skills as $skill) {
+                      if (!empty($category)) {
+                        foreach ($category as $cat) {
                       ?>
-                          <option value="<?= $skill['skillID'] ?>"><?= $skill['skillName'] ?></option>
-                      <?php
+                          <option value="<?= $cat['equipCatID'] ?>"><?= $cat['catName'] ?></option>
+                        <?php
                         }
+                      } else {
+                        ?>
+                        <option value="">No Category Found</option>
+                      <?php
                       }
                       ?>
                     </select>
-                    <div id="selectedSkillsTags"></div>
                   </div>
                   <div class="col-12">
                     <label class="form-label">Upload Image</label>
-                    <input type="file" name="personImage" id="personImage" class="form-control" />
+                    <input type="file" name="equipImg" id="equipImg" class="form-control" />
                   </div>
-                  <div class="col-6">
-                    <label class="form-label">Phone Number</label>
+                  <div class="col-12">
+                    <label class="form-label">Quantity</label>
                     <input
                       type="number"
-                      name="personPhone"
-                      id="personPhone"
-                      required
                       class="form-control"
-                      placeholder="Enter Phone Number" />
-                  </div>
-                  <div class="col-6">
-                    <label class="form-label">Email</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      name="personEmail"
+                      name="quantity"
+                      id="quantity"
                       required
-                      id="personEmail"
-                      placeholder="Enter Email Address" />
+                      value="1"
+                      placeholder="Enter Equipment Quantity" />
                   </div>
-                  <!-- <div class="col-12">
-                      <label class="form-label">Password</label>
-                      <input
-                        type="password"
-                        class="form-control"
-                        placeholder="Enter Password"
-                      />
-                    </div> -->
                   <div class="col-12">
-                    <label class="form-label">Additional Note</label>
+                    <label class="form-label">Description</label>
                     <textarea
                       class="form-control"
-                      rows="4"
-                      name="personAddress"
+                      placeholder="Write Here"
                       required
-                      id="personAddress"
+                      id="equipDesc"
+                      name="equipDesc"
+                      rows="4"
                       cols="4"></textarea>
                   </div>
                   <div class="col-12">
                     <div class="d-grid">
                       <button type="submit" class="btn btn-primary btn-clash">
-                        Add Workforce
+                        Add Equipment
                       </button>
                     </div>
                   </div>
@@ -182,7 +160,9 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"></h5>
+            <h5 class="modal-title" id="exampleModalLabel">
+              Add New Equipment Category
+            </h5>
             <button
               type="button"
               class="btn-close"
@@ -197,47 +177,50 @@
                 <div class="card-body">
                   <div class="border p-4 rounded">
                     <div class="card-title d-flex align-items-center">
-                      <h5 class="mb-0">Add New Skill</h5>
+                      <h5 class="mb-0"></h5>
                     </div>
-                    <hr />
-                    <div class="row mb-3">
-                      <label
-                        for="skillName"
-                        class="col-sm-3 col-form-label">New Skill Name</label>
-                      <div class="col-sm-9">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="skillName"
-                          name="skillName"
-                          placeholder="Enter New Skill Name" />
+                    <form class="row g-3" method="post" >
+                      <div class="row mb-3">
+                        <label
+                          for="catName"
+                          class="col-sm-3 col-form-label">Equipment Category</label>
+                        <div class="col-sm-9">
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="catName"
+                            required
+                            name="catName"
+                            placeholder="Enter New Equipment Category" />
+                        </div>
                       </div>
-                    </div>
-                    <div class="row mb-3">
-                      <label
-                        for="skillDesc"
-                        class="col-sm-3 col-form-label">Description</label>
-                      <div class="col-sm-9">
-                        <textarea
-                          class="form-control"
-                          id="skillDesc"
-                          name="skillDesc"
-                          rows="3"
-                          placeholder="Description"></textarea>
+                      <div class="row mb-3">
+                        <label
+                          for="catDesc"
+                          class="col-sm-3 col-form-label">Description</label>
+                        <div class="col-sm-9">
+                          <textarea
+                            class="form-control"
+                            id="catDesc"
+                            name="catDesc"
+                            required
+                            rows="3"
+                            placeholder="Write Description"></textarea>
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="row">
-                      <label class="col-sm-3 col-form-label"></label>
-                      <div class="col-sm-9">
-                        <button
-                          type="button"
-                          onclick="return addSkillData()"
-                          class="btn btn-primary px-5 btn-clash">
-                          Add Skill
-                        </button>
+                      <div class="row">
+                        <label class="col-sm-3 col-form-label"></label>
+                        <div class="col-sm-9">
+                          <button
+                            type="button"
+                            onclick="return addCatData()"
+                            class="btn btn-primary px-5 btn-clash">
+                            Add Category
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -277,23 +260,15 @@
   <script src="<?= base_url() ?>assets/plugins/metismenu/js/metisMenu.min.js"></script>
   <script src="<?= base_url() ?>assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
   <script src="<?= base_url() ?>assets/js/pace.min.js"></script>
-  <script src="<?= base_url() ?>assets/plugins/select2/js/select2.min.js"></script>
-  <script src="<?= base_url() ?>assets/js/form-select2.js"></script>
   <!--app-->
   <script src="<?= base_url() ?>assets/js/app.js"></script>
   <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('.multiple-select').select2({
-        placeholder: "Select Skills"
-      });
-    });
-  </script>
-  <script>
-    function addSkillData() {
-      var skillName = $('#skillName').val();
-      var skillDescription = $('#skillDesc').val();
-      if (skillName == '' || skillDescription == '') {
+   <script>
+    function addCatData() {
+      
+      var catName = $('#catName').val();
+      var catDesc = $('#catDesc').val();
+      if (catName == '' || catDesc == '') {
         toastr.options = {
           "closeButton": true,
           "showMethod": "fadeIn",
@@ -304,11 +279,11 @@
       } else {
         //  Make an AJAX POST request
         $.ajax({
-          url: '<?= base_url('add-skill-data-ajax') ?>', // URL to the controller method
+          url: '<?= base_url('add-equipment-category-jax') ?>', // URL to the controller method
           type: 'POST', // HTTP method
           data: {
-            skillName: skillName,
-            skillDescription: skillDescription
+            catDesc: catDesc,
+            catName: catName
           }, // Data to send
 
           success: function(response) {
@@ -322,24 +297,21 @@
               return false
             } else {
               // Update the select options
-              $('#personSkill').html('<option value="">Select Skill</option>' + response);
+              $('#equipCat').html('<option value="">Select Category</option>' + response);
 
-              // Refresh Select2 dropdown
-              $('#personSkill').select2({
-                placeholder: "Select Skills"
-              });
+            
 
               // Hide modal and clear fields
               $('#exampleModal').modal('hide');
-              $('#skillName').val('');
-              $('#skillDesc').val('');
+              $('#catName').val('');
+              $('#catDesc').val('');
 
               toastr.options = {
                 "closeButton": true,
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
               }
-              toastr.success('Skill added successfully!');
+              toastr.success('Category Added!');
             }
 
           },
@@ -358,21 +330,7 @@
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
       }
-      toastr.success('Person Added!');
-    </script>
-  <?php
-  }
-  ?>
-   <?php
-  if ($this->session->flashdata('emailExist') != '') {
-  ?>
-    <script type="text/javascript">
-      toastr.options = {
-        "closeButton": true,
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-      }
-      toastr.error('Email Already Registered!');
+      toastr.success('Equipment Added!');
     </script>
   <?php
   }
