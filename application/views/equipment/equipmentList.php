@@ -427,8 +427,9 @@
                           type="number"
                           id="quantity"
                           name="quantity"
+                          value="1"
                           class="form-control"
-                          placeholder="Enter Password" />
+                          placeholder="Enter Quantity" />
                       </div>
                       <div class="col-12">
                         <label class="form-label">Description</label>
@@ -624,6 +625,34 @@
         "hideMethod": "fadeOut"
       }
       toastr.success('Equipment Deleted!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('success-edited') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.success('Equipment Updated!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('error') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.error('Something went wrong, Please try again!');
     </script>
   <?php
   }

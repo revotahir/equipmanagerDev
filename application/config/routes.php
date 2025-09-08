@@ -96,7 +96,7 @@ $route['add-equipment-category-jax']='equipment/AddEquipmentAjaxData';
 $route['all-equipment']='equipment/AllEquipment';
 $route['delet-equipment/:any']='equipment/DeleteEquipment';
 $route['edit-equipment/:any']='equipment/EditEquipment';
-$route['update-equipment-data/:any']='equipment/UpdateEquipmentData';
+$route['edit-equipment-data/:any']='equipment/UpdateEquipmentData';
 
 $route['login-data'] = 'welcome/LoginData';
 

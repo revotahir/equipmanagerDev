@@ -186,83 +186,52 @@ class equipment extends MY_Controller
 		$this->session->set_flashdata('successDeleted', 'Person deleted successfully!');
 		redirect(base_url('all-equipment'));
 	}
-	public function editWorkForce()
-	{
-		$personName = $this->input->post('personName');
-		$personEmail = $this->input->post('personEmail');
-		$personPhone = $this->input->post('personPhone');
-		$personAddress = $this->input->post('personAddress');
-		$personSkill = $this->input->post('personSkill');
-		//check email exsist in user
-		//get user data from worforce id
-		$curentuser = $this->generic->GetData('workforce', array('workforceID' => $this->uri->segment(2)));
+	public function UpdateEquipmentData(){
+		$equipName = $this->input->post('equipName');
+		$equipCatID = $this->input->post('equipCat');
+		$equipTotalQuantity = $this->input->post('quantity');
+		$equipDesc = $this->input->post('equipDesc');
 
-		$checkEmail = $this->generic->GetData('users', array('userEmail' => $personEmail));
-		if ($curentuser[0]['personEmail'] != $personEmail) {
-
-			if ($checkEmail) {
-				$this->session->set_flashdata('emailExist', 'Email already exists!');
-				redirect(base_url('all-workforce'));
-			}
-		}
-		//upload person image
-		$config['upload_path']          = './assets/uploads/workforce/';
-		$config['allowed_types']        = 'gif|jpg|png|jpeg';
-		$config['max_size']             = 2048;
-		$config['encrypt_name']         = TRUE;
-		$this->load->library('upload', $config);
-		if (! $this->upload->do_upload('personImage')) {
-			$error = array('error' => $this->upload->display_errors());
-			// die(print_r($error));
-			if ($error['error'] == '<p>You did not select a file to upload.</p>') {
-				$data = array(
-					'personName' => $personName,
-					'personEmail' => $personEmail,
-					'personPhone' => $personPhone,
-					'personAddInfo' => $personAddress,
-				);
-				$this->generic->Update('workforce', array('workforceID' => $this->uri->segment(2)), $data);
-				//delet all skill 
-				$this->generic->Delete('workforceskilllink', array('workforceID' => $this->uri->segment(2)));
-				if ($personSkill) {
-					foreach ($personSkill as $skill) {
-						$dataSkill = array(
-							'workforceID' => $this->uri->segment(2),
-							'skillID' => $skill
-						);
-						$this->generic->InsertData('workforceskilllink', $dataSkill);
-					}
-				}
-				$this->session->set_flashdata('success-edited', 'Workforce updated successfully!');
-				redirect(base_url('all-workforce'));
-			} else {
-				$this->session->set_flashdata('error', $error['error']);
-				redirect(base_url('all-workforce'));
-			}
-		} else {
-			$uploadData = $this->upload->data();
-			$personImage = $uploadData['file_name'];
+		//check if we have image posted
+		if (empty($_FILES['equipImg']['name'])) {
+			//no image uploded
 			$data = array(
-				'personName' => $personName,
-				'personEmail' => $personEmail,
-				'personPhone' => $personPhone,
-				'personAddInfo' => $personAddress,
-				'personImg' => $personImage
+				'equipName' => $equipName,
+				'equipCatID' => $equipCatID,
+				'equipTotalQuantity' => $equipTotalQuantity,
+				'equipDesc' => $equipDesc
 			);
-			$this->generic->Update('workforce', array('workforceID' => $this->uri->segment(2)), $data);
-			//delet all skill 
-			$this->generic->Delete('workforceskilllink', array('workforceID' => $this->uri->segment(2)));
-			if ($personSkill) {
-				foreach ($personSkill as $skill) {
-					$dataSkill = array(
-						'workforceID' => $this->uri->segment(2),
-						'skillID' => $skill
-					);
-					$this->generic->InsertData('workforceskilllink', $dataSkill);
-				}
+			$this->generic->Update('equipment', array('equipmentID' => $this->uri->segment(2)), $data);
+			$this->session->set_flashdata('success-edited', 'Equipment updated successfully!');
+			redirect(base_url('all-equipment'));
+		} else {
+			//upload person image
+			$config['upload_path']          = './assets/uploads/equipment/';
+			$config['allowed_types']        = 'gif|jpg|png|jpeg';
+			$config['max_size']             = 6048;
+			$config['encrypt_name']         = TRUE;
+			$this->load->library('upload', $config);
+			if (! $this->upload->do_upload('equipImg')) {
+				$error = array('error' => $this->upload->display_errors());
+				// die(print_r($error));
+				$this->session->set_flashdata('error', $error['error']);
+				redirect(base_url('all-equipment'));
+			} else {
+				$uploadData = $this->upload->data();
+				$personImage = $uploadData['file_name'];
+				$data = array(
+					'equipName' => $equipName,
+					'equipCatID' => $equipCatID,
+					'equipTotalQuantity' => $equipTotalQuantity,
+					'equipDesc' => $equipDesc,
+					'equipImg' => $personImage
+				);
+				$this->generic->Update('equipment', array('equipmentID' => $this->uri->segment(2)), $data);
+				$this->session->set_flashdata('success-edited', 'Equipment updated successfully!');
+				redirect(base_url('all-equipment'));	
 			}
-			$this->session->set_flashdata('success-edited', 'Workforce updated successfully!');
-			redirect(base_url('all-workforce'));
 		}
+
 	}
+	
 }
