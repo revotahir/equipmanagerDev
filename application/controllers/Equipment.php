@@ -44,13 +44,11 @@ class equipment extends MY_Controller
 			);
 			$this->generic->InsertData('equipcat', $data);
 			$this->session->set_flashdata('success', 'Skill added successfully!');
-			// if (isset($_GET['allWorkforce']) && $_GET['allWorkforce'] == 1) {
-			// 	redirect(base_url('all-workforce'));
-			// } else {
-
-			// 	redirect(base_url('manage-workforce-skill'));
-			// }
-			redirect(base_url('manage-category'));
+			if (isset($_GET['equipmnetlist']) && $_GET['equipmnetlist'] == 1) {
+				redirect(base_url('all-equipment'));
+			} else {
+				redirect(base_url('manage-category'));
+			}
 		} else {
 			$this->session->set_flashdata('error', 'Please fill all fields!');
 			redirect(base_url('manage-category'));
@@ -115,7 +113,7 @@ class equipment extends MY_Controller
 		$equipCatID = $this->input->post('equipCat');
 		$equipTotalQuantity = $this->input->post('quantity');
 		$equipDesc = $this->input->post('equipDesc');
-		
+
 		//check if we have image posted
 		if (empty($_FILES['equipImg']['name'])) {
 			$personImage = 'equipment.png';
@@ -146,35 +144,35 @@ class equipment extends MY_Controller
 			'equipImg' => $personImage,
 		);
 		$this->generic->InsertData('equipment', $data);
-	
+
 
 
 		$this->session->set_flashdata('success-added', 'Workforce added successfully!');
-		// if (isset($_GET['worforcelist']) && $_GET['worforcelist'] == 1) {
-		// 	redirect(base_url('all-workforce'));
-		// } else {
+		if (isset($_GET['equipmentList']) && $_GET['equipmentList'] == 1) {
+			redirect(base_url('all-equipment'));
+		} else {
 
-		// 	redirect(base_url('add-workforce'));
-		// }
-		redirect(base_url('add-equipment'));
+			redirect(base_url('add-equipment'));							
+		}
+		
 	}
 	public function AllEquipment()
 	{
 		// Get company ID from session
 		$companyID = $this->session->userdata('companyDetails')['companyID'];
 
-		// Load skills for the filter dropdown
+		// Load category for the filter dropdown
 		$this->data['equipCat'] = $this->generic->GetData('equipcat', array('companyID' => $this->session->userdata('companyDetails')['companyID']), 'equipCatID', 'DESC');
 
 		// Build filter array from GET parameters
 		$filters = array('companyID' => $companyID);
 		if ($this->input->get('equipName')) {
 			$filters['equipName'] = $this->input->get('equipName');
-		}	
+		}
 		if ($this->input->get('equipCatID')) {
 			$filters['equipCatID'] = $this->input->get('equipCatID');
 		}
-		
+
 
 
 		// Get filtered workforce list
@@ -183,11 +181,11 @@ class equipment extends MY_Controller
 		// Load view
 		$this->load->view('equipment/equipmentList', $this->data);
 	}
-	public function DeletePerson()
+	public function DeleteEquipment()
 	{
-		$this->generic->Delete('workforce', array('workforceID' => $this->uri->segment(2), 'companyID' => $this->session->userdata('companyDetails')['companyID']));
+		$this->generic->Delete('equipment', array('equipmentID' => $this->uri->segment(2), 'companyID' => $this->session->userdata('companyDetails')['companyID']));
 		$this->session->set_flashdata('successDeleted', 'Person deleted successfully!');
-		redirect(base_url('all-workforce'));
+		redirect(base_url('all-equipment'));
 	}
 	public function editWorkForce()
 	{
@@ -202,10 +200,10 @@ class equipment extends MY_Controller
 
 		$checkEmail = $this->generic->GetData('users', array('userEmail' => $personEmail));
 		if ($curentuser[0]['personEmail'] != $personEmail) {
-			
+
 			if ($checkEmail) {
-			$this->session->set_flashdata('emailExist', 'Email already exists!');
-			redirect(base_url('all-workforce'));
+				$this->session->set_flashdata('emailExist', 'Email already exists!');
+				redirect(base_url('all-workforce'));
 			}
 		}
 		//upload person image
@@ -254,16 +252,16 @@ class equipment extends MY_Controller
 			);
 			$this->generic->Update('workforce', array('workforceID' => $this->uri->segment(2)), $data);
 			//delet all skill 
-				$this->generic->Delete('workforceskilllink', array('workforceID' => $this->uri->segment(2)));
-				if ($personSkill) {
-					foreach ($personSkill as $skill) {
-						$dataSkill = array(
-							'workforceID' => $this->uri->segment(2),
-							'skillID' => $skill
-						);
-						$this->generic->InsertData('workforceskilllink', $dataSkill);
-					}
+			$this->generic->Delete('workforceskilllink', array('workforceID' => $this->uri->segment(2)));
+			if ($personSkill) {
+				foreach ($personSkill as $skill) {
+					$dataSkill = array(
+						'workforceID' => $this->uri->segment(2),
+						'skillID' => $skill
+					);
+					$this->generic->InsertData('workforceskilllink', $dataSkill);
 				}
+			}
 			$this->session->set_flashdata('success-edited', 'Workforce updated successfully!');
 			redirect(base_url('all-workforce'));
 		}

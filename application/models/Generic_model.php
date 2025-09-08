@@ -141,7 +141,7 @@ class Generic_model extends CI_Model
     }
 function GetEquipmentWithCat($filters,$where = false)
     {
-            $this->db->select('e.*, ec.catName');
+            $this->db->select('*');
     $this->db->from('equipment as e');
     $this->db->join('equipcat as ec', 'e.equipCatID = ec.equipCatID', 'left');
     $this->db->order_by('e.equipmentID', 'DESC');
