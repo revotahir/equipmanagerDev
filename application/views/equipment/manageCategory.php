@@ -133,7 +133,17 @@
                 <tr>
                   <td><?=$cat['catName']?></td>
                   <td><?=$cat['catDesc']?></td>
-                  <td>-</td>
+                  <td>
+                    <?php 
+                    //count number of equipment in this category
+                    $equipmentCount = $this->generic->GetCount('equipment','equipmentID', array('equipCatID' => $cat['equipCatID']));
+                    if($equipmentCount){
+                        echo $equipmentCount[0]['result'];
+                    }else{
+                        echo '-';
+                    }
+                    ?>
+                  </td>
                   <td>
                     <div
                       class="table-actions d-flex align-items-center gap-3 fs-6">

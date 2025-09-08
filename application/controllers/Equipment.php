@@ -117,7 +117,6 @@ class equipment extends MY_Controller
 		//check if we have image posted
 		if (empty($_FILES['equipImg']['name'])) {
 			$personImage = 'equipment.png';
-			die('Please select image');
 		} else {
 			//upload person image
 			$config['upload_path']          = './assets/uploads/equipment/';
