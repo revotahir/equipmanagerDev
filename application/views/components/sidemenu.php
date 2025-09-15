@@ -70,7 +70,7 @@
           </li>
           <!-- mannage  Equipment end here-->
           <!-- manage Project -->
-          <!-- <li>
+          <li>
               <a class="has-arrow" href="javascript:;">
                   <div class="parent-icon">
                       <i class="bx bx-window-alt"></i>
@@ -80,16 +80,16 @@
               <ul>
 
                   <li>
-                      <a href=""><i class="bi bi-arrow-right-short"></i>Add Project</a>
+                      <a href="<?=base_url('add-project')?>"><i class="bi bi-arrow-right-short"></i>Add Project</a>
                   </li>
                   <li>
-                      <a href=""><i class="bi bi-arrow-right-short"></i>All Projects </a>
+                      <a href="#"><i class="bi bi-arrow-right-short"></i>All Projects </a>
                   </li>
                   <li>
-                      <a href=""><i class="bi bi-arrow-right-short"></i>Manage Category</a>
+                      <a href="<?=base_url('project-category')?>"><i class="bi bi-arrow-right-short"></i>Project Category</a>
                   </li>
               </ul>
-          </li> -->
+          </li>
           <!-- mannage  Equipment end here-->
       </ul>
       <!--end navigation-->

@@ -98,6 +98,17 @@ $route['delet-equipment/:any']='equipment/DeleteEquipment';
 $route['edit-equipment/:any']='equipment/EditEquipment';
 $route['edit-equipment-data/:any']='equipment/UpdateEquipmentData';
 
+
+//manage project company
+//--manage category
+$route['project-category']='project/ProjectCategory';
+$route['project-cat-data']='project/ProjectCategoryData';
+$route['delet-project-cat/:any']='project/ProjectCategoryDeletData';
+$route['update-project-category-data/:any']='project/ProjectCategoryEditData';
+//--add project
+$route['add-project']='project/AddProject';
+$route['add-project-general-data']='project/AddProjectGeneralData'; // ajax first step(General data)
+
 $route['login-data'] = 'welcome/LoginData';
 
 //test email
