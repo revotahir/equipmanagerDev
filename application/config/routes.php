@@ -108,6 +108,17 @@ $route['update-project-category-data/:any']='project/ProjectCategoryEditData';
 //--add project
 $route['add-project']='project/AddProject';
 $route['add-project-general-data']='project/AddProjectGeneralData'; // ajax first step(General data)
+$route['add-project-workforce']='project/AddProjecWorkforce'; // ajax second step(workforce data)
+$route['remove-project-workforce']='project/removeWorkforceFromProject'; // ajax second step(workforce removal)
+$route['add-project-equipment']='project/addProjectEquipment'; // ajax add project equipment
+$route['remove-project-equipment']='project/RemoveProjectEquipment'; // ajax add project equipment
+$route['move-to-step3']='project/MovetoStepThree'; // ajax Move to step 3
+$route['assign-equipment-employee']='project/assignEquipmenttoEmployee'; // ajax assign equipment to employee
+$route['remove-assigned-equipment']='project/removeAssignEquipmenttoEmployee'; // ajax remove assigned equipment to employee
+$route['mark-project-as-inprogress']='project/MarkInProgressProject'; 
+//--all projects
+$route['all-projects']='project/AllProjects';
+$route['delete-project/:any']='project/DeletProject';
 
 $route['login-data'] = 'welcome/LoginData';
 

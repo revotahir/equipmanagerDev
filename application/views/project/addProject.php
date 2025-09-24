@@ -38,6 +38,10 @@
 
   <title>Add New Project </title>
   <style>
+    .img-fix-cover {
+      object-fit: cover !important;
+    }
+
     .width-ctrl {
       --width: 25%;
     }
@@ -131,23 +135,23 @@
           <div class="multi_tabs_btns-container">
             <div class="multi_tabs_btns-wrapper">
               <!-- Btn -->
-              <div class="multi_tabs-btn active_tab width-ctrl">
+              <div class="multi_tabs-btn active_tab width-ctrl" id="step1div">
                 <div class="tab-progress-bar"></div>
-                <button class="tab-btn">
+                <button class="tab-btn" id="step-1">
                   <span class="_circle">Step 1</span>
                 </button>
               </div>
               <!-- Btn -->
-              <div class="multi_tabs-btn width-ctrl">
+              <div class="multi_tabs-btn   width-ctrl" id="step2div">
                 <div class="tab-progress-bar"></div>
-                <button class="tab-btn" disabled>
+                <button class="tab-btn " id="step-2">
                   <span class="_circle">Step 2</span>
                 </button>
               </div>
               <!-- Btn -->
-              <div class="multi_tabs-btn" style="--width: 50%">
+              <div class="multi_tabs-btn" style="--width: 50%" id="step3div">
                 <div class="tab-progress-bar"></div>
-                <button class="tab-btn" disabled>
+                <button class="tab-btn" id="step-3">
                   <span class="_circle">Step 3</span>
                 </button>
               </div>
@@ -176,6 +180,11 @@
                           required
                           id="pName"
                           name="pName"
+                          <?php
+                          if (isset($_GET['id'])) {
+                            echo 'value="' . htmlspecialchars($projectData[0]['pName']) . '"';
+                          }
+                          ?>
                           class="form-control"
                           placeholder="Enter Project name" />
                       </div>
@@ -187,7 +196,13 @@
                           if (!empty($Pcategory)) {
                             foreach ($Pcategory as $cat) {
                           ?>
-                              <option value="<?= $cat['pCatID'] ?>"><?= $cat['pCatName'] ?></option>
+                              <option
+                                <?php
+                                if (isset($_GET['id']) && $projectData[0]['pCatID'] == $cat['pCatID']) {
+                                  echo 'selected';
+                                }
+                                ?>
+                                value="<?= $cat['pCatID'] ?>"><?= $cat['pCatName'] ?></option>
                           <?php
                             }
                           } else {
@@ -203,36 +218,102 @@
                           required
                           id="pLocation"
                           name="pLocation"
+                          <?php
+                          if (isset($_GET['id'])) {
+                            echo 'value="' . htmlspecialchars($projectData[0]['pLocation']) . '"';
+                          }
+                          ?>
                           class="form-control"
                           placeholder="Add  Location" />
                       </div>
                       <div class="col-12">
                         <label class="form-label">Upload Image (Max 10, Optional)</label>
                         <input type="file" multiple id="pImg" name="pImg[]" class="form-control" />
+                        <div id="previewContainer" class="mt-3 d-flex flex-wrap gap-2">
+                          <?php
+                          if (isset($projectData) && !empty($projectData[0]['pImg1'])) {
+                            for ($i = 1; $i <= 10; $i++) {
+                              $imgField = 'pImg' . $i;
+                              if (!empty($projectData[0][$imgField])) {
+                                echo '<img src="' . base_url('assets/uploads/projectImgs/' . $projectData[0][$imgField]) . '" alt="Project Image" style="width:100px; height:100px; object-fit:cover; border-radius:8px; border:1px solid #ddd;"/>';
+                              }
+                            }
+                          }
+                          ?>
+                        </div>
                       </div>
+                      <script>
+                        document.getElementById("pImg").addEventListener("change", function(event) {
+                          const previewContainer = document.getElementById("previewContainer");
+                          previewContainer.innerHTML = ""; // Clear previous previews
+
+                          const files = event.target.files;
+
+                          if (files.length > 10) {
+                            alert("You can only upload a maximum of 10 files.");
+                            event.target.value = ""; // Clear the input
+                            return;
+                          }
+
+                          Array.from(files).forEach((file) => {
+                            if (file.type.startsWith("image/")) {
+                              const reader = new FileReader();
+
+                              reader.onload = function(e) {
+                                const img = document.createElement("img");
+                                img.src = e.target.result;
+                                img.alt = file.name;
+                                img.style.width = "100px";
+                                img.style.height = "100px";
+                                img.style.objectFit = "cover";
+                                img.style.borderRadius = "8px";
+                                img.style.border = "1px solid #ddd";
+                                previewContainer.appendChild(img);
+                              };
+
+                              reader.readAsDataURL(file);
+                            } else {
+                              const fileName = document.createElement("p");
+                              fileName.textContent = file.name;
+                              fileName.style.color = "red";
+                              previewContainer.appendChild(fileName);
+                            }
+                          });
+                        });
+                      </script>
                       <div class="col-12 mb-3">
                         <label class="form-label">Timeline</label><br>
-                       
+
                         <div class="row">
-                           
+
                           <div class="col-md-6 mb-2 mb-md-0">
                             <span class="text-muted mt-2">Start Date</span>
                             <input
                               type="date"
                               id="pStartDate"
                               name="pStartDate"
+                              <?php
+                              if (isset($_GET['id'])) {
+                                echo 'value="' . htmlspecialchars($projectData[0]['pStartDate']) . '"';
+                              }
+                              ?>
                               required
                               class="form-control"
                               placeholder="Start Date" />
-                              
+
                           </div>
-                         
+
                           <div class="col-md-6">
-                             <span class="text-muted mt-2">End Date(Optional)</span>
+                            <span class="text-muted mt-2">End Date(Optional)</span>
                             <input
                               type="date"
                               id="pEndDate"
                               name="pEndDate"
+                              <?php
+                              if (isset($_GET['id'])) {
+                                echo 'value="' . htmlspecialchars($projectData[0]['pEndDate']) . '"';
+                              }
+                              ?>
                               class="form-control"
                               placeholder="End Date" />
                           </div>
@@ -247,7 +328,11 @@
                           required
                           id="pDesc"
                           name="pDesc"
-                          placeholder="Write Here"></textarea>
+                          placeholder="Write Here"><?php
+                                                    if (isset($_GET['id'])) {
+                                                      echo  htmlspecialchars($projectData[0]['pDesc']);
+                                                    }
+                                                    ?></textarea>
                       </div>
                       <div class="row justify-content-center mt-3">
                         <div class="col-sm-1">
@@ -285,13 +370,21 @@
                     <form class="row g-3">
                       <div class="col-12">
                         <div class="d-flex align-items-center gap-20 mb-3">
-                          <label class="form-label mb-0">Select Employee</label>
+                          <label class="form-label mb-0">Select Workforce</label>
                         </div>
-                        <select name="skill" id="skill" class="form-control">
-                          <option value="">Select Employee</option>
-                          <option value="">Select Employee 1</option>
-                          <option value="">Select Employee 3</option>
-                          <option value="">Select Employee 4</option>
+                        <select name="workforce" id="workforce" onchange="return step2ajax()" class="form-control">
+                          <option value="">Select Workforce</option>
+                          <?php
+                          if (!empty($workforce) && isset($workforce)) {
+                            foreach ($workforce as $emp) {
+                          ?>
+                              <option value="<?= $emp['workforceID'] ?>"><?= $emp['personName'] ?></option>
+                          <?php
+                            }
+                          } else {
+                            echo '<option value="">No Workforce Found</option>';
+                          }
+                          ?>
                         </select>
                       </div>
 
@@ -299,263 +392,152 @@
                       <div class="card-body card-body-p-0">
                         <div class="product-grid">
                           <div
-                            class="row row-cols-1 row-cols-sm-1 row-cols-md-3 row-cols-lg-4 g-3">
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/e167bc99fa5ad15d9308030e83cef4d07e8b4c10.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
+                            class="row row-cols-1 row-cols-sm-1 row-cols-md-3 row-cols-lg-6 g-3" id="workcardsContainer">
+                            <?php
+                            if (isset($selectedworkforce) && !empty($selectedworkforce)) {
+                              foreach ($selectedworkforce as $sel) {
+                                $getskill = $this->generic->GetWorkforcewithSkill(array(), array('w.workforceID' => $sel['workforceID']));
+                                $skills = '';
+                                if ($getskill) {
 
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
+                                  foreach ($getskill as $sk) {
+                                    $skills .= $sk['skillNames'];
+                                  }
+                                }
+                            ?>
+                                <!-- Card start -->
+                                <div class="col close" style="position: relative">
+                                  <div class="card border shadow-none h-100">
+                                    <div class="text-start">
+                                      <img
+                                        src="<?= base_url('assets/uploads/workforce/' . $sel['personImg']) ?>"
+                                        class="card-img-top-main rounded-top"
+                                        alt="Helen Heidenreich" />
+                                      <a href="javascript:removeworkforce(<?= $sel['workforceID'] ?>)" onclick="return confirm('Are you sure you want to remove person from project?')">
+                                        <svg
+                                          width="29"
+                                          height="29"
+                                          viewBox="0 0 29 29"
+                                          fill="none"
+                                          xmlns="http://www.w3.org/2000/svg">
+                                          <path
+                                            d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
+                                            fill="grey" />
+                                        </svg>
+                                      </a>
+                                      <div class="card-body p-3">
+                                        <h5 class="card-title mb-1">
+                                          <?= $sel['personName'] ?>
+                                        </h5>
+                                        <span class="text-muted"><?= $skills ?></span>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/5225a0cdaba6dd55efd0ff44b26e82ddfe8d8800.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
-
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/b909a323568685cb2a0b10d855cc868d21267f7f.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
-
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/f660fef856d605d87fe01d9a5d5be8b6d0ed8a48.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
-
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
+                            <?php
+                              }
+                            } else {
+                              echo '<p class="text-muted">No Workforce Selected Yet</p>';
+                            }
+                            ?>
                           </div>
                         </div>
                       </div>
                       <!-- end -->
 
+
+
+
                       <!-- second section start  -->
 
-                      <div class="col-12">
+                      <div class="col-5">
                         <div class="d-flex align-items-center gap-20 mb-3">
                           <label class="form-label mb-0">Select Equipment</label>
                         </div>
-                        <select name="skill" id="skill" class="form-control">
+                        <select name="equipment" id="equipment" class="form-control">
                           <option value="">Select Equipment</option>
-                          <option value="">Select Equipment 1</option>
-                          <option value="">Select Equipment 3</option>
-                          <option value="">Select Equipment 4</option>
+                          <?php
+                          if (isset($allEquipment) && !empty($allEquipment)) {
+                            foreach ($allEquipment as $eq) {
+                          ?>
+                              <option value="<?= $eq['equipmentID'] ?>" data-available-qty="<?= $eq['equipTotalQuantity'] - $eq['equipInUseQuantity'] ?>"><?= $eq['equipName'] ?> (QTY: <?= $eq['equipTotalQuantity'] - $eq['equipInUseQuantity'] ?>)</option>
+                          <?php
+                            }
+                          } else {
+                            echo '<option value="">No Equipment Selected Yet</option>';
+                          }
+                          ?>
                         </select>
                       </div>
+                      <div class="col-5">
+                        <div class="d-flex align-items-center gap-20 mb-3">
+                          <label class="form-label mb-0">Select Equipment</label>
+                        </div>
+                        <input type="number" name="qty" id="qty" class="form-control" placeholder="Select equipment first" />
+                      </div>
+                      <div class="col-2 d-flex justify-content-start align-items-end">
+                        <!-- <div class="d-flex align-items-center gap-20 mb-3">
+                          <label class="form-label mb-0">Select Equipment</label>
+                        </div> -->
+                        <input type="button" onclick="return addequipmentAjax()" class="btn btn-primary btn-clash d-flex align-items-center" value="Add Equipment" />
+                      </div>
+
 
                       <!-- start -->
                       <div class="card-body card-body-p-0">
                         <div class="product-grid">
                           <div
-                            class="row row-cols-1 row-cols-sm-1 row-cols-md-3 row-cols-lg-4 g-3">
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/e167bc99fa5ad15d9308030e83cef4d07e8b4c10.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
+                            class="row row-cols-1 row-cols-sm-1 row-cols-md-3 row-cols-lg-6 g-3" id="equipcardsContainer">
 
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/5225a0cdaba6dd55efd0ff44b26e82ddfe8d8800.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
+                            <?php
+                            if (isset($selectedEquipment) && !empty($selectedEquipment)) {
+                              foreach ($selectedEquipment as $selEquip) {
+                                $equipDetails = $this->generic->GetData('equipment', array('equipmentID' => $selEquip['equipmentID']));
+                                //get category name
+                                $equipmentCat = $this->generic->GetData('equipcat', array('equipCatID' => $equipDetails[0]['equipCatID']));
+                                if ($equipDetails) {
+                                  $equip = $equipDetails[0];
+                                  $catName = $equipmentCat ? $equipmentCat[0]['catName'] : 'Uncategorized';
+                            ?>
+                                  <!-- Card start -->
+                                  <div class="col close" style="position: relative">
+                                    <div class="card border shadow-none h-100">
+                                      <div class="text-start">
+                                        <img
+                                          src="<?= base_url() ?>assets/uploads/equipment/<?= $equip['equipImg'] ?>"
+                                          class="card-img-top-main rounded-top img-fix-cover"
+                                          alt="Helen Heidenreich" />
+                                        <a href="javascript:removeequipment(<?= $equip['equipmentID'] ?>)" onclick="return confirm('Are you sure you want to remove Equipment from project?')">
+                                          <svg
+                                            width="29"
+                                            height="29"
+                                            viewBox="0 0 29 29"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                              d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
+                                              fill="grey" />
+                                          </svg>
+                                        </a>
 
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
+                                        <div class="card-body p-3">
+                                          <h5 class="card-title mb-1">
+                                            <?= $equip['equipName'] ?> (Qty: <?= $selEquip['equipmentQTY'] ?>)
+                                          </h5>
+                                          <span class="text-muted"><?= $catName ?></span>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/b909a323568685cb2a0b10d855cc868d21267f7f.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
+                                  <!-- Card end -->
+                            <?php
+                                }
+                              }
+                            } else {
+                              echo '<p class="text-muted">No Equipment Selected Yet</p>';
+                            }
+                            ?>
 
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
-                            <!-- Card start -->
-                            <div class="col close" style="position: relative">
-                              <div class="card border shadow-none h-100">
-                                <div class="text-start">
-                                  <img
-                                    src="<?= base_url() ?>assets/images/gallery/f660fef856d605d87fe01d9a5d5be8b6d0ed8a48.jpg"
-                                    class="card-img-top-main rounded-top"
-                                    alt="Helen Heidenreich" />
-                                  <svg
-                                    width="29"
-                                    height="29"
-                                    viewBox="0 0 29 29"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                      d="M19.323 18.1157L15.6999 14.4925L19.323 10.8694C19.4832 10.7092 19.5732 10.492 19.5732 10.2655C19.5732 10.039 19.4832 9.82181 19.323 9.66166C19.1629 9.50151 18.9457 9.41154 18.7192 9.41154C18.4927 9.41154 18.2755 9.50151 18.1153 9.66166L14.4922 13.2848L10.869 9.66166C10.7089 9.50151 10.4917 9.41154 10.2652 9.41154C10.0387 9.41154 9.82149 9.50151 9.66134 9.66166C9.50118 9.82181 9.41121 10.039 9.41121 10.2655C9.41121 10.492 9.50118 10.7092 9.66134 10.8694L13.2845 14.4925L9.66134 18.1157C9.50118 18.2758 9.41121 18.493 9.41121 18.7195C9.41121 18.946 9.50118 19.1632 9.66134 19.3234C9.82149 19.4835 10.0387 19.5735 10.2652 19.5735C10.4917 19.5735 10.7089 19.4835 10.869 19.3234L14.4922 15.7002L18.1153 19.3234C18.2755 19.4835 18.4927 19.5735 18.7192 19.5735C18.9457 19.5735 19.1629 19.4835 19.323 19.3234C19.4832 19.1632 19.5732 18.946 19.5732 18.7195C19.5732 18.493 19.4832 18.2758 19.323 18.1157Z"
-                                      fill="white" />
-                                  </svg>
-
-                                  <div class="card-body p-3">
-                                    <h5 class="card-title mb-1">
-                                      Helen Heidenreich
-                                    </h5>
-                                    <span class="text-muted">Developer</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <!-- Card end -->
                           </div>
                         </div>
                       </div>
@@ -567,7 +549,8 @@
                         <div class="col-sm-1">
                           <div class="d-flex">
                             <button
-                              type="submit"
+                              type="button"
+                              onclick="return gotostep3()"
                               class="btn btn-primary btn-clash">
                               Next
                             </button>
@@ -597,45 +580,88 @@
                       <form class="row g-3">
                         <div class="col-12">
                           <div class="d-flex align-items-center gap-20 mb-3">
-                            <label class="form-label mb-0">Select Equipment</label>
-                          </div>
-                          <select
-                            name="skill"
-                            id="skill"
-                            class="form-control">
-                            <option value="">Select Equipment</option>
-                            <option value="">select equipment 1</option>
-                            <option value="">select equipment 3</option>
-                            <option value="">select equipment 4</option>
-                          </select>
-                        </div>
-                        <div class="col-12">
-                          <div class="d-flex align-items-center gap-20 mb-3">
                             <label class="form-label mb-0">Select Employee</label>
                           </div>
                           <select
-                            name="skill"
-                            id="skill"
+                            name="AssignWorkforce"
+                            id="AssignWorkforce"
                             class="form-control">
                             <option value="">Select Employee</option>
-                            <option value="">Select Employee 1</option>
-                            <option value="">Select Employee 3</option>
-                            <option value="">Select Employee 4</option>
+                            <?php
+                            if (isset($selectedworkforce) && !empty($selectedworkforce)) {
+                              foreach ($selectedworkforce as $sel) {
+                                $getskill = $this->generic->GetWorkforcewithSkill(array(), array('w.workforceID' => $sel['workforceID']));
+                                $skills = '';
+                                if ($getskill) {
+
+                                  foreach ($getskill as $sk) {
+                                    $skills .= $sk['skillNames'];
+                                  }
+                                }
+                            ?>
+                                <option value="<?= $sel['workforceID'] ?>"><?= $sel['personName'] ?> (Skills: <?= $skills ?>)</option>
+                            <?php
+                              }
+                            } else {
+                              echo '<option value="">No Employee Added Yet</option>';
+                            }
+                            ?>
                           </select>
+                        </div>
+                        <div class="col-6">
+                          <div class="d-flex align-items-center gap-20 mb-3">
+                            <label class="form-label mb-0">Select Equipment</label>
+                          </div>
+                          <select
+                            name="AssignEquipment"
+                            id="AssignEquipment"
+                            class="form-control">
+                            <option value="">Select Equipment</option>
+                            <?php
+                            if (isset($selectedEquipment) && !empty($selectedEquipment)) {
+                              foreach ($selectedEquipment as $selEquip) {
+                                $equipDetails = $this->generic->GetData('equipment', array('equipmentID' => $selEquip['equipmentID']));
+                                $equip = $equipDetails[0];
+                                if ($selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] > 0){
+                            ?>
+                                <option value="<?= $equip['equipmentID'] ?>" data-available-assign-qty="<?= $selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] ?>"><?= $equip['equipName'] ?> (QTY for Project: <?= $selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] ?>)</option>
+                            <?php
+                                }
+                              }
+                            } else {
+                              echo '<option value="">No Equipment Added Yet</option>';
+                            }
+                            ?>
+                          </select>
+
+                        </div>
+
+                        <div class="col-6">
+                          <div class="d-flex align-items-center gap-20 mb-3">
+                            <label class="form-label mb-0">Assigning Quantity</label>
+                          </div>
+                          <input type="number" name="assqty" id="assqty" class="form-control" placeholder="Enter Quantity to assign" />
                         </div>
                         <div class="col-12 text-center mt-3">
                           <div
                             class="d-flex flex-column flex-md-row justify-content-center gap-2">
                             <button
-                              type="submit"
+                              type="button"
+                              onclick="return assignEquipmentAjax()"
                               class="btn btn-primary btn-clash">
                               Assign
                             </button>
-                            <button
-                              type="submit"
+                            <?php 
+                            if (isset($_GET['id'])) {
+                            ?>
+                            <a
+                              href="<?= base_url('mark-project-as-inprogress?id='.$_GET['id']) ?>"
                               class="btn btn-primary btn-clash-outline">
                               Submit Project
-                            </button>
+                          </a>
+                          <?php
+                            }
+                          ?>
                           </div>
                         </div>
                       </form>
@@ -657,40 +683,50 @@
                       <tr>
                         <th>Sr.</th>
                         <th>Equipment</th>
+                        <th>Assigned Quantity</th>
                         <th>Employee</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Forklift Model X</td>
-                        <td>
-                          <div class="employee">
-                            <img
-                              src="<?= base_url() ?>assets/images/gallery/be817f5a348841cfb87df369616233a266b8b28f.jpg"
-                              alt="client" />
-                            <span>Meghan Grady</span>
-                          </div>
-                        </td>
-                        <td>
-                          <div
-                            class="table-actions d-flex align-items-center gap-3 fs-6">
-                            <a
-                              href="javascript:;"
-                              class="text-warning"
-                              data-bs-toggle="tooltip"
-                              data-bs-placement="bottom"
-                              title="Edit"><i class="bi bi-pencil-fill"></i></a>
-                            <a
-                              href="javascript:;"
-                              class="text-danger"
-                              data-bs-toggle="tooltip"
-                              data-bs-placement="bottom"
-                              title="Delete"><i class="bi bi-trash-fill"></i></a>
-                          </div>
-                        </td>
-                      </tr>
+                    <tbody id="assignEquipTbody">
+                      <?php
+                      if (isset($assignedEquipments) && !empty($assignedEquipments)) {
+                        $sr = 0;
+                        foreach ($assignedEquipments as $assign) {
+                          $sr++;
+                      ?>
+                          <tr>
+                            <td><?= $sr . '.' ?></td>
+                            <td><?= $assign['equipName'] ?></td>
+                            <td><?= $assign['assignedQty'] ?></td>
+                            <td>
+                              <div class="employee">
+                                <img
+                                  src="<?= base_url() ?>assets/uploads/workforce/<?= $assign['personImg'] ?>"
+                                  alt="client" />
+                                <span><?= $assign['personName'] ?></span>
+                              </div>
+                            </td>
+                            <td>
+                              <div
+                                class="table-actions d-flex align-items-center gap-3 fs-6">
+
+                                <a
+                                  href="javascript:;"
+                                  onclick="confirm('Are you sure you want to delete this assignment?') ? deleteAssignedEquipment(<?= $assign['assignID'] ?>) : false"
+                                  class="text-danger"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-placement="bottom"
+                                  title="Delete"><i class="bi bi-trash-fill"></i></a>
+                              </div>
+                            </td>
+                          </tr>
+                      <?php
+                        }
+                      } else {
+                        echo '<tr><td colspan="5" class="text-center text-muted">No Equipment Assigned Yet</td></tr>';
+                      }
+                      ?>
                     </tbody>
                   </table>
                 </div>
@@ -705,88 +741,6 @@
     <!--end page main-->
 
     <!-- popup start -->
-
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="exampleModal"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Add Person</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!-- body code -->
-
-            <div class="row">
-              <div class="card">
-                <div class="card-body">
-                  <div class="border p-4 rounded">
-                    <div class="card-title d-flex align-items-center">
-                      <h5 class="mb-0">Add New Skill</h5>
-                    </div>
-                    <hr />
-                    <div class="row mb-3">
-                      <label
-                        for="inputEnterYourName"
-                        class="col-sm-3 col-form-label">New Skill Name</label>
-                      <div class="col-sm-9">
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="inputEnterYourName"
-                          placeholder="Enter New Skill Name" />
-                      </div>
-                    </div>
-                    <div class="row mb-3">
-                      <label
-                        for="inputAddress4"
-                        class="col-sm-3 col-form-label">Description</label>
-                      <div class="col-sm-9">
-                        <textarea
-                          class="form-control"
-                          id="inputAddress4"
-                          rows="3"
-                          placeholder="Address"></textarea>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <label class="col-sm-3 col-form-label"></label>
-                      <div class="col-sm-9">
-                        <button
-                          type="submit"
-                          class="btn btn-primary px-5 btn-clash">
-                          Add Manage Skill
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- body code end here -->
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- popup end -->
 
@@ -812,6 +766,113 @@
   <script src="<?= base_url() ?>assets/js/app.js"></script>
   <script src="<?= base_url() ?>assets/js/step.js"></script>
   <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+    <?php
+  if ($this->session->flashdata('successaddedd') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.success('Project In Progress!');
+    </script>
+  <?php
+  }
+  ?>
+  <!-- setup qty field based on equipment selection -->
+  <script>
+    $(document).ready(function() {
+
+      // Handle the onchange event for the equipment dropdown
+      $('#equipment').on('change', function() {
+        // Get the selected option
+        const selectedOption = $(this).find(':selected');
+        const availableQty = selectedOption.data('available-qty'); // Get the available quantity from the data attribute
+
+        if (availableQty !== undefined) {
+          // Set the placeholder for the qty input field
+          $('#qty').attr('placeholder', `Enter quantity (0 - ${availableQty})`);
+
+          // Set the min and max attributes for the qty input field
+          $('#qty').attr('min', 0);
+          $('#qty').attr('max', availableQty);
+        } else {
+          // Reset the qty input field if no valid option is selected
+          $('#qty').attr('placeholder', 'Select equipment first');
+          $('#qty').removeAttr('min');
+          $('#qty').removeAttr('max');
+        }
+      });
+    });
+  </script>
+  <script>
+    $(document).ready(function() {
+      // Handle the onchange event for the AssignEquipment dropdown
+      $('#AssignEquipment').on('change', function() {
+        // Get the selected option
+        const selectedOption = $(this).find(':selected');
+        const availableQty = selectedOption.data('available-assign-qty'); // Get the available quantity from the data attribute
+
+        if (availableQty !== undefined) {
+          // Set the placeholder for the assqty input field
+          $('#assqty').attr('placeholder', `Enter quantity (0 - ${availableQty})`);
+
+          // Set the min and max attributes for the assqty input field
+          $('#assqty').attr('min', 0);
+          $('#assqty').attr('max', availableQty);
+        } else {
+          // Reset the assqty input field if no valid option is selected
+          $('#assqty').attr('placeholder', 'Select equipment first');
+          $('#assqty').removeAttr('min');
+          $('#assqty').removeAttr('max');
+        }
+      });
+    });
+  </script>
+  <?php
+  if(!isset($_GET['step'])){
+  if (isset($_GET['id'])) {
+    if ($projectData[0]['pDraftStatus'] == 2) {
+  ?>
+      <script>
+        $(document).ready(function() {
+          $("#step-3").prop("disabled", true);
+          $("#first-box").removeClass("active");
+          $("#second-box").addClass("active");
+          $("#step2div").addClass("active_tab");
+          $("#step1div").removeClass("active_tab");
+        });
+      </script>
+
+    <?php
+    } else if ($projectData[0]['pDraftStatus'] == 3) {
+    ?>
+      <script>
+        $(document).ready(function() {
+          $("#first-box").removeClass("active");
+          $("#second-box").removeClass("active");
+          $("#third-box").addClass("active");
+          $("#step-3").prop("disabled", false);
+          $("#step3div").addClass("active_tab");
+        });
+      </script>
+    <?php
+    }
+  } else {
+    ?>
+    <script>
+      $(document).ready(function() {
+        $("#step-2").prop("disabled", true);
+        $("#step-3").prop("disabled", true);
+      });
+    </script>
+  <?php
+  }
+}
+  ?>
+
+
   <!-- first step ajax call  -->
   <script>
     $(document).ready(function() {
@@ -820,16 +881,24 @@
         // alert('ok');
         document.getElementById("loader").style.display = "flex";
         var form = this;
+        // Get the current URL and check for the `id` parameter
+        let currentUrl = new URL(window.location.href);
+        let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+
+        // Build the AJAX URL
+        let ajaxUrl = "<?= base_url('add-project-general-data') ?>";
+        if (id) {
+          ajaxUrl += "?id=" + id; // Append `id` if it exists
+        }
         $.ajax({
-          url: "<?= base_url('add-project-general-data') ?>",
+          url: ajaxUrl,
           type: "POST",
           data: new FormData(form),
           processData: false,
           contentType: false,
           cache: false,
           success: function(response) {
-            alert(response);
-            // console.log(response);
+            // alert(response);
             if (response) {
               if (response == "data missing") {
                 toastr.options = {
@@ -843,39 +912,446 @@
               // explode by array //
               response = response.split("//");
 
-              if(response[0]=="Projectadded"){
-                document.getElementById("loader").style.display = "none";
+              if (response[0] == "Projectadded") {
+
                 toastr.options = {
                   "closeButton": true,
                   "showMethod": "fadeIn",
                   "hideMethod": "fadeOut"
                 }
                 toastr.success('Project Added Successfully!');
-                $("#first-box").hide();
-                $("#second-box").show();
-                $("#third-box").hide();
-                $(".step1").removeClass("active");
-                $(".step2").addClass("active");
-                $(".step3").removeClass("active");
-                //add parementer to url
-                var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response[1];
-                window.history.pushState({ path: newurl }, '', newurl);
+              } else if (response[0] == "Projectupdated") {
+                toastr.options = {
+                  "closeButton": true,
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+                toastr.success('Project Updated!');
               }
-
-              // toastr.success("First Step Completed");
-              // $("#first-box").hide();
-              // $("#second-box").show();
-              // $("#third-box").hide();
-              // $(".step1").removeClass("active");
-              // $(".step2").addClass("active");
-              // $(".step3").removeClass("active");
+              document.getElementById("loader").style.display = "none";
+              //remove disable attribute from second tab
+              $("#step-2").prop("disabled", false);
+              //remove active_tab from first tab
+              $("#step1div").removeClass("active_tab");
+              //add active_tab to second tab
+              $("#step2div").addClass("active_tab");
+              //remove show active from first box
+              $("#first-box").removeClass("active");
+              //add active class to second box
+              $("#second-box").addClass("active");
+              //add parementer to url
+              var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response[1];
+              window.history.pushState({
+                path: newurl
+              }, '', newurl);
             } else {
               toastr.error("Something Went Wrong");
             }
+
           },
         });
       });
     });
+  </script>
+
+  <!-- second step ajax call -->
+  <script>
+    function step2ajax() {
+      // alert('ok');
+      var workforceID = $('#workforce').val();
+      if (workforceID == '') {
+        toastr.error('Please select workforce!');
+        return false;
+      }
+      // document.getElementById("loader").style.display = "flex";
+      // Get the current URL and check for the `id` parameter
+      let currentUrl = new URL(window.location.href);
+      let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+
+      // Build the AJAX URL
+      let ajaxUrl = "<?= base_url('add-project-workforce') ?>";
+      if (id) {
+        ajaxUrl += "?id=" + id; // Append `id` if it exists
+      }
+      $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: {
+          workforceID: workforceID
+        },
+        success: function(response) {
+          // alert(response);
+          if (response) {
+
+            toastr.options = {
+              "closeButton": true,
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            toastr.success('Workforce Added Successfully!');
+            response = response.split("///");
+            $('#workforce').html(response[1]);
+            $('#workcardsContainer').html('');
+            console.log(response[2]);
+            $('#workcardsContainer').html(response[2]);
+
+          } else {
+            toastr.error("Something Went Wrong, Try Again!");
+          }
+
+          // document.getElementById("loader").style.display = "none";
+          // //remove disable attribute from second tab
+          // $("#step-3").prop("disabled", false);
+          // //remove active_tab from first tab
+          // $("#step2div").removeClass("active_tab");
+          // //add active_tab to second tab
+          // $("#step3div").addClass("active_tab");
+          // //remove show active from first box
+          // $("#second-box").removeClass("active");
+          // //add active class to second box
+          // $("#third-box").addClass("active");
+          // //add parementer to url
+          // var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response[1];
+          // window.history.pushState({}, '', newurl);
+
+        },
+      });
+    }
+  </script>
+  <!-- remove workforce ajax -->
+  <script>
+    function removeworkforce(workforceID) {
+      // alert(workforceID);
+      if (workforceID == '') {
+        toastr.error('Invalid Workforce!');
+        return false;
+      }
+      // document.getElementById("loader").style.display = "flex";
+      // Get the current URL and check for the `id` parameter
+      let currentUrl = new URL(window.location.href);
+      let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+
+      // Build the AJAX URL
+      let ajaxUrl = "<?= base_url('remove-project-workforce') ?>";
+      if (id) {
+        ajaxUrl += "?id=" + id; // Append `id` if it exists
+      }
+      $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: {
+          workforceID: workforceID
+        },
+        success: function(response) {
+          // alert(response);
+          if (response) {
+            if (response == 'Invalid Request!') {
+              toastr.error("Something Went Wrong, Try Again!");
+              return false;
+            }
+
+            toastr.options = {
+              "closeButton": true,
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            toastr.success('Workforce Removed Successfully!');
+            response = response.split("///");
+            $('#workforce').html(response[1]);
+            $('#workcardsContainer').html('');
+            $('#workcardsContainer').html(response[2]);
+
+          } else {
+            toastr.error("Something Went Wrong, Try Again!");
+          }
+        },
+      });
+    }
+  </script>
+  <!-- add eqipment ajax -->
+  <script>
+    function addequipmentAjax() {
+      // alert('ok');
+      var equipmentID = $('#equipment').val();
+      var qty = $('#qty').val();
+      if (equipmentID == '') {
+        toastr.error('Please select equipment!');
+        return false;
+      }
+      //validate qty on max min
+      var min = parseInt($('#qty').attr('min'));
+      var max = parseInt($('#qty').attr('max'));
+      if (qty == '') {
+        toastr.error('Please enter quantity!');
+        return false;
+      } else if (isNaN(qty) || qty < min || qty > max) {
+        toastr.error('Please enter a valid quantity between ' + min + ' and ' + max + '!');
+        return false;
+      }
+      // document.getElementById("loader").style.display = "flex";
+      // Get the current URL and check for the `id` parameter
+      let currentUrl = new URL(window.location.href);
+      let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+
+      // Build the AJAX URL
+      let ajaxUrl = "<?= base_url('add-project-equipment') ?>";
+      if (id) {
+        ajaxUrl += "?id=" + id; // Append `id` if it exists
+      }
+      $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: {
+          equipmentID: equipmentID,
+          qty: qty
+        },
+        success: function(response) {
+          console.log(response);
+          if (response == 'Invalid Request!') {
+            toastr.error("Something Went Wrong, Try Again!");
+            return false;
+          } else {
+
+            response = response.split("///");
+            if (response[0] == 'EquipmentUpdated') {
+              toastr.success("Equipment Already Added, Quantity Updated!");
+            } else {
+              toastr.success('Equipment Added Successfully!');
+            }
+            $('#equipment').html(response[1]);
+            $('#qty').val('');
+            $('#qty').attr('placeholder', 'Select equipment first');
+            $('#equipcardsContainer').html('');
+            $('#equipcardsContainer').html(response[2]);
+          }
+
+
+        },
+      });
+    }
+    //remove equipment ajax
+    function removeequipment(equipmentID) {
+      // alert(equipCatID);
+      if (equipmentID == '') {
+        toastr.error('Invalid Equipment!');
+        return false;
+      }
+      // document.getElementById("loader").style.display = "flex";
+      // Get the current URL and check for the `id` parameter
+      let currentUrl = new URL(window.location.href);
+      let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+
+      // Build the AJAX URL
+      let ajaxUrl = "<?= base_url('remove-project-equipment') ?>";
+      if (id) {
+        ajaxUrl += "?id=" + id; // Append `id` if it exists
+      }
+      $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: {
+          equipmentID: equipmentID
+        },
+        success: function(response) {
+          if (response) {
+            if (response == 'Invalid Request!') {
+              toastr.error("Something Went Wrong, Try Again!");
+              return false;
+            }
+
+            toastr.options = {
+              "closeButton": true,
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            toastr.success('Equipment Removed Successfully!');
+            response = response.split("///");
+            $('#equipment').html(response[1]);
+            $('#equipcardsContainer').html('');
+            $('#equipcardsContainer').html(response[2]);
+
+          } else {
+            toastr.error("Something Went Wrong, Try Again!");
+          }
+        },
+      });
+    }
+  </script>
+  <!-- move to step 3 ajax  -->
+  <script>
+    function gotostep3() {
+      // document.getElementById("loader").style.display = "flex";
+      // Get the current URL and check for the `id` parameter
+      let currentUrl = new URL(window.location.href);
+      let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+
+      // Build the AJAX URL
+      let ajaxUrl = "<?= base_url('move-to-step3') ?>";
+      if (id) {
+        ajaxUrl += "?id=" + id; // Append `id` if it exists
+      }
+      $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: {},
+        success: function(response) {
+          if (response) {
+            if (response == 'Invalid Request!') {
+              toastr.error("Something Went Wrong, Try Again!");
+              return false;
+            }
+          response = response.split("///");
+            $('#AssignEquipment').html(response[2]);
+            $('#AssignWorkforce').html(response[1]);
+            toastr.options = {
+              "closeButton": true,
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            toastr.success('Moved to Step 3 Successfully!');
+
+            //remove disable attribute from second tab
+            $("#step-3").prop("disabled", false);
+            //remove active_tab from first tab
+            $("#step2div").removeClass("active_tab");
+            //add active_tab to second tab
+            $("#step3div").addClass("active_tab");
+            //remove show active from first box
+            $("#second-box").removeClass("active");
+            //add active class to second box
+            $("#third-box").addClass("active");
+
+          } else {
+            toastr.error("Something Went Wrong, Try Again!");
+          }
+        },
+      });
+    }
+  </script>
+  <!-- step 3 assign equipment ajax  -->
+  <script>
+    function assignEquipmentAjax() {
+      // alert('ok');
+      var workforceID = $('#AssignWorkforce').val();
+      var equipmentID = $('#AssignEquipment').val();
+      var assqty = $('#assqty').val();
+      if (workforceID == '') {
+        toastr.error('Please select employee!');
+        return false;
+      }
+      if (equipmentID == '') {
+        toastr.error('Please select equipment!');
+        return false;
+      }
+      if (assqty == '') {
+        toastr.error('Please enter assigning quantity!');
+        return false;
+      }
+      //validate qty on max min
+      var min = parseInt($('#assqty').attr('min'));
+      var max = parseInt($('#assqty').attr('max'));
+      if (isNaN(assqty) || assqty < min || assqty > max) {
+        toastr.error('Please enter a valid quantity between ' + min + ' and ' + max + '!');
+        return false;
+      }
+      // document.getElementById("loader").style.display = "flex";
+      // Get the current URL and check for the `id` parameter
+      let currentUrl = new URL(window.location.href);
+      let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+      // Build the AJAX URL
+      let ajaxUrl = "<?= base_url('assign-equipment-employee') ?>";
+      if (id) {
+        ajaxUrl += "?id=" + id; // Append `id` if it exists
+      }
+      $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: {
+          workforceID: workforceID,
+          equipmentID: equipmentID,
+          assqty: assqty
+        },
+        success: function(response) {
+          if (response) {
+            if (response == 'Invalid Request!') {
+              toastr.error("Something Went Wrong, Try Again!");
+              return false;
+            } else if (response == 'Quantity Exceeded!') {
+              toastr.error("Assigning Quantity Exceeded, Try Again!");
+              return false;
+            }
+            response = response.split("///");
+            if (response[0] == 'EquipmentAssignmentUpdated') {
+              toastr.success("Equipment Already Assigned to Employee, Quantity Updated!");
+            } else {
+              toastr.success('Equipment Assigned to Employee Successfully!');
+            }
+
+
+            $('#assignEquipTbody').html('');
+            $('#assignEquipTbody').html(response[1]);
+            $('#AssignEquipment').html(response[2]);
+            $('#assqty').val('');
+            $('#assqty').attr('placeholder', 'Select equipment first');
+            //set select employee to default
+            $('#AssignWorkforce').val('');
+
+          } else {
+            toastr.error("Something Went Wrong, Try Again!");
+          }
+        },
+      });
+    }
+  </script>
+  <!-- remove assigned equipment ajax -->
+  <script>
+    function deleteAssignedEquipment(assignID) {
+      // alert(assignID);
+      if (assignID == '') {
+        toastr.error('Invalid Assignment!');
+        return false;
+      }
+      // document.getElementById("loader").style.display = "flex";
+      // Get the current URL and check for the `id` parameter
+      let currentUrl = new URL(window.location.href);
+      let id = currentUrl.searchParams.get("id"); // Get the `id` parameter if it exists
+      // Build the AJAX URL
+      let ajaxUrl = "<?= base_url('remove-assigned-equipment') ?>";
+      if (id) {
+        ajaxUrl += "?id=" + id; // Append `id` if it exists
+      }
+      $.ajax({
+        url: ajaxUrl,
+        type: "POST",
+        data: {
+          assignID: assignID
+        },
+        success: function(response) {
+          if (response) {
+            if (response == 'Invalid Request!') {
+              toastr.error("Something Went Wrong, Try Again!");
+              return false;
+            }
+            toastr.options = {
+              "closeButton": true,
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            toastr.success('Assignment Removed Successfully!');
+            response = response.split("///");
+            $('#assignEquipTbody').html('');
+            $('#assignEquipTbody').html(response[1]);
+            $('#AssignEquipment').html(response[2]);
+            //set select employee to default
+            $('#AssignWorkforce').val('');
+            $('#assqty').val('');
+            $('#assqty').attr('placeholder', 'Select equipment first');
+          } else {
+            toastr.error("Something Went Wrong, Try Again!");
+          }
+        },
+      });
+    }
   </script>
 </body>
 

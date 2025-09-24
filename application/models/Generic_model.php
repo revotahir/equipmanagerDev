@@ -96,39 +96,39 @@ class Generic_model extends CI_Model
             return false;
         }
     }
-    function GetWorkforcewithSkill($filters,$where = false)
+    function GetWorkforcewithSkill($filters, $where = false)
     {
-            $this->db->select('w.*, GROUP_CONCAT(s.skillName SEPARATOR ", ") as skillNames');
-    $this->db->from('workforce as w');
-    $this->db->join('workforceskilllink as wsl', 'w.workforceID = wsl.workforceID', 'left');
-    $this->db->join('skills as s', 'wsl.skillID = s.skillID', 'left');
-    $this->db->order_by('w.workforceID', 'DESC');
-    $this->db->group_by('w.workforceID');
-          
-   
-    if ($filters && is_array($filters)) {
-        if (isset($filters['companyID'])) {
-            $this->db->where('w.companyID', $filters['companyID']);
+        $this->db->select('w.*, GROUP_CONCAT(s.skillName SEPARATOR ", ") as skillNames');
+        $this->db->from('workforce as w');
+        $this->db->join('workforceskilllink as wsl', 'w.workforceID = wsl.workforceID', 'left');
+        $this->db->join('skills as s', 'wsl.skillID = s.skillID', 'left');
+        $this->db->order_by('w.workforceID', 'DESC');
+        $this->db->group_by('w.workforceID');
+
+
+        if ($filters && is_array($filters)) {
+            if (isset($filters['companyID'])) {
+                $this->db->where('w.companyID', $filters['companyID']);
+            }
+            if (isset($filters['personPhone']) && $filters['personPhone'] != '') {
+                $this->db->where('w.personPhone', $filters['personPhone']);
+            }
+            if (isset($filters['personEmail']) && $filters['personEmail'] != '') {
+                $this->db->where('w.personEmail', $filters['personEmail']);
+            }
+            if (isset($filters['personStatus']) && $filters['personStatus'] != '') {
+                $this->db->where('w.personStatus', $filters['personStatus']);
+            }
+            if (isset($filters['personName']) && $filters['personName'] != '') {
+                // die('asfasf');
+                $this->db->like('w.personName', $filters['personName']);
+            }
+            // Filter by skillID (if needed)
+            if (isset($filters['skillID']) && $filters['skillID'] != '') {
+                $this->db->where('wsl.skillID', $filters['skillID']);
+            }
         }
-        if (isset($filters['personPhone']) && $filters['personPhone'] != '') {
-            $this->db->where('w.personPhone', $filters['personPhone']);
-        }
-        if (isset($filters['personEmail']) && $filters['personEmail'] != '') {
-            $this->db->where('w.personEmail', $filters['personEmail']);
-        }
-        if (isset($filters['personStatus']) && $filters['personStatus'] != '') {
-            $this->db->where('w.personStatus', $filters['personStatus']);
-        }
-        if (isset($filters['personName']) && $filters['personName'] != '') {
-            // die('asfasf');
-            $this->db->like('w.personName', $filters['personName']);
-        }
-        // Filter by skillID (if needed)
-        if (isset($filters['skillID']) && $filters['skillID'] != '') {
-            $this->db->where('wsl.skillID', $filters['skillID']);
-        }
-    }
-        if($where){
+        if ($where) {
             $this->db->where($where);
         }
         $q = $this->db->get();
@@ -139,26 +139,28 @@ class Generic_model extends CI_Model
             return false;
         }
     }
-function GetEquipmentWithCat($filters,$where = false)
+    function GetEquipmentWithCat($filters, $where = false, $qtyavalability = false)
     {
-            $this->db->select('*');
-    $this->db->from('equipment as e');
-    $this->db->join('equipcat as ec', 'e.equipCatID = ec.equipCatID', 'left');
-    $this->db->order_by('e.equipmentID', 'DESC');
-    // $this->db->group_by('w.workforceID');
-    if ($filters && is_array($filters)) {
-        if (isset($filters['companyID'])) {
-            $this->db->where('e.companyID', $filters['companyID']); 
+        $this->db->select('*');
+        $this->db->from('equipment as e');
+        $this->db->join('equipcat as ec', 'e.equipCatID = ec.equipCatID', 'left');
+        $this->db->order_by('e.equipmentID', 'DESC');
+        // $this->db->group_by('w.workforceID');
+        if ($filters && is_array($filters)) {
+            if (isset($filters['companyID'])) {
+                $this->db->where('e.companyID', $filters['companyID']);
+            }
+            if (isset($filters['equipName']) && $filters['equipName'] != '') {
+                $this->db->like('e.equipName', $filters['equipName']);
+            }
+            if (isset($filters['equipCatID']) && $filters['equipCatID'] != '') {
+                $this->db->where('e.equipCatID', $filters['equipCatID']);
+            }
         }
-        if (isset($filters['equipName']) && $filters['equipName'] != '') {
-            $this->db->like('e.equipName', $filters['equipName']);
+        if ($qtyavalability) {
+            $this->db->where('(e.equipTotalQuantity - e.equipInUseQuantity) >', 0); // Only include equipment with quantity greater than 0
         }
-        if (isset($filters['equipCatID']) && $filters['equipCatID'] != '') {
-            $this->db->where('e.equipCatID', $filters['equipCatID']);
-        }
-       
-    }
-        if($where){
+        if ($where) {
             $this->db->where($where);
         }
         $q = $this->db->get();
@@ -169,6 +171,64 @@ function GetEquipmentWithCat($filters,$where = false)
             return false;
         }
     }
+
+
+    function GetWorkforceofPRoject($where=false)
+    {
+        $this->db->select('*');
+        $this->db->from('projectworkforcelink as pwl');
+        $this->db->join('workforce as w', 'pwl.workforceID = w.workforceID', 'inner');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
+    function GetAssignedEquipmentToWorkforce($where=false)
+    {
+        $this->db->select('*');
+        $this->db->from('projectequipmentassign as aew');
+        $this->db->join('equipment as e', 'aew.equipmentID = e.equipmentID', 'inner');
+        $this->db->join('workforce as w', 'aew.workforceID = w.workforceID', 'inner');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
+    function GetProjectsWithDetails($where=false)
+    {
+        $this->db->select('*');
+        $this->db->from('projects as p');
+        $this->db->join('projectcategory as pc', 'p.pCatID = pc.pCatID', 'inner');
+        $this->db->order_by('p.projectID', 'DESC');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
+
+
+
+
+
+
     function GetProductList($where = false)
     {
         $this->db->select('*');

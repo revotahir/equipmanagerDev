@@ -83,7 +83,7 @@
                       <a href="<?=base_url('add-project')?>"><i class="bi bi-arrow-right-short"></i>Add Project</a>
                   </li>
                   <li>
-                      <a href="#"><i class="bi bi-arrow-right-short"></i>All Projects </a>
+                      <a href="<?=base_url('all-projects')?>"><i class="bi bi-arrow-right-short"></i>All Projects </a>
                   </li>
                   <li>
                       <a href="<?=base_url('project-category')?>"><i class="bi bi-arrow-right-short"></i>Project Category</a>
