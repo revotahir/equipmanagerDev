@@ -88,15 +88,37 @@ class project extends MY_Controller
 			//load all allocatedd work force
 			$this->data['selectedworkforce'] = $this->generic->GetWorkforceofPRoject(array('pwl.ProjectID' => $_GET['id']));
 			//load all available equipment
-			$this->data['allEquipment'] = $this->generic->GetEquipmentWithCat(false, array('e.companyID' => $this->session->userdata('companyDetails')['companyID']), true);
+
 			$this->data['selectedEquipment'] = $this->generic->GetData('projectequipmentlink', array('ProjectID' => $_GET['id']));
 			//assigned equipment to workforce
 			$this->data['assignedEquipments'] = $this->generic->GetAssignedEquipmentToWorkforce(array('aew.ProjectID' => $_GET['id']));
-		}
+			// Load workforce available for the specified date range
+			$this->data['workforce'] = $this->generic->GetDataWithDateRange(
+				'workforce',
+				array('companyID' => $this->session->userdata('companyDetails')['companyID']),
+				'workforceID',
+				'DESC',
+				$this->data['projectData'][0]['pStartDate'],
+				$this->data['projectData'][0]['pEndDate']
+			);
 
+			// Load equipment available for the specified date range
+
+			// $this->data['allEquipment'] = $this->generic->GetEquipmentWithDateRange(
+			// 	false,
+			// 	array('e.companyID' => $this->session->userdata('companyDetails')['companyID']),
+			// 	true,
+			// 	$this->data['projectData'][0]['pStartDate'],
+			// 	$this->data['projectData'][0]['pEndDate']
+			// );
+		}
+		// $this->data['allEquipment'] = $this->generic->GetEquipmentWithCat(false, array('e.companyID' => $this->session->userdata('companyDetails')['companyID']), true);
 		//load workforce data
-		$this->data['workforce'] = $this->generic->GetData('workforce', array('companyID' => $this->session->userdata('companyDetails')['companyID'], 'personStatus' => 1), 'workforceID', 'DESC');
+		// $this->data['workforce'] = $this->generic->GetData('workforce', array('companyID' => $this->session->userdata('companyDetails')['companyID'], 'personStatus' => 1), 'workforceID', 'DESC');
 		//load all project category
+
+
+
 		$this->data['Pcategory'] = $this->generic->GetData('projectcategory', array('companyID' => $this->session->userdata('companyDetails')['companyID']), 'pCatID', 'DESC');
 		$this->load->view('project/addProject', $this->data);
 	}
@@ -181,15 +203,94 @@ class project extends MY_Controller
 			// Update the data in the database (example)
 			$this->generic->Update('projects', array('ProjectID' => $_GET['id']), $data);
 			$projectID = $_GET['id'];
-			echo "Projectupdated//" . $projectID;
+			//get project details
+			$projectData = $this->generic->GetData('projects', array('ProjectID' => $_GET['id'], 'companyID' => $this->session->userdata('companyDetails')['companyID']));
+			//get available workforce
+			$workforce = $this->generic->GetDataWithDateRange(
+				'workforce',
+				array('companyID' => $this->session->userdata('companyDetails')['companyID']),
+				'workforceID',
+				'DESC',
+				$projectData[0]['pStartDate'],
+				$projectData[0]['pEndDate']
+			);
+			//create options
+			$options = '<option value="">Select Workforce</option>';
+			if ($workforce) {
+				foreach ($workforce as $wf) {
+					$options .= '<option value="' . $wf['workforceID'] . '">' . $wf['personName'] . '</option>';
+				}
+			} else {
+				$options .= '<option value="">No Workforce Available</option>';
+			}
+			echo "Projectupdated//" . $projectID . '//' . $options;
 		} else {
 			// Save the data to the database (example)
 			$this->db->insert('projects', $data);
 			//getmax id
 			$projectID = $this->generic->GetMaxID('projects', 'ProjectID');
 			$projectID = $projectID[0]['result'];
+			//get project details
+			$projectData = $this->generic->GetData('projects', array('ProjectID' => $projectID, 'companyID' => $this->session->userdata('companyDetails')['companyID']));
+			//get available workforce
+			$workforce = $this->generic->GetDataWithDateRange(
+				'workforce',
+				array('companyID' => $this->session->userdata('companyDetails')['companyID']),
+				'workforceID',
+				'DESC',
+				$projectData[0]['pStartDate'],
+				$projectData[0]['pEndDate']
+			);
+			//create options
+			$options = '<option value="">Select Workforce</option>';
+			if ($workforce) {
+				foreach ($workforce as $wf) {
+					$options .= '<option value="' . $wf['workforceID'] . '">' . $wf['personName'] . '</option>';
+				}
+			} else {
+				$options .= '<option value="">No Workforce Available</option>';
+			}
+			//add equipment with datarange availability 
+
+
+			$allEquipments = $this->generic->GetData('equipment');
+			$optionEqip = '<option value="">Select Workforce</option>';
+			foreach ($allEquipments as $allequips) {
+				// Initialize available quantity with the total quantity
+				$availableQty = $allequips['equipTotalQuantity'];
+
+				// Get all assigned equipment for the current equipment
+				$curentEquipAssignList = $this->generic->GetAllAssignedEquipment(array('pel.equipmentID' => $allequips['equipmentID'], 'p.pStatus!=' => 4,'p.pStatus!=' => 1,'p.ProjectID!='=>$projectData[0]['ProjectID']));
+
+				// Loop through assigned equipment and calculate overlapping quantities
+				foreach ($curentEquipAssignList as $projectEQList) {
+					// Check if the project dates overlap
+					if (
+						
+						($projectData[0]['pStartDate'] <= $projectEQList['pEndDate'] && $projectData[0]['pEndDate'] >= $projectEQList['pStartDate']) ||
+						($projectData[0]['pStartDate'] >= $projectEQList['pStartDate'] && $projectData[0]['pStartDate'] <= $projectEQList['pEndDate'])
+					) {
+						die('as');
+						// Subtract the assigned quantity from the available quantity
+						$availableQty -= $projectEQList['equipmentQTY'];
+					}
+				}
+
+				// Ensure the available quantity is not negative
+				$availableQty = max($availableQty, 0);
+
+				// Display the equipment in the dropdown with the available quantity
+				if ($availableQty > 0) {
+					$optionEqip .= '<option value="' . $allequips['equipmentID'] . '" data-available-qty="' . $availableQty . '">' . $allequips['equipName'] . ' (QTY: ' . $availableQty . ')</option>';
+				}
+			}
+
+
+
+
+
 			// Return success response
-			echo "Projectadded//" . $projectID;
+			echo "Projectadded//" . $projectID . '//' . $options . '//' . $optionEqip;
 		}
 	}
 	public function AddProjecWorkforce()
@@ -205,17 +306,28 @@ class project extends MY_Controller
 		//update workforce to 2
 		$this->generic->Update('workforce', array('workforceID' => $workforceIDs), array('personStatus' => 2));
 		//get all workforce have status 1
-		$newworkforce = $this->generic->GetData('workforce', array('companyID' => $this->session->userdata('companyDetails')['companyID'], 'personStatus' => 1), 'workforceID', 'DESC');
-		//repaire work force select option
-		$options = '<option value="">Select Workforce</option>';
-		if ($newworkforce) {
+			$projectData = $this->generic->GetData('projects', array('ProjectID'));
+			//get all workforce have status 1
 
-			foreach ($newworkforce as $work) {
-				$options .= '<option value="' . $work['workforceID'] . '">' . $work['personName'] . '</option>';
+
+			//get available workforce
+			$workforce = $this->generic->GetDataWithDateRange(
+				'workforce',
+				array('companyID' => $this->session->userdata('companyDetails')['companyID']),
+				'workforceID',
+				'DESC',
+				$projectData[0]['pStartDate'],
+				$projectData[0]['pEndDate']
+			);
+			//create options
+			$options = '<option value="">Select Workforce</option>';
+			if ($workforce) {
+				foreach ($workforce as $wf) {
+					$options .= '<option value="' . $wf['workforceID'] . '">' . $wf['personName'] . '</option>';
+				}
+			} else {
+				$options .= '<option value="">No Workforce Available</option>';
 			}
-		} else {
-			$options .= '<option value="">No Workforce Available</option>';
-		}
 		//make card html of curent selectios
 		$selectedworkforce = $this->generic->GetWorkforceofPRoject(array('pwl.ProjectID' => $projectID));
 		$cardsHtml = '';
@@ -272,18 +384,29 @@ class project extends MY_Controller
 			$this->generic->Delete('projectworkforcelink', array('workforceID' => $workforceID, 'ProjectID' => $projectID));
 			//update workforce status to 1
 			$this->generic->Update('workforce', array('workforceID' => $workforceID), array('personStatus' => 1));
+			$projectData = $this->generic->GetData('projects', array('ProjectID'));
 			//get all workforce have status 1
-			$newworkforce = $this->generic->GetData('workforce', array('companyID' => $this->session->userdata('companyDetails')['companyID'], 'personStatus' => 1), 'workforceID', 'DESC');
-			//repaire work force select option
-			$options = '<option value="">Select Workforce</option>';
-			if ($newworkforce) {
 
-				foreach ($newworkforce as $work) {
-					$options .= '<option value="' . $work['workforceID'] . '">' . $work['personName'] . '</option>';
+
+			//get available workforce
+			$workforce = $this->generic->GetDataWithDateRange(
+				'workforce',
+				array('companyID' => $this->session->userdata('companyDetails')['companyID']),
+				'workforceID',
+				'DESC',
+				$projectData[0]['pStartDate'],
+				$projectData[0]['pEndDate']
+			);
+			//create options
+			$options = '<option value="">Select Workforce</option>';
+			if ($workforce) {
+				foreach ($workforce as $wf) {
+					$options .= '<option value="' . $wf['workforceID'] . '">' . $wf['personName'] . '</option>';
 				}
 			} else {
 				$options .= '<option value="">No Workforce Available</option>';
 			}
+
 			//make card html of curent selectios
 			$selectedworkforce = $this->generic->GetWorkforceofPRoject(array('pwl.ProjectID' => $projectID));
 			$cardsHtml = '';
@@ -368,18 +491,49 @@ class project extends MY_Controller
 			}
 			//get all available equipment
 			$availableEquipment = $this->generic->GetEquipmentWithCat(false, array('e.companyID' => $this->session->userdata('companyDetails')['companyID']), true);
+
+
+
+
+
 			//repaire equipment select option
+			$projectData = $this->generic->GetData('projects', array('ProjectID' => $projectID));
 			$options = '<option value="">Select Equipment</option>';
-			if ($availableEquipment) {
-				foreach ($availableEquipment as $equip) {
-					$availableQty = $equip['equipTotalQuantity'] - $equip['equipInUseQuantity'];
-					if ($availableQty > 0) {
-						$options .= '<option value="' . $equip['equipmentID'] . '" data-available-qty="' . $availableQty . '">' . $equip['equipName'] . ' (Available: ' . $availableQty . ')</option>';
+			$allEquipments = $this->generic->GetData('equipment');
+
+			foreach ($allEquipments as $allequips) {
+				// Initialize available quantity with the total quantity
+				$availableQty = $allequips['equipTotalQuantity'];
+
+				// Get all assigned equipment for the current equipment
+				$curentEquipAssignList = $this->generic->GetAllAssignedEquipment(array('pel.equipmentID' => $allequips['equipmentID'], 'p.pStatus!=' => 1));
+
+				// Loop through assigned equipment and calculate overlapping quantities
+				foreach ($curentEquipAssignList as $projectEQList) {
+					// Check if the project dates overlap
+					if (
+						($projectData[0]['pStartDate'] <= $projectEQList['pEndDate'] && $projectData[0]['pEndDate'] >= $projectEQList['pStartDate']) ||
+						($projectData[0]['pStartDate'] >= $projectEQList['pStartDate'] && $projectData[0]['pStartDate'] <= $projectEQList['pEndDate'])
+					) {
+						// Subtract the assigned quantity from the available quantity
+						$availableQty -= $projectEQList['equipmentQTY'];
 					}
 				}
-			} else {
-				$options .= '<option value="">No Equipment Available</option>';
+
+				// Ensure the available quantity is not negative
+				$availableQty = max($availableQty, 0);
+
+				// Display the equipment in the dropdown with the available quantity
+				if ($availableQty > 0) {
+					$options .= '<option value="' . $allequips['equipmentID'] . '" data-available-qty="' . $availableQty . '">' . $allequips['equipName'] . ' (QTY: ' . $availableQty . ')</option>';
+				}
 			}
+
+
+
+
+
+
 			//make card html of curent selections
 			$selectedEquipment = $this->generic->GetData('projectequipmentlink', array('ProjectID' => $projectID));
 			$cardsHtml = '';
@@ -450,17 +604,38 @@ class project extends MY_Controller
 			//get all available equipment
 			$availableEquipment = $this->generic->GetEquipmentWithCat(false, array('e.companyID' => $this->session->userdata('companyDetails')['companyID']), true);
 			//repaire equipment select option
+			$projectData = $this->generic->GetData('projects', array('ProjectID' => $projectID));
 			$options = '<option value="">Select Equipment</option>';
-			if ($availableEquipment) {
-				foreach ($availableEquipment as $equip) {
-					$availableQty = $equip['equipTotalQuantity'] - $equip['equipInUseQuantity'];
-					if ($availableQty > 0) {
-						$options .= '<option value="' . $equip['equipmentID'] . '" data-available-qty="' . $availableQty . '">' . $equip['equipName'] . ' (Available: ' . $availableQty . ')</option>';
+			$allEquipments = $this->generic->GetData('equipment');
+
+			foreach ($allEquipments as $allequips) {
+				// Initialize available quantity with the total quantity
+				$availableQty = $allequips['equipTotalQuantity'];
+
+				// Get all assigned equipment for the current equipment
+				$curentEquipAssignList = $this->generic->GetAllAssignedEquipment(array('pel.equipmentID' => $allequips['equipmentID'], 'p.pStatus!=' => 1));
+
+				// Loop through assigned equipment and calculate overlapping quantities
+				foreach ($curentEquipAssignList as $projectEQList) {
+					// Check if the project dates overlap
+					if (
+						($projectData[0]['pStartDate'] <= $projectEQList['pEndDate'] && $projectData[0]['pEndDate'] >= $projectEQList['pStartDate']) ||
+						($projectData[0]['pStartDate'] >= $projectEQList['pStartDate'] && $projectData[0]['pStartDate'] <= $projectEQList['pEndDate'])
+					) {
+						// Subtract the assigned quantity from the available quantity
+						$availableQty -= $projectEQList['equipmentQTY'];
 					}
 				}
-			} else {
-				$options .= '<option value="">No Equipment Available</option>';
+
+				// Ensure the available quantity is not negative
+				$availableQty = max($availableQty, 0);
+
+				// Display the equipment in the dropdown with the available quantity
+				if ($availableQty > 0) {
+					$options .= '<option value="' . $allequips['equipmentID'] . '" data-available-qty="' . $availableQty . '">' . $allequips['equipName'] . ' (QTY: ' . $availableQty . ')</option>';
+				}
 			}
+
 			//make card html of curent selections
 			$selectedEquipment = $this->generic->GetData('projectequipmentlink', array('ProjectID' => $projectID));
 			$cardsHtml = '';
@@ -672,7 +847,14 @@ class project extends MY_Controller
 					$sr++;
 					$rowsHtml .= '<tr>
 						<td>' . $sr . '.</td>
-						<td>' . $assign['equipName'] . '</td>
+						<td>
+						<div class="employee">
+                                <img
+                                  src="<?= base_url() ?>assets/uploads/equipment/'.$assign['equipImg'].'"
+                                  alt="client" />
+                                <span>'.$assign['equipName'].'</span>
+                              </div>
+						</td>
 						<td>' . $assign['assignedQty'] . '</td>
 						<td>
 						  <div class="employee">

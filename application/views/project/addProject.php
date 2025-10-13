@@ -457,12 +457,42 @@
                         <select name="equipment" id="equipment" class="form-control">
                           <option value="">Select Equipment</option>
                           <?php
-                          if (isset($allEquipment) && !empty($allEquipment)) {
-                            foreach ($allEquipment as $eq) {
-                          ?>
-                              <option value="<?= $eq['equipmentID'] ?>" data-available-qty="<?= $eq['equipTotalQuantity'] - $eq['equipInUseQuantity'] ?>"><?= $eq['equipName'] ?> (QTY: <?= $eq['equipTotalQuantity'] - $eq['equipInUseQuantity'] ?>)</option>
-                          <?php
+                          if (isset($_GET['id'])) {
+                            $allEquipments = $this->generic->GetData('equipment');
+
+                            foreach ($allEquipments as $allequips) {
+                              // Initialize available quantity with the total quantity
+                              $availableQty = $allequips['equipTotalQuantity'];
+
+                              // Get all assigned equipment for the current equipment
+                              $curentEquipAssignList = $this->generic->GetAllAssignedEquipment(array('pel.equipmentID' => $allequips['equipmentID']));
+                              if( $curentEquipAssignList){
+                              // Loop through assigned equipment and calculate overlapping quantities
+                              foreach ($curentEquipAssignList as $projectEQList) {
+                                // Check if the project dates overlap
+                                if (
+                                  $projectData[0]['pStartDate'] <= $projectEQList['pEndDate'] &&
+                                  $projectData[0]['pEndDate'] >= $projectEQList['pStartDate']
+                                ) {
+                                  
+                                  // Subtract the assigned quantity from the available quantity
+                                  $availableQty -= $projectEQList['equipmentQTY'];
+                                  echo 'aaaa'.$availableQty;
+                                }
+                              }
                             }
+                              
+                              // Ensure the available quantity is not negative
+                              $availableQty = max($availableQty, 0);
+
+                              // Display the equipment in the dropdown with the available quantity
+                              if ($availableQty > 0) {
+                                echo '<option value="' . $allequips['equipmentID'] . '" data-available-qty="' . $availableQty . '">' . $allequips['equipName'] . ' (QTY: ' . $availableQty . ')</option>';
+                              }
+                            }
+                          ?>
+                          <?php
+
                           } else {
                             echo '<option value="">No Equipment Selected Yet</option>';
                           }
@@ -622,9 +652,9 @@
                               foreach ($selectedEquipment as $selEquip) {
                                 $equipDetails = $this->generic->GetData('equipment', array('equipmentID' => $selEquip['equipmentID']));
                                 $equip = $equipDetails[0];
-                                if ($selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] > 0){
+                                if ($selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] > 0) {
                             ?>
-                                <option value="<?= $equip['equipmentID'] ?>" data-available-assign-qty="<?= $selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] ?>"><?= $equip['equipName'] ?> (QTY for Project: <?= $selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] ?>)</option>
+                                  <option value="<?= $equip['equipmentID'] ?>" data-available-assign-qty="<?= $selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] ?>"><?= $equip['equipName'] ?> (QTY for Project: <?= $selEquip['equipmentQTY'] - $selEquip['TotalAssignQTY'] ?>)</option>
                             <?php
                                 }
                               }
@@ -651,17 +681,17 @@
                               class="btn btn-primary btn-clash">
                               Assign
                             </button>
-                            <?php 
+                            <?php
                             if (isset($_GET['id'])) {
                             ?>
-                            <a
-                              href="<?= base_url('mark-project-as-inprogress?id='.$_GET['id']) ?>"
-                              class="btn btn-primary btn-clash-outline">
-                              Submit Project
-                          </a>
-                          <?php
+                              <a
+                                href="<?= base_url('mark-project-as-inprogress?id=' . $_GET['id']) ?>"
+                                class="btn btn-primary btn-clash-outline">
+                                Submit Project
+                              </a>
+                            <?php
                             }
-                          ?>
+                            ?>
                           </div>
                         </div>
                       </form>
@@ -697,7 +727,15 @@
                       ?>
                           <tr>
                             <td><?= $sr . '.' ?></td>
-                            <td><?= $assign['equipName'] ?></td>
+                            <td>
+                              <div class="employee">
+                                <img
+                                  src="<?= base_url() ?>assets/uploads/equipment/<?= $assign['equipImg'] ?>"
+                                  alt="client" />
+                                <span><?= $assign['equipName'] ?></span>
+                              </div>
+
+                            </td>
                             <td><?= $assign['assignedQty'] ?></td>
                             <td>
                               <div class="employee">
@@ -766,7 +804,31 @@
   <script src="<?= base_url() ?>assets/js/app.js"></script>
   <script src="<?= base_url() ?>assets/js/step.js"></script>
   <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
-    <?php
+  <!-- date selection  -->
+  <script>
+    $(document).ready(function() {
+      // Disable the end date input by default
+      $('#pEndDate').prop('disabled', true);
+
+      // Listen for changes in the start date input
+      $('#pStartDate').on('change', function() {
+        const startDate = $(this).val(); // Get the selected start date
+
+        if (startDate) {
+          // Enable the end date input
+          $('#pEndDate').prop('disabled', false);
+
+          // Set the min attribute of the end date to the selected start date
+          $('#pEndDate').attr('min', startDate);
+        } else {
+          // If no start date is selected, disable the end date input
+          $('#pEndDate').prop('disabled', true);
+          $('#pEndDate').removeAttr('min'); // Remove the min attribute
+        }
+      });
+    });
+  </script>
+  <?php
   if ($this->session->flashdata('successaddedd') != '') {
   ?>
     <script type="text/javascript">
@@ -831,45 +893,45 @@
     });
   </script>
   <?php
-  if(!isset($_GET['step'])){
-  if (isset($_GET['id'])) {
-    if ($projectData[0]['pDraftStatus'] == 2) {
+  if (!isset($_GET['step'])) {
+    if (isset($_GET['id'])) {
+      if ($projectData[0]['pDraftStatus'] == 2) {
   ?>
-      <script>
-        $(document).ready(function() {
-          $("#step-3").prop("disabled", true);
-          $("#first-box").removeClass("active");
-          $("#second-box").addClass("active");
-          $("#step2div").addClass("active_tab");
-          $("#step1div").removeClass("active_tab");
-        });
-      </script>
+        <script>
+          $(document).ready(function() {
+            $("#step-3").prop("disabled", true);
+            $("#first-box").removeClass("active");
+            $("#second-box").addClass("active");
+            $("#step2div").addClass("active_tab");
+            $("#step1div").removeClass("active_tab");
+          });
+        </script>
 
-    <?php
-    } else if ($projectData[0]['pDraftStatus'] == 3) {
-    ?>
+      <?php
+      } else if ($projectData[0]['pDraftStatus'] == 3) {
+      ?>
+        <script>
+          $(document).ready(function() {
+            $("#first-box").removeClass("active");
+            $("#second-box").removeClass("active");
+            $("#third-box").addClass("active");
+            $("#step-3").prop("disabled", false);
+            $("#step3div").addClass("active_tab");
+          });
+        </script>
+      <?php
+      }
+    } else {
+      ?>
       <script>
         $(document).ready(function() {
-          $("#first-box").removeClass("active");
-          $("#second-box").removeClass("active");
-          $("#third-box").addClass("active");
-          $("#step-3").prop("disabled", false);
-          $("#step3div").addClass("active_tab");
+          $("#step-2").prop("disabled", true);
+          $("#step-3").prop("disabled", true);
         });
       </script>
-    <?php
-    }
-  } else {
-    ?>
-    <script>
-      $(document).ready(function() {
-        $("#step-2").prop("disabled", true);
-        $("#step-3").prop("disabled", true);
-      });
-    </script>
   <?php
+    }
   }
-}
   ?>
 
 
@@ -939,6 +1001,9 @@
               $("#first-box").removeClass("active");
               //add active class to second box
               $("#second-box").addClass("active");
+              //update workforce
+              $('#workforce').html(response[2]);
+              $('#equipment').html(response[3]);
               //add parementer to url
               var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response[1];
               window.history.pushState({
@@ -999,20 +1064,7 @@
             toastr.error("Something Went Wrong, Try Again!");
           }
 
-          // document.getElementById("loader").style.display = "none";
-          // //remove disable attribute from second tab
-          // $("#step-3").prop("disabled", false);
-          // //remove active_tab from first tab
-          // $("#step2div").removeClass("active_tab");
-          // //add active_tab to second tab
-          // $("#step3div").addClass("active_tab");
-          // //remove show active from first box
-          // $("#second-box").removeClass("active");
-          // //add active class to second box
-          // $("#third-box").addClass("active");
-          // //add parementer to url
-          // var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response[1];
-          // window.history.pushState({}, '', newurl);
+
 
         },
       });
@@ -1200,7 +1252,7 @@
               toastr.error("Something Went Wrong, Try Again!");
               return false;
             }
-          response = response.split("///");
+            response = response.split("///");
             $('#AssignEquipment').html(response[2]);
             $('#AssignWorkforce').html(response[1]);
             toastr.options = {

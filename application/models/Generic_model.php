@@ -224,6 +224,109 @@ class Generic_model extends CI_Model
         }
     }
 
+public function GetEquipmentWithDateRange($filters, $where, $qtyAvailability, $startDate, $endDate)
+{
+    $this->db->select('e.*, (e.equipTotalQuantity - e.equipInUseQuantity) AS availableQty');
+    $this->db->from('equipment AS e');
+    $this->db->join('equipcat AS ec', 'e.equipCatID = ec.equipCatID', 'left');
+
+    // Apply filters
+    if ($filters && is_array($filters)) {
+        if (isset($filters['companyID'])) {
+            $this->db->where('e.companyID', $filters['companyID']);
+        }
+        if (isset($filters['equipName']) && $filters['equipName'] != '') {
+            $this->db->like('e.equipName', $filters['equipName']);
+        }
+        if (isset($filters['equipCatID']) && $filters['equipCatID'] != '') {
+            $this->db->where('e.equipCatID', $filters['equipCatID']);
+        }
+    }
+
+        // Check availability based on project dates
+    $this->db->where("NOT EXISTS (
+        SELECT 1 FROM projects AS p
+        INNER JOIN projectequipmentlink AS pel ON pel.equipmentID = e.equipmentID
+        WHERE pel.ProjectID = p.ProjectID
+        AND (
+            (p.pStartDate <= '$endDate' AND p.pEndDate >= '$startDate') OR
+            (p.pStartDate >= '$startDate' AND p.pStartDate <= '$endDate')
+        )
+    )");
+
+    // Check quantity availability
+    if ($qtyAvailability) {
+        $this->db->where('(e.equipTotalQuantity - e.equipInUseQuantity) >', 0); // Ensure available quantity is greater than 0
+    }
+
+    // Ensure equipment with total quantity greater than in-use quantity is also loaded
+    $this->db->where('e.equipTotalQuantity > e.equipInUseQuantity');
+
+    $this->db->order_by('e.equipmentID', 'DESC');
+
+    $query = $this->db->get();
+    return $query->result_array();
+}
+public function GetDataWithDateRange($table, $where, $orderByColumn, $orderDirection, $startDate, $endDate)
+{
+    $this->db->select('*');
+    $this->db->from($table);
+
+    // Apply filters
+    if ($where) {
+        $this->db->where($where);
+    }
+
+    // Check availability based on project dates
+    $this->db->where("NOT EXISTS (
+        SELECT 1 FROM projects AS p
+        INNER JOIN projectworkforcelink AS pwl ON pwl.ProjectID = p.ProjectID
+        WHERE pwl.workforceID = {$table}.workforceID
+        AND (
+            (p.pStartDate <= '$endDate' AND p.pEndDate >= '$startDate') OR
+            (p.pStartDate >= '$startDate' AND p.pStartDate <= '$endDate')
+        )
+    )");
+
+    // Order by
+    $this->db->order_by($orderByColumn, $orderDirection);
+
+    $query = $this->db->get();
+    // die($this->db->last_query());
+    return $query->result_array();
+}
+public function GetAllAssignedEquipment($where=false){
+     $this->db->select('*');
+        $this->db->from('projectequipmentlink as pel');
+        $this->db->join('projects as p', 'p.ProjectID = pel.ProjectID', 'inner');
+         $this->db->where('p.pStatus!=',1);
+         $this->db->where('p.pStatus!=',4);
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
 
