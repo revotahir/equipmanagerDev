@@ -223,6 +223,16 @@ class project extends MY_Controller
 			} else {
 				$options .= '<option value="">No Workforce Available</option>';
 			}
+			//send email for project update
+			//get all workforce
+			$workforcetoProject=$this->generic->GetWorkforceofPRoject(array('pwl.ProjectID'=>$_GET['id']));
+			foreach($workforcetoProject as $workforce){
+				//send email
+			$subject = 'Equip Manager - Project Updated';
+			$message = 'Project('.$projectData[0]['pName'].') is updated, View Dashboard ';
+			$this->send_email($workforce['personEmail'], $subject, $message);
+			}
+
 			echo "Projectupdated//" . $projectID . '//' . $options;
 		} else {
 			// Save the data to the database (example)
@@ -373,6 +383,17 @@ class project extends MY_Controller
                               </div>
                             </div>';
 		}
+		//send email if project is not draft
+			//get project detail
+			$project=$this->generic->GetData('projects',array('ProjectID'=>$projectID));
+			if($project[0]['pStatus']!=1){
+				//get workforce detail
+				$workforceDetail=$this->generic->GetData('workforce',array('workforceID'=>$workforceIDs));
+				//send email
+			$subject = 'Equip Manager - Project Added';
+			$message = 'Project Assigned to you, View Dashboard!';
+			$this->send_email($workforceDetail[0]['personEmail'], $subject, $message);
+			}
 		echo "Workforceadded///" . $options . "///" . $cardsHtml;
 	}
 	public function removeWorkforceFromProject()
@@ -451,6 +472,17 @@ class project extends MY_Controller
                                 </div>
                               </div>
                             </div>';
+			}
+			//send email if project is not draft
+			//get project detail
+			$project=$this->generic->GetData('projects',array('ProjectID'=>$projectID));
+			if($project[0]['pStatus']!=1){
+				//get workforce detail
+				$workforceDetail=$this->generic->GetData('workforce',array('workforceID'=>$workforceID));
+				//send email
+			$subject = 'Equip Manager - Project Removed';
+			$message = 'You have been removed from the project, View Dashboard!';
+			$this->send_email($workforceDetail[0]['personEmail'], $subject, $message);
 			}
 			echo "Workforceremoved///" . $options . "///" . $cardsHtml;
 		} else {
@@ -909,6 +941,16 @@ class project extends MY_Controller
 		if ($projectID) {
 			//update project draft status to 4
 			$this->generic->Update('projects', array('ProjectID' => $projectID), array('pStatus' => 2));
+
+			//send email to all worker that you have been added to project
+			//get all workforce
+			$workforcetoProject=$this->generic->GetWorkforceofPRoject(array('pwl.ProjectID'=>$projectID));
+			foreach($workforcetoProject as $workforce){
+				//send email
+			$subject = 'Equip Manager - Project Assigned';
+			$message = 'New Project assigned to you, View Dashboard ';
+			$this->send_email($workforce['personEmail'], $subject, $message);
+			}
 			//set session message
 			$this->session->set_flashdata('successaddedd', 'Project marked as In Progress successfully.');
 			redirect(base_url('add-project'));
