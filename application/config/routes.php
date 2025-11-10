@@ -120,7 +120,13 @@ $route['mark-project-as-inprogress']='project/MarkInProgressProject';
 $route['all-projects']='project/AllProjects';
 $route['delete-project/:any']='project/DeletProject';
 
+
+
+
+
 $route['login-data'] = 'welcome/LoginData';
+
+
 
 //test email
 $route['test-mail']='welcome/TestMail'; 
