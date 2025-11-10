@@ -304,14 +304,15 @@
                           </div>
 
                           <div class="col-md-6">
-                            <span class="text-muted mt-2">End Date(Optional)</span>
+                            <span class="text-muted mt-2">End Date</span>
                             <input
                               type="date"
                               id="pEndDate"
+                              required
                               name="pEndDate"
                               <?php
                               if (isset($_GET['id'])) {
-                                echo 'value="' . htmlspecialchars($projectData[0]['pEndDate']) . '"';
+                                echo 'value="' . $projectData[0]['pEndDate'] . '"';
                               }
                               ?>
                               class="form-control"
@@ -808,7 +809,7 @@
   <script>
     $(document).ready(function() {
       // Disable the end date input by default
-      $('#pEndDate').prop('disabled', true);
+      
 
       // Listen for changes in the start date input
       $('#pStartDate').on('change', function() {
