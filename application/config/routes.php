@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -69,59 +69,63 @@ $route['company-dashboard'] = 'welcome/companyDashboard';
 
 //manage workforce company
 //--maage skill
-$route['manage-workforce-skill']='workforce/ManageWorkforceSkill';
-$route['add-skill-data']='workforce/addSkillData';
-$route['delet-skill/:any']='workforce/DeleteSkill';
-$route['update-skill-data/:any']='workforce/UpdateSkillData';
+$route['manage-workforce-skill'] = 'workforce/ManageWorkforceSkill';
+$route['add-skill-data'] = 'workforce/addSkillData';
+$route['delet-skill/:any'] = 'workforce/DeleteSkill';
+$route['update-skill-data/:any'] = 'workforce/UpdateSkillData';
 //--add workforce
-$route['add-workforce']='workforce/addWorkforce';
-$route['add-skill-data-ajax']='workforce/addSkillDataAjax';
-$route['add-work-force-data']='workforce/addWorkForceData';
-$route['all-workforce']='workforce/allWorkforce';
-$route['delete-person/:any']='workforce/DeletePerson';
-$route['edit-work-force/:any']='workforce/editWorkForce';
+$route['add-workforce'] = 'workforce/addWorkforce';
+$route['add-skill-data-ajax'] = 'workforce/addSkillDataAjax';
+$route['add-work-force-data'] = 'workforce/addWorkForceData';
+$route['all-workforce'] = 'workforce/allWorkforce';
+$route['delete-person/:any'] = 'workforce/DeletePerson';
+$route['edit-work-force/:any'] = 'workforce/editWorkForce';
 
 
 //manage equipment company
 //--manage category
-$route['manage-category']='equipment/ManageCategory';
-$route['equipment-category-data']='equipment/CategoryData';
-$route['delete-category/:any']='equipment/deletCategory';
-$route['update-category-data/:any']='equipment/CategoryUpdateData';
+$route['manage-category'] = 'equipment/ManageCategory';
+$route['equipment-category-data'] = 'equipment/CategoryData';
+$route['delete-category/:any'] = 'equipment/deletCategory';
+$route['update-category-data/:any'] = 'equipment/CategoryUpdateData';
 //--add equipment
-$route['add-equipment']='equipment/AddEquipment';
-$route['add-equipment-data']='equipment/AddEquipmentData';
-$route['add-equipment-category-jax']='equipment/AddEquipmentAjaxData';
+$route['add-equipment'] = 'equipment/AddEquipment';
+$route['add-equipment-data'] = 'equipment/AddEquipmentData';
+$route['add-equipment-category-jax'] = 'equipment/AddEquipmentAjaxData';
 //--all equipment
-$route['all-equipment']='equipment/AllEquipment';
-$route['delet-equipment/:any']='equipment/DeleteEquipment';
-$route['edit-equipment/:any']='equipment/EditEquipment';
-$route['edit-equipment-data/:any']='equipment/UpdateEquipmentData';
+$route['all-equipment'] = 'equipment/AllEquipment';
+$route['delet-equipment/:any'] = 'equipment/DeleteEquipment';
+$route['edit-equipment/:any'] = 'equipment/EditEquipment';
+$route['edit-equipment-data/:any'] = 'equipment/UpdateEquipmentData';
 
 
 //manage project company
 //--manage category
-$route['project-category']='project/ProjectCategory';
-$route['project-cat-data']='project/ProjectCategoryData';
-$route['delet-project-cat/:any']='project/ProjectCategoryDeletData';
-$route['update-project-category-data/:any']='project/ProjectCategoryEditData';
+$route['project-category'] = 'project/ProjectCategory';
+$route['project-cat-data'] = 'project/ProjectCategoryData';
+$route['delet-project-cat/:any'] = 'project/ProjectCategoryDeletData';
+$route['update-project-category-data/:any'] = 'project/ProjectCategoryEditData';
 //--add project
-$route['add-project']='project/AddProject';
-$route['add-project-general-data']='project/AddProjectGeneralData'; // ajax first step(General data)
-$route['add-project-workforce']='project/AddProjecWorkforce'; // ajax second step(workforce data)
-$route['remove-project-workforce']='project/removeWorkforceFromProject'; // ajax second step(workforce removal)
-$route['add-project-equipment']='project/addProjectEquipment'; // ajax add project equipment
-$route['remove-project-equipment']='project/RemoveProjectEquipment'; // ajax add project equipment
-$route['move-to-step3']='project/MovetoStepThree'; // ajax Move to step 3
-$route['assign-equipment-employee']='project/assignEquipmenttoEmployee'; // ajax assign equipment to employee
-$route['remove-assigned-equipment']='project/removeAssignEquipmenttoEmployee'; // ajax remove assigned equipment to employee
-$route['mark-project-as-inprogress']='project/MarkInProgressProject'; 
+$route['add-project'] = 'project/AddProject';
+$route['add-project-general-data'] = 'project/AddProjectGeneralData'; // ajax first step(General data)
+$route['add-project-workforce'] = 'project/AddProjecWorkforce'; // ajax second step(workforce data)
+$route['remove-project-workforce'] = 'project/removeWorkforceFromProject'; // ajax second step(workforce removal)
+$route['add-project-equipment'] = 'project/addProjectEquipment'; // ajax add project equipment
+$route['remove-project-equipment'] = 'project/RemoveProjectEquipment'; // ajax add project equipment
+$route['move-to-step3'] = 'project/MovetoStepThree'; // ajax Move to step 3
+$route['assign-equipment-employee'] = 'project/assignEquipmenttoEmployee'; // ajax assign equipment to employee
+$route['remove-assigned-equipment'] = 'project/removeAssignEquipmenttoEmployee'; // ajax remove assigned equipment to employee
+$route['mark-project-as-inprogress'] = 'project/MarkInProgressProject';
 //--all projects
-$route['all-projects']='project/AllProjects';
-$route['delete-project/:any']='project/DeletProject';
+$route['all-projects'] = 'project/AllProjects';
+$route['delete-project/:any'] = 'project/DeletProject';
 
 
 
+//super admin
+$route['admin-dashboard'] = 'superadmin/superadmindashboard';
+$route['manage-super-category'] = 'superadmin/ManageSuperCategory';
+$route['add-super-category'] = 'superadmin/addSuperCategory';
 
 
 $route['login-data'] = 'welcome/LoginData';
@@ -129,7 +133,7 @@ $route['login-data'] = 'welcome/LoginData';
 
 
 //test email
-$route['test-mail']='welcome/TestMail'; 
+$route['test-mail'] = 'welcome/TestMail';
 
 
 $route['logout'] = 'welcome/LogOut';

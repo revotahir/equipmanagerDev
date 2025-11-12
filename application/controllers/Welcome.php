@@ -246,7 +246,7 @@ class Welcome extends MY_Controller
 			if (isset($_GET['forgot'])) {
 				redirect(base_url('verify-account?auth=' . $authTocken . '&userID=' . $_GET['userID'] . '&forgot=1'));
 			} else {
-				redirect(base_url('verify-account?auth=' . $authTocken. '&userID=' . $_GET['userID']));
+				redirect(base_url('verify-account?auth=' . $authTocken . '&userID=' . $_GET['userID']));
 			}
 		} else {
 			redirect(base_url('register'));
@@ -281,7 +281,7 @@ class Welcome extends MY_Controller
 	}
 
 
-public function resetPassword()
+	public function resetPassword()
 	{
 		$authTocken = $_GET['auth'];
 		$userID = $_GET['userID'];
@@ -293,7 +293,7 @@ public function resetPassword()
 			redirect(base_url('register'));
 		}
 	}
-public function resetPasswordData()
+	public function resetPasswordData()
 	{
 		$authTocken = $_GET['auth'];
 		$userID = $_GET['userID'];
@@ -323,18 +323,17 @@ public function resetPasswordData()
 	// <!-- redirect to dashboard -->
 	// <!-- ============================================================== -->
 
-	
+
 
 
 	public function companyDashboard()
 	{
-			//check if user is vendor
-			if ($this->session->userdata('loginData')['userType'] == 2) {
-				$this->load->view('dashboards/companydashboard');
-			} else {
-				redirect(base_url());
-			}
-		
+		//check if user is vendor
+		if ($this->session->userdata('loginData')['userType'] == 2) {
+			$this->load->view('dashboards/companydashboard');
+		} else {
+			redirect(base_url());
+		}
 	}
 	public function TestMail()
 	{
