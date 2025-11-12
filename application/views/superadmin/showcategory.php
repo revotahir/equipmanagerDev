@@ -38,8 +38,13 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-
     <title>Manage Category</title>
+    <style>
+        .bg-dark-green img{
+            background-color: #0b2523 !important;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -53,79 +58,55 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Category Management
+                    Show All Category
                 </div>
             </div>
             <!--end breadcrumb-->
-
-            <div class="row">
-                <div class="col-xl-12 mx-auto">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="border p-4 rounded">
-                                <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Add Equipment Category</h5>
-                                </div>
-                                <hr />
-                                <form action="<?= base_url('add-super-category') ?>" method="post">
-
-                                    <div class="row mb-3">
-                                        <label
-                                            for="catIcon"
-                                            class="col-sm-3 col-form-label">Upload Icon</label>
-                                        <div class="col-sm-9">
-                                            <input
-                                                type="file"
-                                                class="form-control"
-                                                id="catIcon"
-                                                name="catIcon"
-                                                required
-                                                placeholder="Enter Category Name" />
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <label
-                                            for="catName"
-                                            class="col-sm-3 col-form-label">Category Name</label>
-                                        <div class="col-sm-9">
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                id="catName"
-                                                name="catName"
-                                                required
-                                                placeholder="Enter Category Name" />
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <label for="catDesc" class="col-sm-3 col-form-label">Description</label>
-                                        <div class="col-sm-9">
-                                            <textarea
-                                                class="form-control"
-                                                id="catDesc"
-                                                name="catDesc"
-                                                rows="3"
-                                                required
-                                                placeholder="Write Description"></textarea>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <label class="col-sm-3 col-form-label"></label>
-                                        <div class="col-sm-9">
-                                            <button
-                                                type="submit"
-                                                class="btn btn-primary px-5 btn-clash">
-                                                Add Category
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-0">Manage Category</h5>
+                    <div class="table-responsive mt-3">
+                        <table class="table align-middle">
+                            <thead class="table-secondary bg-sky-blue font-clash-green">
+                                <tr>
+                                    <th>Category Icon</th>
+                                    <th>Category Name</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                if (!empty($supercategory)) {
+                                    foreach ($supercategory as $superCat) {
+                                ?>
+                                        <tr>
+                                            <td class="bg-dark-green"><img src="<?= base_url('assets/uploads/superadmin/category/' . $superCat['web_catIcon']) ?>" alt="icon" width="50"></td>
+                                            <td><?= $superCat['web_catName'] ?></td>
+                                            <td><?= $superCat['web_catDesp'] ?></td>
+                                            <td><?= ($superCat['web_catStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
+                                            <td>
+                                                <i class="bi bi-pencil-fill text-warning"></i>
+                                                <i class="bi bi-trash-fill text-danger"></i>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    }
+                                } else {
+                                    ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center">No Categories Added Yet!</td>
+                                    </tr>
+                                <?php
+                                }
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+
             <!--end row-->
         </main>
         <!--end page main-->
@@ -155,7 +136,7 @@
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
     <?php
-    if ($this->session->flashdata('error') != '') {
+    if ($this->session->flashdata('success-edited') != '') {
     ?>
         <script type="text/javascript">
             toastr.options = {
@@ -163,7 +144,35 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr.error('Please fill out all fields!');
+            toastr.success('Category Updated!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('successDeleted') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Category Deleted!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('success') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Category Added!');
         </script>
     <?php
     }
