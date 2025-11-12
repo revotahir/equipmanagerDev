@@ -151,9 +151,8 @@ class equipment extends MY_Controller
 			redirect(base_url('all-equipment'));
 		} else {
 
-			redirect(base_url('add-equipment'));							
+			redirect(base_url('add-equipment'));
 		}
-		
 	}
 	public function AllEquipment()
 	{
@@ -186,7 +185,8 @@ class equipment extends MY_Controller
 		$this->session->set_flashdata('successDeleted', 'Person deleted successfully!');
 		redirect(base_url('all-equipment'));
 	}
-	public function UpdateEquipmentData(){
+	public function UpdateEquipmentData()
+	{
 		$equipName = $this->input->post('equipName');
 		$equipCatID = $this->input->post('equipCat');
 		$equipTotalQuantity = $this->input->post('quantity');
@@ -228,10 +228,8 @@ class equipment extends MY_Controller
 				);
 				$this->generic->Update('equipment', array('equipmentID' => $this->uri->segment(2)), $data);
 				$this->session->set_flashdata('success-edited', 'Equipment updated successfully!');
-				redirect(base_url('all-equipment'));	
+				redirect(base_url('all-equipment'));
 			}
 		}
-
 	}
-	
 }

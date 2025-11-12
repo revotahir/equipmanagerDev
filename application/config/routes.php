@@ -126,6 +126,7 @@ $route['delete-project/:any'] = 'project/DeletProject';
 $route['admin-dashboard'] = 'superadmin/superadmindashboard';
 $route['manage-super-category'] = 'superadmin/ManageSuperCategory';
 $route['add-super-category'] = 'superadmin/addSuperCategory';
+$route['show-super-category'] = 'superadmin/showSuperCategory';
 
 
 $route['login-data'] = 'welcome/LoginData';

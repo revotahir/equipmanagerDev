@@ -77,5 +77,14 @@ class superadmin extends MY_Controller
             'web_catStatus' => 1,
         );
         $this->generic->InsertData('web_cat', $data);
+        redirect(base_url('show-super-category'));
+    }
+
+    public function showSuperCategory()
+    {
+        // Get data from database
+        $this->data['supercategory'] = $this->generic->GetData('web_cat', array(), 'web_catID', 'DESC');
+        $this->session->set_flashdata('success', 'Person deleted successfully!');
+        $this->load->view('superadmin/showcategory', $this->data);
     }
 }

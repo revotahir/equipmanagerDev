@@ -35,6 +35,9 @@
                       <li>
                           <a href="<?= base_url('manage-super-category') ?>"><i class="bi bi-arrow-right-short"></i>Add Category</a>
                       </li>
+                      <li>
+                          <a href="<?= base_url('show-super-category') ?>"><i class="bi bi-arrow-right-short"></i>See Category</a>
+                      </li>
                   </ul>
               </li>
 
