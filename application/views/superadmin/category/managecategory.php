@@ -53,7 +53,7 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Category Management
+                    Super Category Management
                 </div>
             </div>
             <!--end breadcrumb-->
@@ -64,10 +64,10 @@
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Add Equipment Category</h5>
+                                    <h5 class="mb-0">Add Super Category</h5>
                                 </div>
                                 <hr />
-                                <form action="<?= base_url('add-super-category') ?>" method="post">
+                                <form action="<?= base_url('add-super-category') ?>" method="post" enctype="multipart/form-data">
 
                                     <div class="row mb-3">
                                         <label

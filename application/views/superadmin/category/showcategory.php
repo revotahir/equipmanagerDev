@@ -40,7 +40,7 @@
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
     <title>Manage Category</title>
     <style>
-        .bg-dark-green img{
+        .bg-dark-green img {
             background-color: #0b2523 !important;
             border-radius: 10px;
         }
@@ -82,7 +82,9 @@
                                     foreach ($supercategory as $superCat) {
                                 ?>
                                         <tr>
-                                            <td class="bg-dark-green"><img src="<?= base_url('assets/uploads/superadmin/category/' . $superCat['web_catIcon']) ?>" alt="icon" width="50"></td>
+                                            <td class="bg-dark-green">
+                                                <img src="<?= base_url('assets/uploads/superadmin/category/' . $superCat['web_catIcon']) ?>" alt="icon" width="50" height="50">
+                                            </td>
                                             <td><?= $superCat['web_catName'] ?></td>
                                             <td><?= $superCat['web_catDesp'] ?></td>
                                             <td><?= ($superCat['web_catStatus'] == 1) ? 'Active' : 'Inactive' ?></td>

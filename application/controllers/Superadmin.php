@@ -42,7 +42,7 @@ class superadmin extends MY_Controller
     // manage super category
     public function ManageSuperCategory()
     {
-        $this->load->view('superadmin/managecategory');
+        $this->load->view('superadmin/category/managecategory');
     }
 
     public function addSuperCategory()
@@ -77,6 +77,7 @@ class superadmin extends MY_Controller
             'web_catStatus' => 1,
         );
         $this->generic->InsertData('web_cat', $data);
+        $this->session->set_flashdata('success', 'Person deleted successfully!');
         redirect(base_url('show-super-category'));
     }
 
@@ -84,7 +85,6 @@ class superadmin extends MY_Controller
     {
         // Get data from database
         $this->data['supercategory'] = $this->generic->GetData('web_cat', array(), 'web_catID', 'DESC');
-        $this->session->set_flashdata('success', 'Person deleted successfully!');
-        $this->load->view('superadmin/showcategory', $this->data);
+        $this->load->view('superadmin/category/showcategory', $this->data);
     }
 }
