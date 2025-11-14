@@ -89,8 +89,20 @@
                                             <td><?= $superCat['web_catDesp'] ?></td>
                                             <td><?= ($superCat['web_catStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
                                             <td>
-                                                <i class="bi bi-pencil-fill text-warning"></i>
-                                                <i class="bi bi-trash-fill text-danger"></i>
+                                                <a href="<?= base_url('update-cate/' . $superCat['web_catID']) ?>" class="text-warning ms-2"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    title="Edit">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <a href="<?= base_url('delet-cat/' . $superCat['web_catID']) ?>"
+                                                    class="text-danger ms-2"
+                                                    onclick="return confirm('Are you sure you want to delete this category?');"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    title="Delete">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php
@@ -175,6 +187,20 @@
                 "hideMethod": "fadeOut"
             }
             toastr.success('Category Added!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('error') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.error('Please select a valid image file!');
         </script>
     <?php
     }

@@ -127,7 +127,9 @@ $route['admin-dashboard'] = 'superadmin/superadmindashboard';
 $route['manage-super-category'] = 'superadmin/ManageSuperCategory';
 $route['add-super-category'] = 'superadmin/addSuperCategory';
 $route['show-super-category'] = 'superadmin/showSuperCategory';
-
+$route['delet-cat/:any'] = 'superadmin/deletCategory';
+$route['update-cate/:any'] = 'superadmin/UpdateSuperCategory';
+$route['process-update-cat'] = 'superadmin/ProcessUpdateCategory';
 
 $route['login-data'] = 'welcome/LoginData';
 

@@ -87,4 +87,56 @@ class superadmin extends MY_Controller
         $this->data['supercategory'] = $this->generic->GetData('web_cat', array(), 'web_catID', 'DESC');
         $this->load->view('superadmin/category/showcategory', $this->data);
     }
+
+    public function deletCategory()
+    {
+        // Delete category from database
+        $this->generic->Delete('web_cat', array('web_catID' => $this->uri->segment(2)));
+        $this->session->set_flashdata('successDeleted', 'Category deleted successfully!');
+        redirect(base_url('show-super-category'));
+    }
+
+    public function UpdateSuperCategory()
+    {
+        // Get category data
+        $this->data['updateCategory'] = $this->generic->GetData('web_cat', array('web_catID' => $this->uri->segment(2)));
+        // Load view
+        $this->load->view('superadmin/category/updatecategory', $this->data);
+    }
+
+    public function ProcessUpdateCategory()
+    {
+        $catID = $this->input->post('catID');
+        $superCatName = $this->input->post('catName');
+        $superCatDesp = $this->input->post('catDesc');
+
+        //check if we have image posted
+        if (empty($_FILES['catIcon']['name'])) {
+            $personImage = 'category.svg';
+        } else {
+            //upload person image
+            $config['upload_path']          = './assets/uploads/superadmin/category';
+            $config['allowed_types']        = 'svg';
+            $config['max_size']             = 1024;
+            $config['encrypt_name']         = TRUE;
+            $this->load->library('upload', $config);
+            if (! $this->upload->do_upload('catIcon')) {
+                $error = array('error' => $this->upload->display_errors());
+                // die(print_r($error));
+                $this->session->set_flashdata('error', $error['error']);
+                redirect(base_url('show-super-category'));
+            } else {
+                $uploadData = $this->upload->data();
+                $personImage = $uploadData['file_name'];
+            }
+        }
+        $data = array(
+            'web_catName' => $superCatName,
+            'web_catDesp' => $superCatDesp,
+            'web_catIcon' => $personImage,
+        );
+        $this->generic->Update('web_cat', array('web_catID' => $catID), $data);
+        $this->session->set_flashdata('success-edited', 'Person deleted successfully!');
+        redirect(base_url('show-super-category'));
+    }
 }
