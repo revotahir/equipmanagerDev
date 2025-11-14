@@ -124,12 +124,21 @@ $route['delete-project/:any'] = 'project/DeletProject';
 
 //super admin
 $route['admin-dashboard'] = 'superadmin/superadmindashboard';
+// manage super category
 $route['manage-super-category'] = 'superadmin/ManageSuperCategory';
 $route['add-super-category'] = 'superadmin/addSuperCategory';
 $route['show-super-category'] = 'superadmin/showSuperCategory';
 $route['delet-cat/:any'] = 'superadmin/deletCategory';
-$route['update-cate/:any'] = 'superadmin/UpdateSuperCategory';
-$route['process-update-cat'] = 'superadmin/ProcessUpdateCategory';
+$route['update-cate/:any'] = 'superadmin/updateSuperCategory';
+$route['process-update-cat'] = 'superadmin/processUpdateCategory';
+//super testimonial
+$route['manage-super-testimonial'] = 'superadmin/ManageSuperTestimonial';
+$route['add-testimoni'] = 'superadmin/AddTestimonial';
+$route['delet-testmoni/:any'] = 'superadmin/deleteTestimonial';
+$route['update-testmoni/:any'] = 'superadmin/updateTestimonial';
+$route['process-update-testi/:any'] = 'superadmin/processUpdateTestimonial';
+
+
 
 $route['login-data'] = 'welcome/LoginData';
 

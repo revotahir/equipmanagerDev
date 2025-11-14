@@ -52,7 +52,7 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Testimonial</a>
+                          <a href="<?= base_url('manage-super-testimonial') ?>"><i class="bi bi-arrow-right-short"></i>Add Testimonial</a>
                       </li>
                   </ul>
               </li>

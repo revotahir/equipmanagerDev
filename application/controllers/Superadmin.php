@@ -39,12 +39,13 @@ class superadmin extends MY_Controller
     }
 
 
-    // manage super category
+    // manage super category page load
     public function ManageSuperCategory()
     {
         $this->load->view('superadmin/category/managecategory');
     }
 
+    // add category
     public function addSuperCategory()
     {
         $superCatName = $this->input->post('catName');
@@ -81,6 +82,7 @@ class superadmin extends MY_Controller
         redirect(base_url('show-super-category'));
     }
 
+    // show super category
     public function showSuperCategory()
     {
         // Get data from database
@@ -88,6 +90,7 @@ class superadmin extends MY_Controller
         $this->load->view('superadmin/category/showcategory', $this->data);
     }
 
+    // delete category
     public function deletCategory()
     {
         // Delete category from database
@@ -96,7 +99,8 @@ class superadmin extends MY_Controller
         redirect(base_url('show-super-category'));
     }
 
-    public function UpdateSuperCategory()
+    // update category
+    public function updateSuperCategory()
     {
         // Get category data
         $this->data['updateCategory'] = $this->generic->GetData('web_cat', array('web_catID' => $this->uri->segment(2)));
@@ -104,7 +108,8 @@ class superadmin extends MY_Controller
         $this->load->view('superadmin/category/updatecategory', $this->data);
     }
 
-    public function ProcessUpdateCategory()
+    // process update category
+    public function processUpdateCategory()
     {
         $catID = $this->input->post('catID');
         $superCatName = $this->input->post('catName');
@@ -117,7 +122,7 @@ class superadmin extends MY_Controller
             //upload person image
             $config['upload_path']          = './assets/uploads/superadmin/category';
             $config['allowed_types']        = 'svg';
-            $config['max_size']             = 1024;
+            $config['max_size']             = 300;
             $config['encrypt_name']         = TRUE;
             $this->load->library('upload', $config);
             if (! $this->upload->do_upload('catIcon')) {
@@ -138,5 +143,113 @@ class superadmin extends MY_Controller
         $this->generic->Update('web_cat', array('web_catID' => $catID), $data);
         $this->session->set_flashdata('success-edited', 'Person deleted successfully!');
         redirect(base_url('show-super-category'));
+    }
+
+
+    // manage super testimonial page load
+    public function ManageSuperTestimonial()
+    {
+        $this->data['showtestimonialdata'] = $this->generic->GetData('web_testimonial', array(), 'web_testimonialID', 'DESC');
+        $this->load->view('superadmin/testimonial/supertestimonial', $this->data);
+    }
+
+    // add testimonial
+    public function AddTestimonial()
+    {
+        $testiRating = $this->input->post('testiRating');
+        $testiReview = $this->input->post('testiReview');
+        $testiName = $this->input->post('testiName');
+        $testiLocation = $this->input->post('testiLocation');
+
+        //check if we have image posted
+        if (empty($_FILES['testiImage']['name'])) {
+            $personImage = 'testimonial.svg';
+        } else {
+            //upload person image
+            $config['upload_path']          = './assets/uploads/superadmin/testimonial';
+            $config['allowed_types']        = 'svg|png|jpg|jpeg';
+            $config['max_size']             = 500;
+            $config['encrypt_name']         = TRUE;
+            $this->load->library('upload', $config);
+            if (! $this->upload->do_upload('testiImage')) {
+                $error = array('error' => $this->upload->display_errors());
+                // die(print_r($error));
+                $this->session->set_flashdata('error', $error['error']);
+                redirect(base_url('manage-super-testimonial'));
+            } else {
+                $uploadData = $this->upload->data();
+                $personImage = $uploadData['file_name'];
+            }
+        }
+        $data = array(
+            'web_testimonialRating' => $testiRating,
+            'web_testimonialDesp' => $testiReview,
+            'web_testimonialName' => $testiName,
+            'web_testimonialLocation' => $testiLocation,
+            'web_testimonialImg' => $personImage,
+            'web_testimonialStatus' => 1,
+        );
+        $this->generic->InsertData('web_testimonial', $data);
+        $this->session->set_flashdata('success', 'Person deleted successfully!');
+        redirect(base_url('manage-super-testimonial'));
+    }
+
+    // delete testimonial
+    public function deleteTestimonial()
+    {
+        // Delete testimonial from database
+        $this->generic->Delete('web_testimonial', array('web_testimonialID' => $this->uri->segment(2)));
+        $this->session->set_flashdata('successDeleted', 'Testimonial deleted successfully!');
+        redirect(base_url('manage-super-testimonial'));
+    }
+
+    // update testimonial
+    public function updateTestimonial()
+    {
+        // Get testimonial data
+        $this->data['testimonialData'] = $this->generic->GetData('web_testimonial', array('web_testimonialID' => $this->uri->segment(2)));
+        // Load view
+        $this->load->view('superadmin/testimonial/updatetestimonial', $this->data);
+    }
+
+    // process update testimonial
+    public function processUpdateTestimonial()
+    {
+        $testiID = $this->uri->segment(2);
+        $testiRating = $this->input->post('testiRating');
+        $testiReview = $this->input->post('testiReview');
+        $testiName = $this->input->post('testiName');
+        $testiLocation = $this->input->post('testiLocation');
+
+        //check if we have image posted
+        if (empty($_FILES['testiImage']['name'])) {
+            $personImage = 'testimonial.svg';
+        } else {
+            //upload person image
+            $config['upload_path']          = './assets/uploads/superadmin/testimonial';
+            $config['allowed_types']        = 'svg|png|jpg|jpeg';
+            $config['max_size']             = 500;
+            $config['encrypt_name']         = TRUE;
+            $this->load->library('upload', $config);
+            if (! $this->upload->do_upload('testiImage')) {
+                $error = array('error' => $this->upload->display_errors());
+                // die(print_r($error));
+                $this->session->set_flashdata('error', $error['error']);
+                redirect(base_url('manage-super-testimonial'));
+            } else {
+                $uploadData = $this->upload->data();
+                $personImage = $uploadData['file_name'];
+            }
+        }
+        $data = array(
+            'web_testimonialRating' => $testiRating,
+            'web_testimonialDesp' => $testiReview,
+            'web_testimonialName' => $testiName,
+            'web_testimonialLocation' => $testiLocation,
+            'web_testimonialImg' => $personImage,
+        );
+        $this->generic->Update('web_testimonial', array('web_testimonialID' => $testiID), $data);
+        $this->session->set_flashdata('success-edited', 'Person deleted successfully!');
+        redirect(base_url('manage-super-testimonial'));
     }
 }

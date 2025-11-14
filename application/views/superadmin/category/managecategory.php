@@ -81,6 +81,9 @@
                                                 name="catIcon"
                                                 required
                                                 placeholder="Enter Category Name" />
+                                            <div class="mt-2 text-muted">
+                                                <small>Acceptable image formats SVG Max Size 300KB</small>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
