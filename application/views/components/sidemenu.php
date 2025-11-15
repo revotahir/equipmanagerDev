@@ -104,7 +104,7 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Company Partners</a>
+                          <a href="<?= base_url('manage-company') ?>"><i class="bi bi-arrow-right-short"></i>Add Company Partners</a>
                       </li>
                   </ul>
               </li>

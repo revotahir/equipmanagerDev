@@ -421,7 +421,7 @@ class superadmin extends MY_Controller
     public function deleteSuccess()
     {
         $this->generic->Delete('web_success', array('web_successID' => $this->uri->segment(2)));
-        $this->session->set_flashdata('success-delete', 'Metrics added successfully!');
+        $this->session->set_flashdata('success-delete', 'Metrics Deleted!');
         redirect(base_url('manage-success'));
     }
 
@@ -469,5 +469,52 @@ class superadmin extends MY_Controller
         $this->generic->Update('web_success', array('web_successID' => $sucesID), $data);
         $this->session->set_flashdata('success-update', 'Metrics added successfully!');
         redirect(base_url('manage-success'));
+    }
+
+    // company page load
+    public function manageCompany()
+    {
+        $this->data['companyData'] = $this->generic->GetData('web_company', array(), 'web_companyID', 'DESC');
+        $this->load->view('superadmin/partners/managepartners', $this->data);
+    }
+
+    // add partner
+    public function addPartner()
+    {
+        //check if we have image posted
+        if (empty($_FILES['sucesIcon']['name'])) {
+            $partnerIcon = 'partner.svg';
+        } else {
+            //upload person image
+            $config['upload_path']          = './assets/uploads/superadmin/partner';
+            $config['allowed_types']        = 'svg';
+            $config['max_size']             = 300;
+            $config['encrypt_name']         = TRUE;
+            $this->load->library('upload', $config);
+            if (! $this->upload->do_upload('sucesIcon')) {
+                $error = array('error' => $this->upload->display_errors());
+                $this->session->set_flashdata('error', $error['error']);
+                redirect(base_url('manage-company'));
+            } else {
+                $uploadData = $this->upload->data();
+                $partnerIcon = $uploadData['file_name'];
+            }
+        }
+
+        $data = array(
+            'web_companyIcon' => $partnerIcon,
+            'web_companyStatus' => 1,
+        );
+        $this->generic->InsertData('web_company', $data);
+        $this->session->set_flashdata('success', 'Partner added successfully!');
+        redirect(base_url('manage-company'));
+    }
+
+    // delete partner
+    public function deletePartner()
+    {
+        $this->generic->Delete('web_company', array('web_companyID' => $this->uri->segment(2)));
+        $this->session->set_flashdata('success-delete', 'Partner Deleted!');
+        redirect(base_url('manage-company'));
     }
 }

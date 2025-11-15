@@ -150,6 +150,11 @@ $route['add-success'] = 'superadmin/addSuccess';
 $route['delet-metrics/:any'] = 'superadmin/deleteSuccess';
 $route['update-success/:any'] = 'superadmin/updateSuccess';
 $route['process-update-success/:any'] = 'superadmin/processUpdateSuccess';
+// company partner
+$route['manage-company'] = 'superadmin/manageCompany';
+$route['add-partner'] = 'superadmin/addPartner';
+$route['delet-partner/:any'] = 'superadmin/deletePartner';
+
 
 $route['login-data'] = 'welcome/LoginData';
 
