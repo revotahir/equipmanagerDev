@@ -137,8 +137,12 @@ $route['add-testimoni'] = 'superadmin/AddTestimonial';
 $route['delet-testmoni/:any'] = 'superadmin/deleteTestimonial';
 $route['update-testmoni/:any'] = 'superadmin/updateTestimonial';
 $route['process-update-testi/:any'] = 'superadmin/processUpdateTestimonial';
-
-
+// super blog
+$route['manage-super-blog'] = 'superadmin/ManageSuperBlog';
+$route['add-blog'] = 'superadmin/addSuperBlog';
+$route['show-super-blog'] = 'superadmin/showSuperBlog';
+$route['dlet-blog/:any'] = 'superadmin/deletSuperBlog';
+$route['update-blog/:any'] = 'superadmin/updateSuperBlog';
 
 $route['login-data'] = 'welcome/LoginData';
 

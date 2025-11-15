@@ -139,7 +139,7 @@
                                                     name="testiName"
                                                     required
                                                     value="<?= $testiData['web_testimonialName'] ?>"
-                                                    placeholder="Enter Category Name" />
+                                                    placeholder="Enter Client Name" />
                                             </div>
                                         </div>
                                         <div class="row mb-3">
@@ -154,7 +154,7 @@
                                                     name="testiLocation"
                                                     required
                                                     value="<?= $testiData['web_testimonialLocation'] ?>"
-                                                    placeholder="Enter Category Name" />
+                                                    placeholder="Enter User Location" />
                                             </div>
                                         </div>
 

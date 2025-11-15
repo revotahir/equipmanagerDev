@@ -1,7 +1,7 @@
 /*
-Template Name: Skodash Admin
-Author: codervent
-Email: codervent@gmail.com
+Developer Name:  Muhammad Hamza
+Author: Hamza
+Email: Muhammadhamza.webdev@gmail.com
 File: style.css
 */
 /* 
@@ -2064,15 +2064,15 @@ a {
 	cursor: pointer;
 	position: absolute;
 	top: 1px;
-    right: 5px;
-    width: 35px;
-    height: 35px;
+	right: 5px;
+	width: 35px;
+	height: 35px;
 }
 
 .card-img-top-main {
 	width: 100%;
 	height: 200px !important;
-    object-fit: contain !important;
+	object-fit: contain !important;
 }
 
 /* ----------------- */

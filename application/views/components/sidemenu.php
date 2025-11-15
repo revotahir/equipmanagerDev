@@ -68,7 +68,10 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Blog</a>
+                          <a href="<?= base_url('manage-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>Add Blog</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('show-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>See Blog</a>
                       </li>
                   </ul>
               </li>

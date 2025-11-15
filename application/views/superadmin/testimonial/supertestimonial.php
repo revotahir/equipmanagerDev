@@ -102,8 +102,7 @@
                                                 type="file"
                                                 class="form-control"
                                                 id="testiImage"
-                                                name="testiImage"
-                                                placeholder="Enter Category Name" />
+                                                name="testiImage" />
                                             <div class="mt-2 text-muted">
                                                 <small>Acceptable image formats JPG, JPEG, PNG, SVG Max Size 500KB</small>
                                             </div>
@@ -120,7 +119,7 @@
                                                 id="testiName"
                                                 name="testiName"
                                                 required
-                                                placeholder="Enter Category Name" />
+                                                placeholder="Enter Client Name" />
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -134,7 +133,7 @@
                                                 id="testiLocation"
                                                 name="testiLocation"
                                                 required
-                                                placeholder="Enter Category Name" />
+                                                placeholder="Enter User Location" />
                                         </div>
                                     </div>
 

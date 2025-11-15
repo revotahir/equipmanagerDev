@@ -39,7 +39,7 @@
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
 
-    <title>Manage Category</title>
+    <title>Add Blog</title>
 </head>
 
 <body>
@@ -53,64 +53,96 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Super Category Management
+                    Blog Management
                 </div>
             </div>
             <!--end breadcrumb-->
-
             <div class="row">
                 <div class="col-xl-12 mx-auto">
                     <div class="card">
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Add Super Category</h5>
+                                    <h5 class="mb-0">Add Blog</h5>
                                 </div>
                                 <hr />
-                                <form action="<?= base_url('add-super-category') ?>" method="post" enctype="multipart/form-data">
-
+                                <form action="<?= base_url('add-blog') ?>" method="post" enctype="multipart/form-data">
                                     <div class="row mb-3">
                                         <label
-                                            for="catIcon"
-                                            class="col-sm-3 col-form-label">Upload Icon</label>
+                                            for="blogImage"
+                                            class="col-sm-3 col-form-label">Upload Image</label>
                                         <div class="col-sm-9">
                                             <input
                                                 type="file"
                                                 class="form-control"
-                                                id="catIcon"
-                                                name="catIcon"
-                                                required />
+                                                id="blogImage"
+                                                name="blogImage" />
                                             <div class="mt-2 text-muted">
-                                                <small>Acceptable image formats SVG Max Size 300KB</small>
+                                                <small>Acceptable image formats JPG, JPEG, PNG, Max Size 1024KB</small>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
+                                        <label for="blogCate" class="col-sm-3 col-form-label">Select Blog Category</label>
+                                        <div class="col-sm-9">
+                                            <select name="blogCate" id="blogCate" class="form-control">
+                                                <option value="">Select Category</option>
+                                                <option value="manufacturing">Manufacturing</option>
+                                                <option value="industry">Industry</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
                                         <label
-                                            for="catName"
-                                            class="col-sm-3 col-form-label">Category Name</label>
+                                            for="blogDate"
+                                            class="col-sm-3 col-form-label">Date</label>
+                                        <div class="col-sm-9">
+                                            <input
+                                                type="date"
+                                                class="form-control"
+                                                id="blogDate"
+                                                name="blogDate"
+                                                required />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="blogTitle"
+                                            class="col-sm-3 col-form-label">Title</label>
                                         <div class="col-sm-9">
                                             <input
                                                 type="text"
                                                 class="form-control"
-                                                id="catName"
-                                                name="catName"
+                                                id="blogTitle"
+                                                name="blogTitle"
                                                 required
-                                                placeholder="Enter Category Name" />
+                                                placeholder="Enter Title" />
                                         </div>
                                     </div>
                                     <div class="row mb-3">
-                                        <label for="catDesc" class="col-sm-3 col-form-label">Description</label>
+                                        <label for="blogDesp" class="col-sm-3 col-form-label">Blog Description</label>
                                         <div class="col-sm-9">
                                             <textarea
                                                 class="form-control"
-                                                id="catDesc"
-                                                name="catDesc"
+                                                id="blogDesp"
+                                                name="blogDesp"
                                                 rows="3"
                                                 required
-                                                placeholder="Write Description"></textarea>
+                                                placeholder="Write Blog Description"></textarea>
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <label for="blogDespSec" class="col-sm-3 col-form-label">Blog Description (optional)</label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="blogDespSec"
+                                                name="blogDespSec"
+                                                rows="3"
+                                                placeholder="Write Blog Description"></textarea>
+                                        </div>
+                                    </div>
+
 
                                     <div class="row">
                                         <label class="col-sm-3 col-form-label"></label>
@@ -118,7 +150,7 @@
                                             <button
                                                 type="submit"
                                                 class="btn btn-primary px-5 btn-clash">
-                                                Add Category
+                                                Add Blog
                                             </button>
                                         </div>
                                     </div>
@@ -129,6 +161,7 @@
                 </div>
             </div>
             <!--end row-->
+
         </main>
         <!--end page main-->
 
