@@ -517,4 +517,44 @@ class superadmin extends MY_Controller
         $this->session->set_flashdata('success-delete', 'Partner Deleted!');
         redirect(base_url('manage-company'));
     }
+
+    // update parnter
+    public function updatePartner()
+    {
+        $this->data['partnerdata'] = $this->generic->GetData('web_company', array('web_companyID' => $this->uri->segment(2)));
+        $this->load->view('superadmin/partners/updatemanagepartners', $this->data);
+    }
+
+    // process update partner
+    public function processUpdatePartner()
+    {
+        $prntID = $this->uri->segment(2);
+        //check if we have image posted
+        if (empty($_FILES['sucesIcon']['name'])) {
+            $partnerIcon = 'partner.svg';
+        } else {
+            //upload person image
+            $config['upload_path']          = './assets/uploads/superadmin/partner';
+            $config['allowed_types']        = 'svg';
+            $config['max_size']             = 300;
+            $config['encrypt_name']         = TRUE;
+            $this->load->library('upload', $config);
+            if (! $this->upload->do_upload('sucesIcon')) {
+                $error = array('error' => $this->upload->display_errors());
+                $this->session->set_flashdata('error', $error['error']);
+                redirect(base_url('manage-company'));
+            } else {
+                $uploadData = $this->upload->data();
+                $partnerIcon = $uploadData['file_name'];
+            }
+        }
+
+        $data = array(
+            'web_companyIcon' => $partnerIcon,
+            'web_companyStatus' => 1,
+        );
+        $this->generic->Update('web_company', array('web_companyID' => $prntID), $data);
+        $this->session->set_flashdata('success-update', 'Partner added successfully!');
+        redirect(base_url('manage-company'));
+    }
 }

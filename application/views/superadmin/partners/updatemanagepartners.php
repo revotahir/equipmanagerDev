@@ -39,7 +39,7 @@
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
 
-    <title>Company Partners</title>
+    <title>Update Partners</title>
 </head>
 
 <body>
@@ -53,7 +53,7 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Company Partners Management
+                    Company Partner Management
                 </div>
             </div>
             <!--end breadcrumb-->
@@ -63,101 +63,52 @@
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Add Company Partners</h5>
+                                    <h5 class="mb-0">Update Company Partners</h5>
                                 </div>
                                 <hr />
-                                <form action="<?= base_url('add-partner') ?>" method="post" enctype="multipart/form-data">
-                                    <div class="row mb-3">
-                                        <label
-                                            for="sucesIcon"
-                                            class="col-sm-3 col-form-label">Upload Icon</label>
-                                        <div class="col-sm-9">
-                                            <input
-                                                type="file"
-                                                class="form-control"
-                                                id="sucesIcon"
-                                                name="sucesIcon" />
-                                            <div class="mt-2 text-muted">
-                                                <small>Acceptable image formats SVG Max Size 300KB</small>
+                                <?php foreach ($partnerdata as $prntData) { ?>
+                                    <form action="<?= base_url('process-update-partner/' . $prntData['web_companyID']) ?>" method="post" enctype="multipart/form-data">
+                                        <div class="row mb-3">
+                                            <label
+                                                for="sucesIcon"
+                                                class="col-sm-3 col-form-label">Upload Icon</label>
+                                            <div class="col-sm-9">
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    id="sucesIcon"
+                                                    name="sucesIcon" />
+                                                <div class="mt-2 text-muted">
+                                                    <small>Acceptable image formats SVG Max Size 300KB</small>
+                                                </div>
+                                                <!-- Show current icon -->
+                                                <?php if (!empty($prntData['web_companyIcon'])) { ?>
+                                                    <div class="mt-2 bg-dark-green">
+                                                        <small>Current Icon:</small>
+                                                        <img src="<?= base_url('assets/uploads/superadmin/partner/' . $prntData['web_companyIcon']) ?>" alt="icon" style="width: 50px; height: 50px; object-fit:cover" class="ms-2">
+                                                    </div>
+                                                <?php } ?>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <label class="col-sm-3 col-form-label"></label>
-                                        <div class="col-sm-9">
-                                            <button
-                                                type="submit"
-                                                class="btn btn-primary px-5 btn-clash">
-                                                Add Partners
-                                            </button>
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label"></label>
+                                            <div class="col-sm-9">
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-primary px-5 btn-clash">
+                                                    Update Partners
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                <?php
+                                } ?>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!--end row-->
-
-
-
-            <!--end breadcrumb-->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="mb-0">Manage Company Partners</h5>
-                    <div class="table-responsive mt-3">
-                        <table class="table align-middle">
-                            <thead class="table-secondary bg-sky-blue font-clash-green">
-                                <tr>
-                                    <th>Company Partners Icon</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                if (!empty($companyData)) {
-                                    foreach ($companyData as $compData) {
-                                ?>
-                                        <tr>
-                                            <td class="bg-dark-green">
-                                                <img src="<?= base_url('assets/uploads/superadmin/partner/' . $compData['web_companyIcon']) ?>" alt="icon"
-                                                    style="width: 30px; height: 30px; object-fit:cover" />
-                                            </td>
-                                            <td><?= ($compData['web_companyStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
-                                            <td>
-                                                <a href="<?= base_url('update-partner/' . $compData['web_companyID']) ?>" class="text-warning ms-2"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom"
-                                                    title="Edit">
-                                                    <i class="bi bi-pencil-fill"></i>
-                                                </a>
-                                                <a href="<?= base_url('delet-partner/' . $compData['web_companyID']) ?>"
-                                                    class="text-danger ms-2"
-                                                    onclick="return confirm('Are you sure you want to delete this Metrics?');"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom"
-                                                    title="Delete">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <?php
-                                    }
-                                } else {
-                                    ?>
-                                    <tr>
-                                        <td colspan="3" class="text-center">No Partners Added Yet!</td>
-                                    </tr>
-                                <?php
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
         </main>
         <!--end page main-->

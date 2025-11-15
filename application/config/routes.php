@@ -154,6 +154,8 @@ $route['process-update-success/:any'] = 'superadmin/processUpdateSuccess';
 $route['manage-company'] = 'superadmin/manageCompany';
 $route['add-partner'] = 'superadmin/addPartner';
 $route['delet-partner/:any'] = 'superadmin/deletePartner';
+$route['update-partner/:any'] = 'superadmin/updatePartner';
+$route['process-update-partner/:any'] = 'superadmin/processUpdatePartner';
 
 
 $route['login-data'] = 'welcome/LoginData';
