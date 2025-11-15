@@ -87,7 +87,7 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Success Metrics</a>
+                          <a href="<?= base_url('manage-success') ?>"><i class="bi bi-arrow-right-short"></i>Add Success Metrics</a>
                       </li>
                   </ul>
               </li>
