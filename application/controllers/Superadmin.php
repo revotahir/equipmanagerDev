@@ -318,4 +318,56 @@ class superadmin extends MY_Controller
         redirect(base_url('show-super-blog'));
     }
 
+    // update blog
+    public function updateSuperBlog()
+    {
+        // Get blog data
+        $this->data['blogData'] = $this->generic->GetData('web_blogs', array('web_blogID' => $this->uri->segment(2)));
+        // Load view
+        $this->load->view('superadmin/blog/updateblog', $this->data);
+    }
+
+    // process blog update
+    public function processUpdateBlog()
+    {
+        $blogID = $this->uri->segment(2);
+        $blogCate = $this->input->post('blogCate');
+        $blogDate = $this->input->post('blogDate');
+        $blogTitle = $this->input->post('blogTitle');
+        $blogDesp = $this->input->post('blogDesp');
+        $blogDespSec = $this->input->post('blogDespSec');
+
+        //check if we have image posted
+        if (empty($_FILES['blogImage']['name'])) {
+            $blogImage = 'testimonial.svg';
+        } else {
+            //upload person image
+            $config['upload_path']          = './assets/uploads/superadmin/blog';
+            $config['allowed_types']        = 'png|jpg|jpeg';
+            $config['max_size']             = 1024;
+            $config['encrypt_name']         = TRUE;
+            $this->load->library('upload', $config);
+            if (! $this->upload->do_upload('blogImage')) {
+                $error = array('error' => $this->upload->display_errors());
+                // die(print_r($error));
+                $this->session->set_flashdata('error', $error['error']);
+                redirect(base_url('add-blog'));
+            } else {
+                $uploadData = $this->upload->data();
+                $blogImage = $uploadData['file_name'];
+            }
+        }
+        $data = array(
+            'web_blogCat' => $blogCate,
+            'web_blogDate' => $blogDate,
+            'web_blogTitle' => $blogTitle,
+            'web_blogDesp' => $blogDesp,
+            'web_blogDespSec' => $blogDespSec,
+            'web_blogImg' => $blogImage,
+            'web_blogStatus' => 1,
+        );
+        $this->generic->Update('web_blogs', array('web_blogID' => $blogID), $data);
+        $this->session->set_flashdata('success', 'Person deleted successfully!');
+        redirect(base_url('show-super-blog'));
+    }
 }

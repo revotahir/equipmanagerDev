@@ -143,6 +143,7 @@ $route['add-blog'] = 'superadmin/addSuperBlog';
 $route['show-super-blog'] = 'superadmin/showSuperBlog';
 $route['dlet-blog/:any'] = 'superadmin/deletSuperBlog';
 $route['update-blog/:any'] = 'superadmin/updateSuperBlog';
+$route['process-update-blog/:any'] = 'superadmin/processUpdateBlog';
 
 $route['login-data'] = 'welcome/LoginData';
 

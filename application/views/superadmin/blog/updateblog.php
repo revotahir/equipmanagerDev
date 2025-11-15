@@ -38,7 +38,8 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-    <title>Update Category</title>
+
+    <title>Update Blog</title>
     <style>
         .bg-dark-green img {
             background-color: #0b2523 !important;
@@ -58,73 +59,127 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Super Category Update
+                    Blog Management
                 </div>
             </div>
             <!--end breadcrumb-->
-
             <div class="row">
                 <div class="col-xl-12 mx-auto">
                     <div class="card">
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Update Super Category</h5>
+                                    <h5 class="mb-0">Update Blog</h5>
                                 </div>
                                 <hr />
-                                <?php foreach ($updateCategory as $catdata) { ?>
-                                    <form action="<?= base_url('process-update-cat') ?>" method="post" enctype="multipart/form-data">
-                                        <input type="hidden" name="catID" value="<?= $catdata['web_catID'] ?>">
-
+                                <?php foreach ($blogData as $blgData) { ?>
+                                    <form action="<?= base_url('process-update-blog/' . $blgData['web_blogID']) ?>" method="post" enctype="multipart/form-data">
                                         <div class="row mb-3">
-                                            <label for="catIcon" class="col-sm-3 col-form-label">Upload Icon</label>
+                                            <label
+                                                for="blogImage"
+                                                class="col-sm-3 col-form-label">Upload Image</label>
                                             <div class="col-sm-9">
-                                                <input type="file" class="form-control" id="catIcon" name="catIcon" />
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    id="blogImage"
+                                                    name="blogImage" />
+                                                <div class="mt-2 text-muted">
+                                                    <small>Acceptable image formats JPG, JPEG, PNG, Max Size 1024KB</small>
+                                                </div>
                                                 <!-- Show current icon -->
-                                                <?php if (!empty($catdata['web_catIcon'])) { ?>
+                                                <?php if (!empty($blgData['web_blogImg'])) { ?>
                                                     <div class="mt-2 bg-dark-green">
                                                         <small>Current Icon:</small>
-                                                        <img src="<?= base_url('assets/uploads/superadmin/category/' . $catdata['web_catIcon']) ?>" alt="icon" width="30" height="30" class="ms-2">
+                                                        <img src="<?= base_url('assets/uploads/superadmin/blog/' . $blgData['web_blogImg']) ?>" alt="icon" style="width: 50px; height: 50px; object-fit:cover" class="ms-2">
                                                     </div>
                                                 <?php } ?>
                                             </div>
                                         </div>
-
                                         <div class="row mb-3">
-                                            <label for="catName" class="col-sm-3 col-form-label">Category Name</label>
+                                            <label for="blogCate" class="col-sm-3 col-form-label">Select Blog Category</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="catName" name="catName" required value="<?= $catdata['web_catName'] ?>" placeholder="Enter Category Name" />
+                                                <select name="blogCate" id="blogCate" class="form-control">
+                                                    <option value="">Select Category</option>
+                                                    <option value="manufacturing" <?= isset($blgData['web_blogCat']) && $blgData['web_blogCat'] == 'manufacturing' ? 'selected' : '' ?>>Manufacturing</option>
+                                                    <option value="industry" <?= isset($blgData['web_blogCat']) && $blgData['web_blogCat'] == 'industry' ? 'selected' : '' ?>>Industry</option>
+                                                </select>
                                             </div>
                                         </div>
-
                                         <div class="row mb-3">
-                                            <label for="catDesc" class="col-sm-3 col-form-label">Description</label>
+                                            <label
+                                                for="blogDate"
+                                                class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <input
+                                                    type="date"
+                                                    class="form-control"
+                                                    id="blogDate"
+                                                    name="blogDate"
+                                                    value="<?= $blgData['web_blogDate'] ?? '' ?>"
+                                                    required />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label
+                                                for="blogTitle"
+                                                class="col-sm-3 col-form-label">Title</label>
+                                            <div class="col-sm-9">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="blogTitle"
+                                                    name="blogTitle"
+                                                    required
+                                                    value="<?= $blgData['web_blogTitle'] ?>"
+                                                    placeholder="Enter Title" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="blogDesp" class="col-sm-3 col-form-label">Blog Description</label>
                                             <div class="col-sm-9">
                                                 <textarea
                                                     class="form-control"
-                                                    id="catDesc"
-                                                    name="catDesc"
+                                                    id="blogDesp"
+                                                    name="blogDesp"
                                                     rows="3"
-                                                    required placeholder="Write Description"><?= $catdata['web_catDesp'] ?></textarea>
+                                                    required
+                                                    placeholder="Write Blog Description"><?= $blgData['web_blogDesp'] ?></textarea>
                                             </div>
                                         </div>
+                                        <div class="row mb-3">
+                                            <label for="blogDespSec" class="col-sm-3 col-form-label">Blog Description (optional)</label>
+                                            <div class="col-sm-9">
+                                                <textarea
+                                                    class="form-control"
+                                                    id="blogDespSec"
+                                                    name="blogDespSec"
+                                                    rows="3"
+                                                    placeholder="Write Blog Description"><?= $blgData['web_blogDesp'] ?></textarea>
+                                            </div>
+                                        </div>
+
 
                                         <div class="row">
                                             <label class="col-sm-3 col-form-label"></label>
                                             <div class="col-sm-9">
-                                                <button type="submit" class="btn btn-primary px-5 btn-clash">
-                                                    Update Category
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-primary px-5 btn-clash">
+                                                    Update Blog
                                                 </button>
                                             </div>
                                         </div>
                                     </form>
-                                <?php } ?>
+                                <?php
+                                } ?>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!--end row-->
+
         </main>
         <!--end page main-->
 

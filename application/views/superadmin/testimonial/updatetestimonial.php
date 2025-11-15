@@ -100,7 +100,7 @@
                                                     name="testiReview"
                                                     rows="3"
                                                     required
-                                                    placeholder="Write User Review"><?= htmlspecialchars($testiData['web_testimonialDesp'] ?? '') ?></textarea>
+                                                    placeholder="Write User Review"><?= $testiData['web_testimonialDesp'] ?></textarea>
                                             </div>
                                         </div>
                                         <div class="row mb-3">
