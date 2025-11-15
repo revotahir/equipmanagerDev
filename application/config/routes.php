@@ -147,7 +147,9 @@ $route['process-update-blog/:any'] = 'superadmin/processUpdateBlog';
 // success metrics
 $route['manage-success'] = 'superadmin/manageSuccess';
 $route['add-success'] = 'superadmin/addSuccess';
-
+$route['delet-metrics/:any'] = 'superadmin/deleteSuccess';
+$route['update-success/:any'] = 'superadmin/updateSuccess';
+$route['process-update-success/:any'] = 'superadmin/processUpdateSuccess';
 
 $route['login-data'] = 'welcome/LoginData';
 

@@ -374,7 +374,9 @@ class superadmin extends MY_Controller
     // manage super success metrics page load
     public function manageSuccess()
     {
-        $this->load->view('superadmin/success/managesuccess');
+        // get data from database
+        $this->data['successData'] = $this->generic->GetData('web_success', array(), 'web_successID', 'DESC');
+        $this->load->view('superadmin/success/managesuccess', $this->data);
     }
 
     // add success
@@ -402,15 +404,70 @@ class superadmin extends MY_Controller
                 $uploadData = $this->upload->data();
                 $successIcon = $uploadData['file_name'];
             }
-            $data = array(
-                'web_successIcon' => $successIcon,
-                'web_successName' => $sucesTitle,
-                'web_successDes' => $sucesDesp,
-                'web_successStatus' => 1,
-            );
-            $this->generic->InsertData('web_success', $data);
-            $this->session->set_flashdata('success', 'Metrics added successfully!');
-            redirect(base_url('manage-success'));
         }
+
+        $data = array(
+            'web_successIcon' => $successIcon,
+            'web_successName' => $sucesTitle,
+            'web_successDes' => $sucesDesp,
+            'web_successStatus' => 1,
+        );
+        $this->generic->InsertData('web_success', $data);
+        $this->session->set_flashdata('success', 'Metrics added successfully!');
+        redirect(base_url('manage-success'));
+    }
+
+    // delete success
+    public function deleteSuccess()
+    {
+        $this->generic->Delete('web_success', array('web_successID' => $this->uri->segment(2)));
+        $this->session->set_flashdata('success-delete', 'Metrics added successfully!');
+        redirect(base_url('manage-success'));
+    }
+
+    // update success page laod
+    public function updateSuccess()
+    {
+        $this->data['successData'] = $this->generic->GetData('web_success', array('web_successID' => $this->uri->segment(2)));
+        $this->load->view('superadmin/success/updatemanagesuccess', $this->data);
+    }
+
+    // process update success
+    public function processUpdateSuccess()
+    {
+        $sucesID = $this->uri->segment(2);
+        $sucesTitle = $this->input->post('sucesTitle');
+        $sucesDesp = $this->input->post('sucesDesp');
+
+        //check if we have image posted
+        if (empty($_FILES['sucesIcon']['name'])) {
+            $successIcon = 'metrics.svg';
+        } else {
+            //upload person image
+            $config['upload_path']          = './assets/uploads/superadmin/success-metrics';
+            $config['allowed_types']        = 'svg';
+            $config['max_size']             = 300;
+            $config['encrypt_name']         = TRUE;
+            $this->load->library('upload', $config);
+            if (! $this->upload->do_upload('sucesIcon')) {
+                $error = array('error' => $this->upload->display_errors());
+                // die(print_r($error));
+                $this->session->set_flashdata('error', $error['error']);
+                redirect(base_url('manage-success'));
+            } else {
+                $uploadData = $this->upload->data();
+                $successIcon = $uploadData['file_name'];
+            }
+        }
+
+        $data = array(
+            'web_successIcon' => $successIcon,
+            'web_successName' => $sucesTitle,
+            'web_successDes' => $sucesDesp,
+            'web_successStatus' => 1,
+        );
+        $this->generic->Update('web_success', array('web_successID' => $sucesID), $data);
+        $this->session->set_flashdata('success-update', 'Metrics added successfully!');
+        redirect(base_url('manage-success'));
     }
 }

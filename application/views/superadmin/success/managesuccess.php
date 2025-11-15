@@ -126,6 +126,69 @@
             </div>
             <!--end row-->
 
+
+
+            <!--end breadcrumb-->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-0">Manage Success Metrics</h5>
+                    <div class="table-responsive mt-3">
+                        <table class="table align-middle">
+                            <thead class="table-secondary bg-sky-blue font-clash-green">
+                                <tr>
+                                    <th>Metrics Icon</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                if (!empty($successData)) {
+                                    foreach ($successData as $sucesData) {
+                                ?>
+                                        <tr>
+                                            <td class="bg-dark-green">
+                                                <img src="<?= base_url('assets/uploads/superadmin/success-metrics/' . $sucesData['web_successIcon']) ?>" alt="icon"
+                                                    style="width: 30px; height: 30px; object-fit:cover" />
+                                            </td>
+                                            <td><?= $sucesData['web_successName'] ?></td>
+                                            <td><?= $sucesData['web_successDes'] ?></td>
+                                            <td><?= ($sucesData['web_successStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
+                                            <td>
+                                                <a href="<?= base_url('update-success/' . $sucesData['web_successID']) ?>" class="text-warning ms-2"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    title="Edit">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <a href="<?= base_url('delet-metrics/' . $sucesData['web_successID']) ?>"
+                                                    class="text-danger ms-2"
+                                                    onclick="return confirm('Are you sure you want to delete this Metrics?');"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    title="Delete">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    }
+                                } else {
+                                    ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center">No Metrics Added Yet!</td>
+                                    </tr>
+                                <?php
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </main>
         <!--end page main-->
 
@@ -154,6 +217,35 @@
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
 
+    <?php
+    if ($this->session->flashdata('success-update') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Metrics Updated!');
+        </script>
+    <?php
+    }
+    ?>
+
+    <?php
+    if ($this->session->flashdata('success-delete') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Metrics Deleted!');
+        </script>
+    <?php
+    }
+    ?>
     <?php
     if ($this->session->flashdata('success') != '') {
     ?>
