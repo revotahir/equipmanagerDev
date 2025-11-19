@@ -124,9 +124,38 @@ $route['delete-project/:any'] = 'project/DeletProject';
 
 //super admin
 $route['admin-dashboard'] = 'superadmin/superadmindashboard';
+// manage super category
 $route['manage-super-category'] = 'superadmin/ManageSuperCategory';
 $route['add-super-category'] = 'superadmin/addSuperCategory';
 $route['show-super-category'] = 'superadmin/showSuperCategory';
+$route['delet-cat/:any'] = 'superadmin/deletCategory';
+$route['update-cate/:any'] = 'superadmin/updateSuperCategory';
+$route['process-update-cat'] = 'superadmin/processUpdateCategory';
+//super testimonial
+$route['manage-super-testimonial'] = 'superadmin/ManageSuperTestimonial';
+$route['add-testimoni'] = 'superadmin/AddTestimonial';
+$route['delet-testmoni/:any'] = 'superadmin/deleteTestimonial';
+$route['update-testmoni/:any'] = 'superadmin/updateTestimonial';
+$route['process-update-testi/:any'] = 'superadmin/processUpdateTestimonial';
+// super blog
+$route['manage-super-blog'] = 'superadmin/ManageSuperBlog';
+$route['add-blog'] = 'superadmin/addSuperBlog';
+$route['show-super-blog'] = 'superadmin/showSuperBlog';
+$route['dlet-blog/:any'] = 'superadmin/deletSuperBlog';
+$route['update-blog/:any'] = 'superadmin/updateSuperBlog';
+$route['process-update-blog/:any'] = 'superadmin/processUpdateBlog';
+// success metrics
+$route['manage-success'] = 'superadmin/manageSuccess';
+$route['add-success'] = 'superadmin/addSuccess';
+$route['delet-metrics/:any'] = 'superadmin/deleteSuccess';
+$route['update-success/:any'] = 'superadmin/updateSuccess';
+$route['process-update-success/:any'] = 'superadmin/processUpdateSuccess';
+// company partner
+$route['manage-company'] = 'superadmin/manageCompany';
+$route['add-partner'] = 'superadmin/addPartner';
+$route['delet-partner/:any'] = 'superadmin/deletePartner';
+$route['update-partner/:any'] = 'superadmin/updatePartner';
+$route['process-update-partner/:any'] = 'superadmin/processUpdatePartner';
 
 
 $route['login-data'] = 'welcome/LoginData';

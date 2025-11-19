@@ -38,8 +38,13 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-
-    <title>Manage Category</title>
+    <title>Update Category</title>
+    <style>
+        .bg-dark-green img {
+            background-color: #0b2523 !important;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -53,7 +58,7 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Category Management
+                    Super Category Update
                 </div>
             </div>
             <!--end breadcrumb-->
@@ -64,63 +69,56 @@
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Add Equipment Category</h5>
+                                    <h5 class="mb-0">Update Super Category</h5>
                                 </div>
                                 <hr />
-                                <form action="<?= base_url('add-super-category') ?>" method="post">
+                                <?php foreach ($updateCategory as $catdata) { ?>
+                                    <form action="<?= base_url('process-update-cat') ?>" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="catID" value="<?= $catdata['web_catID'] ?>">
 
-                                    <div class="row mb-3">
-                                        <label
-                                            for="catIcon"
-                                            class="col-sm-3 col-form-label">Upload Icon</label>
-                                        <div class="col-sm-9">
-                                            <input
-                                                type="file"
-                                                class="form-control"
-                                                id="catIcon"
-                                                name="catIcon"
-                                                required
-                                                placeholder="Enter Category Name" />
+                                        <div class="row mb-3">
+                                            <label for="catIcon" class="col-sm-3 col-form-label">Upload Icon</label>
+                                            <div class="col-sm-9">
+                                                <input type="file" class="form-control" id="catIcon" name="catIcon" />
+                                                <!-- Show current icon -->
+                                                <?php if (!empty($catdata['web_catIcon'])) { ?>
+                                                    <div class="mt-2 bg-dark-green">
+                                                        <small>Current Icon:</small>
+                                                        <img src="<?= base_url('assets/uploads/superadmin/category/' . $catdata['web_catIcon']) ?>" alt="icon" width="30" height="30" class="ms-2">
+                                                    </div>
+                                                <?php } ?>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <label
-                                            for="catName"
-                                            class="col-sm-3 col-form-label">Category Name</label>
-                                        <div class="col-sm-9">
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                id="catName"
-                                                name="catName"
-                                                required
-                                                placeholder="Enter Category Name" />
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <label for="catDesc" class="col-sm-3 col-form-label">Description</label>
-                                        <div class="col-sm-9">
-                                            <textarea
-                                                class="form-control"
-                                                id="catDesc"
-                                                name="catDesc"
-                                                rows="3"
-                                                required
-                                                placeholder="Write Description"></textarea>
-                                        </div>
-                                    </div>
 
-                                    <div class="row">
-                                        <label class="col-sm-3 col-form-label"></label>
-                                        <div class="col-sm-9">
-                                            <button
-                                                type="submit"
-                                                class="btn btn-primary px-5 btn-clash">
-                                                Add Category
-                                            </button>
+                                        <div class="row mb-3">
+                                            <label for="catName" class="col-sm-3 col-form-label">Category Name</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="catName" name="catName" required value="<?= $catdata['web_catName'] ?>" placeholder="Enter Category Name" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
+
+                                        <div class="row mb-3">
+                                            <label for="catDesc" class="col-sm-3 col-form-label">Description</label>
+                                            <div class="col-sm-9">
+                                                <textarea
+                                                    class="form-control"
+                                                    id="catDesc"
+                                                    name="catDesc"
+                                                    rows="3"
+                                                    required placeholder="Write Description"><?= $catdata['web_catDesp'] ?></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label"></label>
+                                            <div class="col-sm-9">
+                                                <button type="submit" class="btn btn-primary px-5 btn-clash">
+                                                    Update Category
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>

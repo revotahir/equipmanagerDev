@@ -52,7 +52,7 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Testimonial</a>
+                          <a href="<?= base_url('manage-super-testimonial') ?>"><i class="bi bi-arrow-right-short"></i>Add Testimonial</a>
                       </li>
                   </ul>
               </li>
@@ -68,7 +68,10 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Blog</a>
+                          <a href="<?= base_url('manage-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>Add Blog</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('show-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>See Blog</a>
                       </li>
                   </ul>
               </li>
@@ -84,7 +87,7 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Success Metrics</a>
+                          <a href="<?= base_url('manage-success') ?>"><i class="bi bi-arrow-right-short"></i>Add Success Metrics</a>
                       </li>
                   </ul>
               </li>
@@ -101,7 +104,7 @@
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('') ?>"><i class="bi bi-arrow-right-short"></i>Add Company Partners</a>
+                          <a href="<?= base_url('manage-company') ?>"><i class="bi bi-arrow-right-short"></i>Add Company Partners</a>
                       </li>
                   </ul>
               </li>

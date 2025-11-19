@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 10, 2025 at 11:51 AM
+-- Host: 127.0.0.1
+-- Generation Time: Nov 15, 2025 at 09:34 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -40,7 +40,8 @@ CREATE TABLE `companydetail` (
 INSERT INTO `companydetail` (`companyID`, `userID`, `companyName`) VALUES
 (1, 1, 'admin'),
 (2, 2, 'Company 2'),
-(3, 9, 'test');
+(3, 9, 'test'),
+(4, 10, 'test');
 
 -- --------------------------------------------------------
 
@@ -280,7 +281,8 @@ INSERT INTO `userauth` (`authID`, `userID`, `authCode`, `authTocken`, `authStatu
 (6, 6, '3167', 'e0np3Zds', 0),
 (7, 7, '9373', 'LeBAoft5', 0),
 (8, 8, '1993', 'cSvTpojm', 0),
-(9, 9, '7211', 'ce2TEAtI', 1);
+(9, 9, '7211', 'ce2TEAtI', 1),
+(10, 10, '6205', 'comWG3f5', 0);
 
 -- --------------------------------------------------------
 
@@ -334,7 +336,81 @@ INSERT INTO `users` (`userID`, `userName`, `userPhone`, `userEmail`, `userPass`,
 (6, 'person 99', '2342', 'revotahir@gmail.com', NULL, 4, 2),
 (7, 'person 994', '3443', 'creative.sol8264@gmail.c', NULL, 4, 2),
 (8, 'per 5', '32323', 'per@gmail.com', NULL, 4, 2),
-(9, 'tahir', '0300222112', 'fastimigration01@gmail.com', '86e916352d024f292f6ff0ae210acdfe', 2, 1);
+(9, 'tahir', '0300222112', 'fastimigration01@gmail.com', '86e916352d024f292f6ff0ae210acdfe', 2, 1),
+(10, 'test', '03000000000', 'test@gmail.com', 'c93ccd78b2076528346216b3b2f701e6', 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_blogs`
+--
+
+CREATE TABLE `web_blogs` (
+  `web_blogID` int(11) NOT NULL,
+  `web_blogImg` varchar(300) NOT NULL,
+  `web_blogCat` varchar(50) NOT NULL,
+  `web_blogDate` varchar(30) NOT NULL,
+  `web_blogTitle` varchar(300) NOT NULL,
+  `web_blogDesp` varchar(5000) NOT NULL,
+  `web_blogDespSec` varchar(5000) NOT NULL,
+  `web_blogStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Active and 0=Deactive'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_cat`
+--
+
+CREATE TABLE `web_cat` (
+  `web_catID` int(11) NOT NULL,
+  `web_catIcon` varchar(300) NOT NULL,
+  `web_catName` varchar(30) NOT NULL,
+  `web_catDesp` varchar(2000) NOT NULL,
+  `web_catStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Active and 0=Deactive'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_company`
+--
+
+CREATE TABLE `web_company` (
+  `web_companyID` int(11) NOT NULL,
+  `web_companyIcon` varchar(300) NOT NULL,
+  `web_companyStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT ' 1=Active and 0=Deactive '
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_success`
+--
+
+CREATE TABLE `web_success` (
+  `web_successID` int(11) NOT NULL,
+  `web_successIcon` varchar(300) NOT NULL,
+  `web_successName` varchar(30) NOT NULL,
+  `web_successDes` varchar(2000) NOT NULL,
+  `web_successStatus` tinyint(1) NOT NULL COMMENT '1=Active and 0=Deactive'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_testimonial`
+--
+
+CREATE TABLE `web_testimonial` (
+  `web_testimonialID` int(11) NOT NULL,
+  `web_testimonialRating` varchar(10) NOT NULL,
+  `web_testimonialDesp` varchar(500) NOT NULL,
+  `web_testimonialImg` varchar(300) NOT NULL,
+  `web_testimonialName` varchar(30) NOT NULL,
+  `web_testimonialLocation` varchar(30) NOT NULL,
+  `web_testimonialStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Active and 0=Deactive'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -469,6 +545,36 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`userID`);
 
 --
+-- Indexes for table `web_blogs`
+--
+ALTER TABLE `web_blogs`
+  ADD PRIMARY KEY (`web_blogID`);
+
+--
+-- Indexes for table `web_cat`
+--
+ALTER TABLE `web_cat`
+  ADD PRIMARY KEY (`web_catID`);
+
+--
+-- Indexes for table `web_company`
+--
+ALTER TABLE `web_company`
+  ADD PRIMARY KEY (`web_companyID`);
+
+--
+-- Indexes for table `web_success`
+--
+ALTER TABLE `web_success`
+  ADD PRIMARY KEY (`web_successID`);
+
+--
+-- Indexes for table `web_testimonial`
+--
+ALTER TABLE `web_testimonial`
+  ADD PRIMARY KEY (`web_testimonialID`);
+
+--
 -- Indexes for table `workforce`
 --
 ALTER TABLE `workforce`
@@ -488,7 +594,7 @@ ALTER TABLE `workforceskilllink`
 -- AUTO_INCREMENT for table `companydetail`
 --
 ALTER TABLE `companydetail`
-  MODIFY `companyID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `companyID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `equipcat`
@@ -542,7 +648,7 @@ ALTER TABLE `skills`
 -- AUTO_INCREMENT for table `userauth`
 --
 ALTER TABLE `userauth`
-  MODIFY `authID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `authID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `usercompanyworkforcelink`
@@ -554,7 +660,37 @@ ALTER TABLE `usercompanyworkforcelink`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `web_blogs`
+--
+ALTER TABLE `web_blogs`
+  MODIFY `web_blogID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `web_cat`
+--
+ALTER TABLE `web_cat`
+  MODIFY `web_catID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `web_company`
+--
+ALTER TABLE `web_company`
+  MODIFY `web_companyID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `web_success`
+--
+ALTER TABLE `web_success`
+  MODIFY `web_successID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `web_testimonial`
+--
+ALTER TABLE `web_testimonial`
+  MODIFY `web_testimonialID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `workforce`

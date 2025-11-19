@@ -38,13 +38,8 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-    <title>Manage Category</title>
-    <style>
-        .bg-dark-green img{
-            background-color: #0b2523 !important;
-            border-radius: 10px;
-        }
-    </style>
+
+    <title>Update Partners</title>
 </head>
 
 <body>
@@ -58,56 +53,63 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Show All Category
+                    Company Partner Management
                 </div>
             </div>
             <!--end breadcrumb-->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="mb-0">Manage Category</h5>
-                    <div class="table-responsive mt-3">
-                        <table class="table align-middle">
-                            <thead class="table-secondary bg-sky-blue font-clash-green">
-                                <tr>
-                                    <th>Category Icon</th>
-                                    <th>Category Name</th>
-                                    <th>Description</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+            <div class="row">
+                <div class="col-xl-12 mx-auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="border p-4 rounded">
+                                <div class="card-title d-flex align-items-center">
+                                    <h5 class="mb-0">Update Company Partners</h5>
+                                </div>
+                                <hr />
+                                <?php foreach ($partnerdata as $prntData) { ?>
+                                    <form action="<?= base_url('process-update-partner/' . $prntData['web_companyID']) ?>" method="post" enctype="multipart/form-data">
+                                        <div class="row mb-3">
+                                            <label
+                                                for="sucesIcon"
+                                                class="col-sm-3 col-form-label">Upload Icon</label>
+                                            <div class="col-sm-9">
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    id="sucesIcon"
+                                                    name="sucesIcon" />
+                                                <div class="mt-2 text-muted">
+                                                    <small>Acceptable image formats SVG Max Size 300KB</small>
+                                                </div>
+                                                <!-- Show current icon -->
+                                                <?php if (!empty($prntData['web_companyIcon'])) { ?>
+                                                    <div class="mt-2 bg-dark-green">
+                                                        <small>Current Icon:</small>
+                                                        <img src="<?= base_url('assets/uploads/superadmin/partner/' . $prntData['web_companyIcon']) ?>" alt="icon" style="width: 50px; height: 50px; object-fit:cover" class="ms-2">
+                                                    </div>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label class="col-sm-3 col-form-label"></label>
+                                            <div class="col-sm-9">
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-primary px-5 btn-clash">
+                                                    Update Partners
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 <?php
-                                if (!empty($supercategory)) {
-                                    foreach ($supercategory as $superCat) {
-                                ?>
-                                        <tr>
-                                            <td class="bg-dark-green"><img src="<?= base_url('assets/uploads/superadmin/category/' . $superCat['web_catIcon']) ?>" alt="icon" width="50"></td>
-                                            <td><?= $superCat['web_catName'] ?></td>
-                                            <td><?= $superCat['web_catDesp'] ?></td>
-                                            <td><?= ($superCat['web_catStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
-                                            <td>
-                                                <i class="bi bi-pencil-fill text-warning"></i>
-                                                <i class="bi bi-trash-fill text-danger"></i>
-                                            </td>
-                                        </tr>
-                                    <?php
-                                    }
-                                } else {
-                                    ?>
-                                    <tr>
-                                        <td colspan="5" class="text-center">No Categories Added Yet!</td>
-                                    </tr>
-                                <?php
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                                } ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <!--end row-->
+
         </main>
         <!--end page main-->
 
@@ -135,8 +137,9 @@
     <!--app-->
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+
     <?php
-    if ($this->session->flashdata('success-edited') != '') {
+    if ($this->session->flashdata('success-update') != '') {
     ?>
         <script type="text/javascript">
             toastr.options = {
@@ -144,13 +147,14 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr.success('Category Updated!');
+            toastr.success('Partner Updated!');
         </script>
     <?php
     }
     ?>
+
     <?php
-    if ($this->session->flashdata('successDeleted') != '') {
+    if ($this->session->flashdata('success-delete') != '') {
     ?>
         <script type="text/javascript">
             toastr.options = {
@@ -158,7 +162,7 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr.success('Category Deleted!');
+            toastr.success('Partner Deleted!');
         </script>
     <?php
     }
@@ -172,7 +176,21 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr.success('Category Added!');
+            toastr.success('Partner Added!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('error') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.error('Please select SVG file only!');
         </script>
     <?php
     }
