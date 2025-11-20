@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 15, 2025 at 09:34 PM
+-- Host: localhost
+-- Generation Time: Nov 20, 2025 at 03:18 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -385,6 +385,38 @@ CREATE TABLE `web_company` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `web_pages`
+--
+
+CREATE TABLE `web_pages` (
+  `pageID` int(11) NOT NULL,
+  `slug` varchar(250) NOT NULL,
+  `pageType` tinyint(1) NOT NULL COMMENT '1= Utality, 2= catory or product list 3= product detail\r\n4= blog list 5= blog detail',
+  `pageStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=active 0= 404'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_page_meta`
+--
+
+CREATE TABLE `web_page_meta` (
+  `metaID` int(11) NOT NULL,
+  `pageID` int(11) NOT NULL,
+  `metaTittle` varchar(500) DEFAULT NULL,
+  `metaKeywords` varchar(500) DEFAULT NULL,
+  `metaDesc` varchar(2500) DEFAULT NULL,
+  `pageTittle` varchar(200) NOT NULL,
+  `h1` varchar(500) DEFAULT NULL,
+  `h2` varchar(500) DEFAULT NULL,
+  `p1` varchar(2500) DEFAULT NULL,
+  `p2` varchar(2500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `web_success`
 --
 
@@ -563,6 +595,18 @@ ALTER TABLE `web_company`
   ADD PRIMARY KEY (`web_companyID`);
 
 --
+-- Indexes for table `web_pages`
+--
+ALTER TABLE `web_pages`
+  ADD PRIMARY KEY (`pageID`);
+
+--
+-- Indexes for table `web_page_meta`
+--
+ALTER TABLE `web_page_meta`
+  ADD PRIMARY KEY (`metaID`);
+
+--
 -- Indexes for table `web_success`
 --
 ALTER TABLE `web_success`
@@ -679,6 +723,18 @@ ALTER TABLE `web_cat`
 --
 ALTER TABLE `web_company`
   MODIFY `web_companyID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `web_pages`
+--
+ALTER TABLE `web_pages`
+  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `web_page_meta`
+--
+ALTER TABLE `web_page_meta`
+  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `web_success`

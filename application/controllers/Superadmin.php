@@ -78,6 +78,7 @@ class superadmin extends MY_Controller
             'web_catStatus' => 1,
         );
         $this->generic->InsertData('web_cat', $data);
+        
         $this->session->set_flashdata('success', 'Person deleted successfully!');
         redirect(base_url('show-super-category'));
     }

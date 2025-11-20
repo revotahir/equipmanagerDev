@@ -111,7 +111,36 @@
                                                 placeholder="Write Description"></textarea>
                                         </div>
                                     </div>
-
+                                <div class="card-title d-flex align-items-center">
+                                    <h5 class="mb-0">Category page SEO</h5>
+                                </div>
+                                <hr />
+                                 <div class="row mb-3">
+                                        <label
+                                            for="metaTittle"
+                                            class="col-sm-3 col-form-label">Page Tittle</label>
+                                        <div class="col-sm-9">
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="metaTittle"
+                                                name="metaTittle"
+                                                placeholder="Enter Category Name" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaDesc"
+                                            class="col-sm-3 col-form-label">Meta Description</label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="metaDesc"
+                                                name="metaDesc"
+                                                rows="3"
+                                                placeholder="Write Description"></textarea>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <label class="col-sm-3 col-form-label"></label>
                                         <div class="col-sm-9">
