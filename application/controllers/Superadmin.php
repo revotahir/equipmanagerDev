@@ -58,7 +58,7 @@ class superadmin extends MY_Controller
             //upload person image
             $config['upload_path']          = './assets/uploads/superadmin/category';
             $config['allowed_types']        = 'svg';
-            $config['max_size']             = 1024;
+            $config['max_size']             = 5024;
             $config['encrypt_name']         = TRUE;
             $this->load->library('upload', $config);
             if (! $this->upload->do_upload('catIcon')) {
@@ -71,23 +71,60 @@ class superadmin extends MY_Controller
                 $personImage = $uploadData['file_name'];
             }
         }
+        
+        //get all seo part inputs
+        $metaTitle = $this->input->post('metaTittle');
+        // normalize title: trim, replace any whitespace sequence with a hyphen, then lowercase
+        $Slug = strtolower(preg_replace('/\s+/', '-', trim($superCatName)));
+        $metaKeywords = $this->input->post('metaKeyword');
+        $metaDesc = $this->input->post('metaDesc');
+        $heading1 = $this->input->post('heading1');
+        $heading2 = $this->input->post('heading2');
+        $headingDesc1= $this->input->post('headingDesc1');
+        $headingDesc2= $this->input->post('headingDesc2');
+        //page entry
+        $pagedata=array(
+            'slug'=> $Slug,
+            'pageType'=>2,
+            'pageStatus'=>1
+        );
+        $this->generic->InsertData('web_pages', $pagedata);
+        //get page max page id
+        $pageID=$this->generic->GetMaxID('web_pages','pageID');
+        //seo data entry
+        if($metaTitle){
+            $pageTittle=$metaTitle;
+        }else{
+            $pageTittle=$superCatName." | equipmanager.dk";
+        }
+        $seodata=array(
+            'pageID'=>$pageID[0]['result'],
+            'metaTittle'=>$pageTittle,
+            'metaKeywords'=>$metaKeywords,
+            'metaDesc'=>$metaDesc,
+            'h1'=>$heading1,
+            'h2'=>$heading2,
+            'p1'=>$headingDesc1,
+            'p2'=>$headingDesc2
+        );
+        $this->generic->InsertData('web_page_meta',$seodata);
+        //add category data
         $data = array(
             'web_catName' => $superCatName,
+            'pageID'=>$pageID[0]['result'],
             'web_catDesp' => $superCatDesp,
             'web_catIcon' => $personImage,
-            'web_catStatus' => 1,
         );
         $this->generic->InsertData('web_cat', $data);
-        
         $this->session->set_flashdata('success', 'Person deleted successfully!');
-        redirect(base_url('show-super-category'));
+        redirect(base_url('manage-super-category'));
     }
 
     // show super category
     public function showSuperCategory()
     {
         // Get data from database
-        $this->data['supercategory'] = $this->generic->GetData('web_cat', array(), 'web_catID', 'DESC');
+        $this->data['supercategory'] = $this->generic->GetWebCategoryData();
         $this->load->view('superadmin/category/showcategory', $this->data);
     }
 
@@ -104,7 +141,7 @@ class superadmin extends MY_Controller
     public function updateSuperCategory()
     {
         // Get category data
-        $this->data['updateCategory'] = $this->generic->GetData('web_cat', array('web_catID' => $this->uri->segment(2)));
+        $this->data['updateCategory'] = $this->generic->GetWebCategoryData(array('wc.web_catID' => $this->uri->segment(2)));
         // Load view
         $this->load->view('superadmin/category/updatecategory', $this->data);
     }
@@ -142,6 +179,36 @@ class superadmin extends MY_Controller
             'web_catIcon' => $personImage,
         );
         $this->generic->Update('web_cat', array('web_catID' => $catID), $data);
+        //get cat data
+        $cat=$this->generic->GetData('web_cat', array('web_catID' => $catID));
+        //update seo meta
+        //get all seo part inputs
+        $metaTitle = $this->input->post('metaTittle');
+        // normalize title: trim, replace any whitespace sequence with a hyphen, then lowercase
+        $Slug = strtolower(preg_replace('/\s+/', '-', trim($superCatName)));
+        $metaKeywords = $this->input->post('metaKeyword');
+        $metaDesc = $this->input->post('metaDesc');
+        $heading1 = $this->input->post('heading1');
+        $heading2 = $this->input->post('heading2');
+        $headingDesc1= $this->input->post('headingDesc1');
+        $headingDesc2= $this->input->post('headingDesc2');
+        if($metaTitle){
+            $pageTittle=$metaTitle;
+        }else{
+            $pageTittle=$superCatName." | equipmanager.dk";
+        }
+         $seodata=array(
+            'metaTittle'=>$pageTittle,
+            'metaKeywords'=>$metaKeywords,
+            'metaDesc'=>$metaDesc,
+            'h1'=>$heading1,
+            'h2'=>$heading2,
+            'p1'=>$headingDesc1,
+            'p2'=>$headingDesc2
+        );
+        $this->generic->Update('web_page_meta', array('pageID' => $cat[0]['pageID']), $seodata);
+        //update slug
+         $this->generic->Update('web_pages', array('pageID' => $cat[0]['pageID']), array('slug'=>$Slug));
         $this->session->set_flashdata('success-edited', 'Person deleted successfully!');
         redirect(base_url('show-super-category'));
     }
@@ -221,10 +288,11 @@ class superadmin extends MY_Controller
         $testiReview = $this->input->post('testiReview');
         $testiName = $this->input->post('testiName');
         $testiLocation = $this->input->post('testiLocation');
-
+        //get testiminial data
+        $testiminial=$this->generic->GetData('web_testimonial',array('web_testimonialID'=>$testiID));
         //check if we have image posted
         if (empty($_FILES['testiImage']['name'])) {
-            $personImage = 'testimonial.svg';
+            $personImage = $testiminial[0]['web_testimonialImg'];
         } else {
             //upload person image
             $config['upload_path']          = './assets/uploads/superadmin/testimonial';

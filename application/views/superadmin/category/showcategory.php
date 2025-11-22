@@ -87,8 +87,92 @@
                                             </td>
                                             <td><?= $superCat['web_catName'] ?></td>
                                             <td><?= $superCat['web_catDesp'] ?></td>
-                                            <td><?= ($superCat['web_catStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
+                                            <td><?= ($superCat['pageStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
                                             <td>
+                                                <a
+                                                    href="#"
+                                                    class="text-info"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModal_<?= $superCat['web_catID'] ?>"
+
+                                                    title="View SEO Config"><i class="bi bi-eye-fill"></i></a>
+                                                <!-- Modal -->
+                                                <div
+                                                    class="modal fade"
+                                                    id="exampleModal_<?= $superCat['web_catID'] ?>"
+                                                    tabindex="-1"
+                                                    aria-labelledby="exampleModalLabel_<?= $superCat['web_catID'] ?>"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog modal-l">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel_<?= $superCat['web_catID'] ?>"></h5>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- body code -->
+
+                                                                <div class="row">
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+                                                                            <div class="border p-3 rounded">
+                                                                                <h6 class="mb-0 text-uppercase">SEO Content for <?= $superCat['web_catName'] ?></h6>
+                                                                                <hr />
+                                                                                <div class="table-responsive mt-3">
+                                                                                    <table class="table align-middle">
+                                                                                        <thead class="table-secondary bg-sky-blue font-clash-green">
+                                                                                            <tr>
+                                                                                                <th>Attribute</th>
+                                                                                                <th>Value</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td>Meta Title</td>
+                                                                                                <td><?= $superCat['metaTittle'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Meta Description</td>
+                                                                                                <td><?= $superCat['metaDesc'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Meta Keywords</td>
+                                                                                                <td><?= $superCat['metaKeywords'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Heading 1</td>
+                                                                                                <td><?= $superCat['h1'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Heading 2</td>
+                                                                                                <td><?= $superCat['h2'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Heading Description 1</td>
+                                                                                                <td><?= $superCat['p1'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Heading Description 2</td>
+                                                                                                <td><?= $superCat['p2'] ?></td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- body code end here -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <a href="<?= base_url('update-cate/' . $superCat['web_catID']) ?>" class="text-warning ms-2"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom"

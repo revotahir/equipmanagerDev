@@ -28,40 +28,40 @@
               </li>
               <li>
                   <a href="javascript:;" class="has-arrow">
-                      <div class="parent-icon"><i class="bi bi-people-fill"></i></div>
-                      <div class="menu-title font-clash">Manage Category</div>
+                      <div class="parent-icon"><i class="bi bi-bookmark"></i></div>
+                      <div class="menu-title font-clash">Marketplace Categories</div>
                   </a>
                   <ul>
                       <li>
                           <a href="<?= base_url('manage-super-category') ?>"><i class="bi bi-arrow-right-short"></i>Add Category</a>
                       </li>
                       <li>
-                          <a href="<?= base_url('show-super-category') ?>"><i class="bi bi-arrow-right-short"></i>See Category</a>
+                          <a href="<?= base_url('show-super-category') ?>"><i class="bi bi-arrow-right-short"></i>Manage Category</a>
                       </li>
                   </ul>
               </li>
 
               <!-- manage Testimonial -->
               <li>
-                  <a class="has-arrow" href="javascript:;">
+                  <a  href="<?= base_url('manage-super-testimonial') ?>">
                       <div class="parent-icon">
-                          <i class="bi bi-tools"></i>
+                          <i class="bi bi-chat-left-quote"></i>
                       </div>
                       <div class="menu-title font-clash">Manage Testimonial</div>
                   </a>
-                  <ul>
+                  <!-- <ul>
 
                       <li>
                           <a href="<?= base_url('manage-super-testimonial') ?>"><i class="bi bi-arrow-right-short"></i>Add Testimonial</a>
                       </li>
-                  </ul>
+                  </ul> -->
               </li>
               <!-- mannage  Testimonial end here-->
               <!-- manage Blog -->
               <li>
                   <a class="has-arrow" href="javascript:;">
                       <div class="parent-icon">
-                          <i class="bx bx-window-alt"></i>
+                          <i class="bi bi-card-heading"></i>
                       </div>
                       <div class="menu-title font-clash">Manage Blog</div>
                   </a>

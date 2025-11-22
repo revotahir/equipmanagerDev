@@ -79,7 +79,8 @@
                                                 class="form-control"
                                                 id="catIcon"
                                                 name="catIcon"
-                                                required />
+                                                required
+                                                accept=".svg,image/svg+xml" />
                                             <div class="mt-2 text-muted">
                                                 <small>Acceptable image formats SVG Max Size 300KB</small>
                                             </div>
@@ -111,21 +112,21 @@
                                                 placeholder="Write Description"></textarea>
                                         </div>
                                     </div>
-                                <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Category page SEO</h5>
-                                </div>
-                                <hr />
-                                 <div class="row mb-3">
+                                    <div class="card-title d-flex align-items-center">
+                                        <h5 class="mb-0">Category page SEO (Optional)</h5>
+                                    </div>
+                                    <hr />
+                                    <div class="row mb-3">
                                         <label
                                             for="metaTittle"
-                                            class="col-sm-3 col-form-label">Page Tittle</label>
+                                            class="col-sm-3 col-form-label">Page Tittle<br><span>(Don't fill if you want auto generate)</span></label>
                                         <div class="col-sm-9">
                                             <input
                                                 type="text"
                                                 class="form-control"
                                                 id="metaTittle"
                                                 name="metaTittle"
-                                                placeholder="Enter Category Name" />
+                                                placeholder="Page Title" />
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -138,12 +139,67 @@
                                                 id="metaDesc"
                                                 name="metaDesc"
                                                 rows="3"
-                                                placeholder="Write Description"></textarea>
+                                                placeholder="Meta Description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaKeyword"
+                                            class="col-sm-3 col-form-label">Meta Keyword<br><span>(Seperate each keywork by coma , )</span></label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="metaKeyword"
+                                                name="metaKeyword"
+                                                rows="3"
+                                                placeholder="Meta Keywords"></textarea>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row mb-3">
+
+                                        <div class="col-sm-6">
+                                            <label for="heading1">heading 1</label>
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                id="heading1"
+                                                name="heading1"
+                                                placeholder="Heading 1" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="heading2">heading 2</label>
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                id="heading2"
+                                                name="heading2"
+                                                placeholder="Heading 2" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+
+                                        <div class="col-sm-6">
+                                            <label for="headingDesc1">Heading description 1</label>
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                id="headingDesc1"
+                                                name="headingDesc1"
+                                                placeholder="Heading Description 1" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="headingDesc2">Heading description 2</label>
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                id="headingDesc2"
+                                                name="headingDesc2"
+                                                placeholder="Heading Description 2" />
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <label class="col-sm-3 col-form-label"></label>
-                                        <div class="col-sm-9">
+                                        <div class="col-sm-12">
                                             <button
                                                 type="submit"
                                                 class="btn btn-primary px-5 btn-clash">
@@ -185,6 +241,60 @@
     <!--app-->
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+    <script>
+        // Client-side validation: only allow SVG files (extension + basic content check)
+        $(function() {
+            var $catInput = $('#catIcon');
+            $catInput.on('change', function() {
+                var file = this.files && this.files[0];
+                if (!file) return;
+                var name = file.name.toLowerCase();
+                // extension check
+                if (!name.endsWith('.svg')) {
+                    toastr.error('Please select an SVG file.');
+                    $(this).val('');
+                    return;
+                }
+                // size check (300 KB limit as used server-side)
+                if (file.size > 300 * 1024) {
+                    toastr.error('SVG must be 300KB or smaller.');
+                    $(this).val('');
+                    return;
+                }
+                // basic content sniff: read the first chunk and ensure it contains '<svg'
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var txt = e.target.result;
+                    if (txt.toLowerCase().indexOf('<svg') === -1) {
+                        toastr.error('File does not appear to be a valid SVG.');
+                        $catInput.val('');
+                    }
+                };
+                // read only first 2KB for performance
+                try {
+                    var blob = file.slice(0, 2048);
+                    reader.readAsText(blob);
+                } catch (err) {
+                    // on any read error, clear selection
+                    $catInput.val('');
+                    toastr.error('Unable to validate the selected file.');
+                }
+            });
+
+            // final check on submit to prevent accidental non-svg uploads
+            $('form').on('submit', function(e) {
+                var fi = $catInput[0];
+                if (fi && fi.files && fi.files.length) {
+                    var f = fi.files[0];
+                    if (!f.name.toLowerCase().endsWith('.svg')) {
+                        e.preventDefault();
+                        toastr.error('Please select an SVG file before submitting.');
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
     <?php
     if ($this->session->flashdata('error') != '') {
     ?>
@@ -194,7 +304,21 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr.error('Please fill out all fields!');
+            toastr.error('Upload Error, Try again!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('success') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Category Added!');
         </script>
     <?php
     }

@@ -108,9 +108,101 @@
                                                     required placeholder="Write Description"><?= $catdata['web_catDesp'] ?></textarea>
                                             </div>
                                         </div>
+                                        <div class="card-title d-flex align-items-center">
+                                            <h5 class="mb-0">Category page SEO (Optional)</h5>
+                                        </div>
+                                        <hr />
+                                        <div class="row mb-3">
+                                            <label
+                                                for="metaTittle"
+                                                class="col-sm-3 col-form-label">Page Tittle<br><span>(Don't fill if you want auto generate)</span></label>
+                                            <div class="col-sm-9">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    value="<?=$catdata['metaTittle'] ?> "
+                                                    id="metaTittle"
+                                                    name="metaTittle"
+                                                    placeholder="Page Title" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label
+                                                for="metaDesc"
+                                                class="col-sm-3 col-form-label">Meta Description</label>
+                                            <div class="col-sm-9">
+                                                <textarea
+                                                    class="form-control"
+                                                    id="metaDesc"
+
+                                                    name="metaDesc"
+                                                    rows="3"
+                                                    placeholder="Meta Description"><?=$catdata['metaDesc'] ?></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label
+                                                for="metaKeyword"
+                                                class="col-sm-3 col-form-label">Meta Keyword<br><span>(Seperate each keywork by coma , )</span></label>
+                                            <div class="col-sm-9">
+                                                <textarea
+                                                    class="form-control"
+                                                    id="metaKeyword"
+                                                    name="metaKeyword"
+                                                    rows="3"
+                                                    placeholder="Meta Keywords"><?=$catdata['metaKeywords'] ?></textarea>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row mb-3">
+
+                                            <div class="col-sm-6">
+                                                <label for="heading1">heading 1</label>
+                                                <input
+                                                    class="form-control"
+                                                    type="text"
+                                                    id="heading1"
+                                                    value="<?=$catdata['h1'] ?> "
+                                                    name="heading1"
+                                                    placeholder="Heading 1" />
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label for="heading2">heading 2</label>
+                                                <input
+                                                    class="form-control"
+                                                    type="text"
+                                                    id="heading2"
+                                                    value="<?=$catdata['h2'] ?> "
+
+                                                    name="heading2"
+                                                    placeholder="Heading 2" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+
+                                            <div class="col-sm-6">
+                                                <label for="headingDesc1">Heading description 1</label>
+                                                <input
+                                                    class="form-control"
+                                                    type="text"
+                                                    value="<?=$catdata['p1'] ?> "
+                                                    id="headingDesc1"
+                                                    name="headingDesc1"
+                                                    placeholder="Heading Description 1" />
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <label for="headingDesc2">Heading description 2</label>
+                                                <input
+                                                    class="form-control"
+                                                    type="text"
+                                                    id="headingDesc2"
+                                                    value="<?=$catdata['p2'] ?> "
+                                                    name="headingDesc2"
+                                                    placeholder="Heading Description 2" />
+                                            </div>
+                                        </div>
 
                                         <div class="row">
-                                            <label class="col-sm-3 col-form-label"></label>
                                             <div class="col-sm-9">
                                                 <button type="submit" class="btn btn-primary px-5 btn-clash">
                                                     Update Category
