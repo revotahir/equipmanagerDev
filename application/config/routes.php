@@ -144,6 +144,8 @@ $route['show-super-blog'] = 'superadmin/showSuperBlog';
 $route['dlet-blog/:any'] = 'superadmin/deletSuperBlog';
 $route['update-blog/:any'] = 'superadmin/updateSuperBlog';
 $route['process-update-blog/:any'] = 'superadmin/processUpdateBlog';
+$route['manage-blog-category'] = 'superadmin/manageBlogCat';
+$route['add-blog-category-data'] = 'superadmin/blogCatData';
 // success metrics
 $route['manage-success'] = 'superadmin/manageSuccess';
 $route['add-success'] = 'superadmin/addSuccess';
