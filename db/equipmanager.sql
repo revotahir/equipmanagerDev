@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Nov 20, 2025 at 03:18 PM
+-- Host: 127.0.0.1
+-- Generation Time: Nov 24, 2025 at 01:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -348,7 +348,7 @@ INSERT INTO `users` (`userID`, `userName`, `userPhone`, `userEmail`, `userPass`,
 CREATE TABLE `web_blogs` (
   `web_blogID` int(11) NOT NULL,
   `web_blogImg` varchar(300) NOT NULL,
-  `web_blogCat` varchar(50) NOT NULL,
+  `blogCatID` int(11) NOT NULL,
   `web_blogDate` varchar(30) NOT NULL,
   `web_blogTitle` varchar(300) NOT NULL,
   `web_blogDesp` varchar(5000) NOT NULL,
@@ -359,16 +359,44 @@ CREATE TABLE `web_blogs` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `web_blog_cat`
+--
+
+CREATE TABLE `web_blog_cat` (
+  `blogCatID` int(11) NOT NULL,
+  `pageID` int(11) NOT NULL,
+  `blogCat` varchar(200) NOT NULL,
+  `blogCatDesc` varchar(2500) NOT NULL,
+  `blogCatStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=active 0=inactive'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_blog_cat`
+--
+
+INSERT INTO `web_blog_cat` (`blogCatID`, `pageID`, `blogCat`, `blogCatDesc`, `blogCatStatus`) VALUES
+(1, 4, 'Plumbin Hack', 'aassdfasdfa', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `web_cat`
 --
 
 CREATE TABLE `web_cat` (
   `web_catID` int(11) NOT NULL,
+  `pageID` int(11) NOT NULL,
   `web_catIcon` varchar(300) NOT NULL,
   `web_catName` varchar(30) NOT NULL,
-  `web_catDesp` varchar(2000) NOT NULL,
-  `web_catStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Active and 0=Deactive'
+  `web_catDesp` varchar(2000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_cat`
+--
+
+INSERT INTO `web_cat` (`web_catID`, `pageID`, `web_catIcon`, `web_catName`, `web_catDesp`) VALUES
+(3, 3, 'category.svg', 'Plubmber', 'Plumber Description');
 
 -- --------------------------------------------------------
 
@@ -395,6 +423,14 @@ CREATE TABLE `web_pages` (
   `pageStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=active 0= 404'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `web_pages`
+--
+
+INSERT INTO `web_pages` (`pageID`, `slug`, `pageType`, `pageStatus`) VALUES
+(3, 'plubmber', 2, 1),
+(4, 'plumbin-hack', 4, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -407,12 +443,19 @@ CREATE TABLE `web_page_meta` (
   `metaTittle` varchar(500) DEFAULT NULL,
   `metaKeywords` varchar(500) DEFAULT NULL,
   `metaDesc` varchar(2500) DEFAULT NULL,
-  `pageTittle` varchar(200) NOT NULL,
   `h1` varchar(500) DEFAULT NULL,
   `h2` varchar(500) DEFAULT NULL,
   `p1` varchar(2500) DEFAULT NULL,
   `p2` varchar(2500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_page_meta`
+--
+
+INSERT INTO `web_page_meta` (`metaID`, `pageID`, `metaTittle`, `metaKeywords`, `metaDesc`, `h1`, `h2`, `p1`, `p2`) VALUES
+(2, 3, 'Plubmber | equipmanager.dk ', 'a,b,c,d,ff', 'aaa', 'h111 ', 'h222 ', 'hd111 ', 'hd222 '),
+(3, 4, 'Plumbin Hack | equipmanager.dk', 'asdfas,asda,as', 'test descritpion', 'he', 'hr', 'pe', 'ps');
 
 -- --------------------------------------------------------
 
@@ -443,6 +486,13 @@ CREATE TABLE `web_testimonial` (
   `web_testimonialLocation` varchar(30) NOT NULL,
   `web_testimonialStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Active and 0=Deactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_testimonial`
+--
+
+INSERT INTO `web_testimonial` (`web_testimonialID`, `web_testimonialRating`, `web_testimonialDesp`, `web_testimonialImg`, `web_testimonialName`, `web_testimonialLocation`, `web_testimonialStatus`) VALUES
+(1, '5', 'Verry good', '5b51e337d9b4612ccfb40a1257fc850a.png', 'Tahir Iqbal', 'California', 1);
 
 -- --------------------------------------------------------
 
@@ -583,6 +633,12 @@ ALTER TABLE `web_blogs`
   ADD PRIMARY KEY (`web_blogID`);
 
 --
+-- Indexes for table `web_blog_cat`
+--
+ALTER TABLE `web_blog_cat`
+  ADD PRIMARY KEY (`blogCatID`);
+
+--
 -- Indexes for table `web_cat`
 --
 ALTER TABLE `web_cat`
@@ -713,10 +769,16 @@ ALTER TABLE `web_blogs`
   MODIFY `web_blogID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `web_blog_cat`
+--
+ALTER TABLE `web_blog_cat`
+  MODIFY `blogCatID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `web_cat`
 --
 ALTER TABLE `web_cat`
-  MODIFY `web_catID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `web_catID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `web_company`
@@ -728,13 +790,13 @@ ALTER TABLE `web_company`
 -- AUTO_INCREMENT for table `web_pages`
 --
 ALTER TABLE `web_pages`
-  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `web_page_meta`
 --
 ALTER TABLE `web_page_meta`
-  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `web_success`
@@ -746,7 +808,7 @@ ALTER TABLE `web_success`
 -- AUTO_INCREMENT for table `web_testimonial`
 --
 ALTER TABLE `web_testimonial`
-  MODIFY `web_testimonialID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `web_testimonialID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `workforce`
