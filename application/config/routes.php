@@ -131,6 +131,8 @@ $route['show-super-category'] = 'superadmin/showSuperCategory';
 $route['delet-cat/:any'] = 'superadmin/deletCategory';
 $route['update-cate/:any'] = 'superadmin/updateSuperCategory';
 $route['process-update-cat'] = 'superadmin/processUpdateCategory';
+// change status
+$route['change-status/:any/:any'] = 'superadmin/changeStatus';
 //super testimonial
 $route['manage-super-testimonial'] = 'superadmin/ManageSuperTestimonial';
 $route['add-testimoni'] = 'superadmin/AddTestimonial';
