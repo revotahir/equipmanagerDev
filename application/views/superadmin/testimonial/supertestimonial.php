@@ -38,8 +38,68 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-
     <title>Manage Testimonial</title>
+    <style>
+        .checkbox-apple {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            margin: 20px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .checkbox-apple label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 25px;
+            border-radius: 50px;
+            background: linear-gradient(to bottom, #b3b3b3, #e6e6e6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-apple label:after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 23px;
+            height: 23px;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-apple input[type="checkbox"]:checked+label {
+            background: linear-gradient(to bottom, #4cd964, #5de24e);
+        }
+
+        .checkbox-apple input[type="checkbox"]:checked+label:after {
+            transform: translateX(25px);
+        }
+
+        .checkbox-apple label:hover {
+            background: linear-gradient(to bottom, #b3b3b3, #e6e6e6);
+        }
+
+        .checkbox-apple label:hover:after {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .yep {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 25px;
+        }
+    </style>
 </head>
 
 <body>
@@ -170,6 +230,7 @@
                                     <th>Client Name</th>
                                     <th>Client Location</th>
                                     <th>Status</th>
+                                    <th></th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -184,16 +245,16 @@
                                             </td>
                                             <td><?= $superTesti['web_testimonialName'] ?></td>
                                             <td><?= $superTesti['web_testimonialLocation'] ?></td>
-                                            <td>
-                                                <?php
-                                                if ($superTesti['web_testimonialStatus'] == 1) {
-                                                ?>
-                                                    Active<?php
-                                                        } else {
-                                                            ?>
-                                                    Inactive<?php
-                                                        } ?>
+                                            <td><?= ($superTesti['web_testimonialStatus'] == 1) ? 'Active' : 'Inactive' ?>
                                             </td>
+                                            <td><a href="<?= base_url('change-testi-status/' . $superTesti['web_testimonialID']) ?>/<?= $superTesti['web_testimonialStatus'] ?>" data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    title="Status">
+                                                    <div class="checkbox-apple">
+                                                        <input class="yep" id="check-apple" type="checkbox" <?= ($superTesti['web_testimonialStatus'] == 1) ? 'checked' : '' ?> />
+                                                        <label for="check-apple"></label>
+                                                    </div>
+                                                </a></td>
                                             <td>
                                                 <a href="<?= base_url('update-testmoni/' . $superTesti['web_testimonialID']) ?>" class="text-warning ms-2"
                                                     data-bs-toggle="tooltip"
@@ -250,6 +311,47 @@
     <!--app-->
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+    <script>
+        // Plain JS: delegate clicks on the toggle area and redirect to the enclosing anchor's href.
+        document.addEventListener('click', function(e) {
+            var wrapper = e.target.closest('.checkbox-apple');
+            if (!wrapper) return;
+            var anchor = wrapper.closest('a');
+            if (!anchor) return;
+            e.preventDefault();
+            // Use href (absolute or relative)
+            var href = anchor.getAttribute('href');
+            if (href) window.location.href = href;
+        });
+    </script>
+    <?php
+    if ($this->session->flashdata('statusDeactivated') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Testimonial deactivated successfully!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('statusActivated') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Testimonial activated successfully!');
+        </script>
+    <?php
+    }
+    ?>
     <?php
     if ($this->session->flashdata('success-edited') != '') {
     ?>

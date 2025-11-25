@@ -154,7 +154,7 @@ class superadmin extends MY_Controller
             $this->session->set_flashdata('statusDeactivated', 'Category deactivated successfully!');
         } else {
             $newStatus = 1;
-            $this->session->set_flashdata('statusActivated', 'Category deactivated successfully!');
+            $this->session->set_flashdata('statusActivated', 'Category activated successfully!');
         }
         $this->generic->Update('web_pages', array('pageID' => $this->uri->segment(2)), array('pageStatus' => $newStatus));
         redirect(base_url('show-super-category'));
@@ -283,6 +283,20 @@ class superadmin extends MY_Controller
         // Delete testimonial from database
         $this->generic->Delete('web_testimonial', array('web_testimonialID' => $this->uri->segment(2)));
         $this->session->set_flashdata('successDeleted', 'Testimonial deleted successfully!');
+        redirect(base_url('manage-super-testimonial'));
+    }
+
+    // change status 
+    public function changeTestimonialStatus()
+    {
+        if ($this->uri->segment(3) == 1) {
+            $newStatus = 0;
+            $this->session->set_flashdata('statusDeactivated', 'Category deactivated successfully!');
+        } else {
+            $newStatus = 1;
+            $this->session->set_flashdata('statusActivated', 'Category activated successfully!');
+        }
+        $this->generic->Update('web_testimonial', array('web_testimonialID' => $this->uri->segment(2)), array('web_testimonialStatus' => $newStatus));
         redirect(base_url('manage-super-testimonial'));
     }
 

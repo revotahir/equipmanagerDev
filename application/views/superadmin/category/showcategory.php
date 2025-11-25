@@ -45,8 +45,6 @@
             border-radius: 10px;
         }
 
-
-        /* From Uiverse.io by guilhermeyohan */
         .checkbox-apple {
             position: relative;
             width: 50px;
