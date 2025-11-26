@@ -68,8 +68,6 @@
                                     <th>Upload Date</th>
                                     <th>Title</th>
                                     <th>Description</th>
-                                    <th>Description Second</th>
-                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -83,12 +81,28 @@
                                                 <img src="<?= base_url('assets/uploads/superadmin/blog/' . $superBlog['web_blogImg']) ?>" alt="icon"
                                                     style="width: 150px; height: 150px; object-fit:cover" />
                                             </td>
-                                            <td><?= $superBlog['web_blogCat'] ?></td>
+                                            <?php
+                                            // Check the blog post's category ID first
+                                            if ($superBlog['blogCatID'] == 0) {
+                                            ?>
+                                                <td>Empty</td>
+                                                <?php
+                                            } else {
+                                                // If it's not 0, loop to find the actual category name
+                                                foreach ($blogCatData as $blogCat) {
+                                                    if ($superBlog['blogCatID'] == $blogCat['blogCatID']) {
+                                                ?>
+                                                        <td><?= $blogCat['blogCat'] ?></td>
+                                            <?php
+                                                        // Stop looping once the match is found (improves efficiency)
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            ?>
                                             <td><?= $superBlog['web_blogDate'] ?></td>
                                             <td><?= $superBlog['web_blogTitle'] ?></td>
                                             <td><?= $superBlog['web_blogDesp'] ?></td>
-                                            <td><?= $superBlog['web_blogDespSec'] ?></td>
-                                            <td><?= ($superBlog['web_blogStatus'] == 1) ? 'Active' : 'Inactive' ?></td>
                                             <td>
                                                 <a href="<?= base_url('update-blog/' . $superBlog['web_blogID']) ?>" class="text-warning ms-2"
                                                     data-bs-toggle="tooltip"

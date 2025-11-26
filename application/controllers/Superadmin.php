@@ -71,7 +71,7 @@ class superadmin extends MY_Controller
                 $personImage = $uploadData['file_name'];
             }
         }
-        
+
         //get all seo part inputs
         $metaTitle = $this->input->post('metaTittle');
         // normalize title: trim, replace any whitespace sequence with a hyphen, then lowercase
@@ -80,38 +80,38 @@ class superadmin extends MY_Controller
         $metaDesc = $this->input->post('metaDesc');
         $heading1 = $this->input->post('heading1');
         $heading2 = $this->input->post('heading2');
-        $headingDesc1= $this->input->post('headingDesc1');
-        $headingDesc2= $this->input->post('headingDesc2');
+        $headingDesc1 = $this->input->post('headingDesc1');
+        $headingDesc2 = $this->input->post('headingDesc2');
         //page entry
-        $pagedata=array(
-            'slug'=> $Slug,
-            'pageType'=>2,
-            'pageStatus'=>1
+        $pagedata = array(
+            'slug' => $Slug,
+            'pageType' => 2,
+            'pageStatus' => 1
         );
         $this->generic->InsertData('web_pages', $pagedata);
         //get page max page id
-        $pageID=$this->generic->GetMaxID('web_pages','pageID');
+        $pageID = $this->generic->GetMaxID('web_pages', 'pageID');
         //seo data entry
-        if($metaTitle){
-            $pageTittle=$metaTitle;
-        }else{
-            $pageTittle=$superCatName." | equipmanager.dk";
+        if ($metaTitle) {
+            $pageTittle = $metaTitle;
+        } else {
+            $pageTittle = $superCatName . " | equipmanager.dk";
         }
-        $seodata=array(
-            'pageID'=>$pageID[0]['result'],
-            'metaTittle'=>$pageTittle,
-            'metaKeywords'=>$metaKeywords,
-            'metaDesc'=>$metaDesc,
-            'h1'=>$heading1,
-            'h2'=>$heading2,
-            'p1'=>$headingDesc1,
-            'p2'=>$headingDesc2
+        $seodata = array(
+            'pageID' => $pageID[0]['result'],
+            'metaTittle' => $pageTittle,
+            'metaKeywords' => $metaKeywords,
+            'metaDesc' => $metaDesc,
+            'h1' => $heading1,
+            'h2' => $heading2,
+            'p1' => $headingDesc1,
+            'p2' => $headingDesc2
         );
-        $this->generic->InsertData('web_page_meta',$seodata);
+        $this->generic->InsertData('web_page_meta', $seodata);
         //add category data
         $data = array(
             'web_catName' => $superCatName,
-            'pageID'=>$pageID[0]['result'],
+            'pageID' => $pageID[0]['result'],
             'web_catDesp' => $superCatDesp,
             'web_catIcon' => $personImage,
         );
@@ -145,6 +145,21 @@ class superadmin extends MY_Controller
         // Load view
         $this->load->view('superadmin/category/updatecategory', $this->data);
     }
+
+    // change status from active to deactive
+    public function changeStatus()
+    {
+        if ($this->uri->segment(3) == 1) {
+            $newStatus = 0;
+            $this->session->set_flashdata('statusDeactivated', 'Category deactivated successfully!');
+        } else {
+            $newStatus = 1;
+            $this->session->set_flashdata('statusActivated', 'Category activated successfully!');
+        }
+        $this->generic->Update('web_pages', array('pageID' => $this->uri->segment(2)), array('pageStatus' => $newStatus));
+        redirect(base_url('show-super-category'));
+    }
+
 
     // process update category
     public function processUpdateCategory()
@@ -180,7 +195,7 @@ class superadmin extends MY_Controller
         );
         $this->generic->Update('web_cat', array('web_catID' => $catID), $data);
         //get cat data
-        $cat=$this->generic->GetData('web_cat', array('web_catID' => $catID));
+        $cat = $this->generic->GetData('web_cat', array('web_catID' => $catID));
         //update seo meta
         //get all seo part inputs
         $metaTitle = $this->input->post('metaTittle');
@@ -190,25 +205,25 @@ class superadmin extends MY_Controller
         $metaDesc = $this->input->post('metaDesc');
         $heading1 = $this->input->post('heading1');
         $heading2 = $this->input->post('heading2');
-        $headingDesc1= $this->input->post('headingDesc1');
-        $headingDesc2= $this->input->post('headingDesc2');
-        if($metaTitle){
-            $pageTittle=$metaTitle;
-        }else{
-            $pageTittle=$superCatName." | equipmanager.dk";
+        $headingDesc1 = $this->input->post('headingDesc1');
+        $headingDesc2 = $this->input->post('headingDesc2');
+        if ($metaTitle) {
+            $pageTittle = $metaTitle;
+        } else {
+            $pageTittle = $superCatName . " | equipmanager.dk";
         }
-         $seodata=array(
-            'metaTittle'=>$pageTittle,
-            'metaKeywords'=>$metaKeywords,
-            'metaDesc'=>$metaDesc,
-            'h1'=>$heading1,
-            'h2'=>$heading2,
-            'p1'=>$headingDesc1,
-            'p2'=>$headingDesc2
+        $seodata = array(
+            'metaTittle' => $pageTittle,
+            'metaKeywords' => $metaKeywords,
+            'metaDesc' => $metaDesc,
+            'h1' => $heading1,
+            'h2' => $heading2,
+            'p1' => $headingDesc1,
+            'p2' => $headingDesc2
         );
         $this->generic->Update('web_page_meta', array('pageID' => $cat[0]['pageID']), $seodata);
         //update slug
-         $this->generic->Update('web_pages', array('pageID' => $cat[0]['pageID']), array('slug'=>$Slug));
+        $this->generic->Update('web_pages', array('pageID' => $cat[0]['pageID']), array('slug' => $Slug));
         $this->session->set_flashdata('success-edited', 'Person deleted successfully!');
         redirect(base_url('show-super-category'));
     }
@@ -271,6 +286,20 @@ class superadmin extends MY_Controller
         redirect(base_url('manage-super-testimonial'));
     }
 
+    // change status 
+    public function changeTestimonialStatus()
+    {
+        if ($this->uri->segment(3) == 1) {
+            $newStatus = 0;
+            $this->session->set_flashdata('statusDeactivated', 'Category deactivated successfully!');
+        } else {
+            $newStatus = 1;
+            $this->session->set_flashdata('statusActivated', 'Category activated successfully!');
+        }
+        $this->generic->Update('web_testimonial', array('web_testimonialID' => $this->uri->segment(2)), array('web_testimonialStatus' => $newStatus));
+        redirect(base_url('manage-super-testimonial'));
+    }
+
     // update testimonial
     public function updateTestimonial()
     {
@@ -289,7 +318,7 @@ class superadmin extends MY_Controller
         $testiName = $this->input->post('testiName');
         $testiLocation = $this->input->post('testiLocation');
         //get testiminial data
-        $testiminial=$this->generic->GetData('web_testimonial',array('web_testimonialID'=>$testiID));
+        $testiminial = $this->generic->GetData('web_testimonial', array('web_testimonialID' => $testiID));
         //check if we have image posted
         if (empty($_FILES['testiImage']['name'])) {
             $personImage = $testiminial[0]['web_testimonialImg'];
@@ -325,14 +354,16 @@ class superadmin extends MY_Controller
     // manage super blog page load
 
     //--manage blog category
-    public function manageBlogCat(){
-        $this->data['blogCat']=$this->generic->GetData('web_blog_cat');
-        $this->load->view('superadmin/blog/blogCat',$this->data);
+    public function manageBlogCat()
+    {
+        $this->data['blogCat'] = $this->generic->GetData('web_blog_cat');
+        $this->load->view('superadmin/blog/blogCat', $this->data);
     }
-    public function blogCatData(){
-        $catName=$this->input->post('catName');
+    public function blogCatData()
+    {
+        $catName = $this->input->post('catName');
         //add page
-         //get all seo part inputs
+        //get all seo part inputs
         $metaTitle = $this->input->post('metaTittle');
         // normalize title: trim, replace any whitespace sequence with a hyphen, then lowercase
         $Slug = strtolower(preg_replace('/\s+/', '-', trim($catName)));
@@ -340,54 +371,55 @@ class superadmin extends MY_Controller
         $metaDesc = $this->input->post('metaDesc');
         $heading1 = $this->input->post('heading1');
         $heading2 = $this->input->post('heading2');
-        $headingDesc1= $this->input->post('headingDesc1');
-        $headingDesc2= $this->input->post('headingDesc2');
+        $headingDesc1 = $this->input->post('headingDesc1');
+        $headingDesc2 = $this->input->post('headingDesc2');
         //page entry
-        $pagedata=array(
-            'slug'=> $Slug,
-            'pageType'=>4,
-            'pageStatus'=>1
+        $pagedata = array(
+            'slug' => $Slug,
+            'pageType' => 4,
+            'pageStatus' => 1
         );
         $this->generic->InsertData('web_pages', $pagedata);
         //get page max page id
-        $pageID=$this->generic->GetMaxID('web_pages','pageID');
+        $pageID = $this->generic->GetMaxID('web_pages', 'pageID');
         //seo data entry
-        if($metaTitle){
-            $pageTittle=$metaTitle;
-        }else{
-            $pageTittle=$catName." | equipmanager.dk";
+        if ($metaTitle) {
+            $pageTittle = $metaTitle;
+        } else {
+            $pageTittle = $catName . " | equipmanager.dk";
         }
-        $seodata=array(
-            'pageID'=>$pageID[0]['result'],
-            'metaTittle'=>$pageTittle,
-            'metaKeywords'=>$metaKeywords,
-            'metaDesc'=>$metaDesc,
-            'h1'=>$heading1,
-            'h2'=>$heading2,
-            'p1'=>$headingDesc1,
-            'p2'=>$headingDesc2
+        $seodata = array(
+            'pageID' => $pageID[0]['result'],
+            'metaTittle' => $pageTittle,
+            'metaKeywords' => $metaKeywords,
+            'metaDesc' => $metaDesc,
+            'h1' => $heading1,
+            'h2' => $heading2,
+            'p1' => $headingDesc1,
+            'p2' => $headingDesc2
         );
-        $this->generic->InsertData('web_page_meta',$seodata);
+        $this->generic->InsertData('web_page_meta', $seodata);
         //add blog cat data
-        $blogcatData=array(
-            'pageID'=>$pageID[0]['result'],
-            'blogCat'=>$this->input->post('catName'),
-            'blogCatDesc'=>$this->input->post('catDesc'),
+        $blogcatData = array(
+            'pageID' => $pageID[0]['result'],
+            'blogCat' => $this->input->post('catName'),
+            'blogCatDesc' => $this->input->post('catDesc'),
         );
-        $this->generic->InsertData('web_blog_cat',$blogcatData);
+        $this->generic->InsertData('web_blog_cat', $blogcatData);
         $this->session->set_flashdata('successadded', 'addedd');
-                redirect(base_url('manage-blog-category'));
-
+        redirect(base_url('manage-blog-category'));
     }
     public function ManageSuperBlog()
     {
-        $this->load->view('superadmin/blog/addblog');
+        $this->data['blogCatData'] = $this->generic->GetData('web_blog_cat');
+        $this->load->view('superadmin/blog/addblog', $this->data);
     }
 
     // show super blog page load
     public function showSuperBlog()
     {
         $this->data['showblogdata'] = $this->generic->GetData('web_blogs', array(), 'web_blogID', 'DESC');
+        $this->data['blogCatData'] = $this->generic->GetData('web_blog_cat');
         $this->load->view('superadmin/blog/showblog', $this->data);
     }
 
@@ -398,7 +430,6 @@ class superadmin extends MY_Controller
         $blogDate = $this->input->post('blogDate');
         $blogTitle = $this->input->post('blogTitle');
         $blogDesp = $this->input->post('blogDesp');
-        $blogDespSec = $this->input->post('blogDespSec');
 
         //check if we have image posted
         if (empty($_FILES['blogImage']['name'])) {
@@ -421,13 +452,11 @@ class superadmin extends MY_Controller
             }
         }
         $data = array(
-            'web_blogCat' => $blogCate,
+            'blogCatID' => $blogCate,
             'web_blogDate' => $blogDate,
             'web_blogTitle' => $blogTitle,
             'web_blogDesp' => $blogDesp,
-            'web_blogDespSec' => $blogDespSec,
             'web_blogImg' => $blogImage,
-            'web_blogStatus' => 1,
         );
         $this->generic->InsertData('web_blogs', $data);
         $this->session->set_flashdata('success', 'Person deleted successfully!');

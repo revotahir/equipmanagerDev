@@ -131,12 +131,16 @@ $route['show-super-category'] = 'superadmin/showSuperCategory';
 $route['delet-cat/:any'] = 'superadmin/deletCategory';
 $route['update-cate/:any'] = 'superadmin/updateSuperCategory';
 $route['process-update-cat'] = 'superadmin/processUpdateCategory';
+// change status
+$route['change-status/:any/:any'] = 'superadmin/changeStatus';
 //super testimonial
 $route['manage-super-testimonial'] = 'superadmin/ManageSuperTestimonial';
 $route['add-testimoni'] = 'superadmin/AddTestimonial';
 $route['delet-testmoni/:any'] = 'superadmin/deleteTestimonial';
 $route['update-testmoni/:any'] = 'superadmin/updateTestimonial';
 $route['process-update-testi/:any'] = 'superadmin/processUpdateTestimonial';
+// change status
+$route['change-testi-status/:any/:any'] = 'superadmin/changeTestimonialStatus';
 // super blog
 $route['manage-super-blog'] = 'superadmin/ManageSuperBlog';
 $route['add-blog'] = 'superadmin/addSuperBlog';
