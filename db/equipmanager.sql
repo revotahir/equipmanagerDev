@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 24, 2025 at 01:40 PM
+-- Generation Time: Nov 26, 2025 at 06:57 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -347,14 +347,20 @@ INSERT INTO `users` (`userID`, `userName`, `userPhone`, `userEmail`, `userPass`,
 
 CREATE TABLE `web_blogs` (
   `web_blogID` int(11) NOT NULL,
+  `pageID` int(11) NOT NULL,
   `web_blogImg` varchar(300) NOT NULL,
   `blogCatID` int(11) NOT NULL,
   `web_blogDate` varchar(30) NOT NULL,
   `web_blogTitle` varchar(300) NOT NULL,
-  `web_blogDesp` varchar(5000) NOT NULL,
-  `web_blogDespSec` varchar(5000) NOT NULL,
-  `web_blogStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=Active and 0=Deactive'
+  `web_blogDesp` varchar(10000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_blogs`
+--
+
+INSERT INTO `web_blogs` (`web_blogID`, `pageID`, `web_blogImg`, `blogCatID`, `web_blogDate`, `web_blogTitle`, `web_blogDesp`) VALUES
+(6, 9, '5d3941770f26300df2d786ea848e6689.png', 1, '2025-11-26', 'asdfasaa', '<p>sfafsfa</p>');
 
 -- --------------------------------------------------------
 
@@ -366,16 +372,16 @@ CREATE TABLE `web_blog_cat` (
   `blogCatID` int(11) NOT NULL,
   `pageID` int(11) NOT NULL,
   `blogCat` varchar(200) NOT NULL,
-  `blogCatDesc` varchar(2500) NOT NULL,
-  `blogCatStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=active 0=inactive'
+  `blogCatDesc` varchar(2500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `web_blog_cat`
 --
 
-INSERT INTO `web_blog_cat` (`blogCatID`, `pageID`, `blogCat`, `blogCatDesc`, `blogCatStatus`) VALUES
-(1, 4, 'Plumbin Hack', 'aassdfasdfa', 1);
+INSERT INTO `web_blog_cat` (`blogCatID`, `pageID`, `blogCat`, `blogCatDesc`) VALUES
+(1, 4, 'Plumbin Hack', 'aassdfasdfa'),
+(3, 7, 'Willa Flowerss', 'Excepturi vitae recu');
 
 -- --------------------------------------------------------
 
@@ -396,7 +402,7 @@ CREATE TABLE `web_cat` (
 --
 
 INSERT INTO `web_cat` (`web_catID`, `pageID`, `web_catIcon`, `web_catName`, `web_catDesp`) VALUES
-(3, 3, 'category.svg', 'Plubmber', 'Plumber Description');
+(4, 5, '6a1ca398e597a1f7d1c862ea27b561c6.svg', 'Adam Kirby', 'Aliquam enim laborum');
 
 -- --------------------------------------------------------
 
@@ -429,7 +435,10 @@ CREATE TABLE `web_pages` (
 
 INSERT INTO `web_pages` (`pageID`, `slug`, `pageType`, `pageStatus`) VALUES
 (3, 'plubmber', 2, 1),
-(4, 'plumbin-hack', 4, 1);
+(4, 'plumbin-hack', 4, 1),
+(5, 'adam-kirby', 2, 1),
+(7, 'willa-flowers', 4, 1),
+(9, 'asdfas', 5, 1);
 
 -- --------------------------------------------------------
 
@@ -455,7 +464,10 @@ CREATE TABLE `web_page_meta` (
 
 INSERT INTO `web_page_meta` (`metaID`, `pageID`, `metaTittle`, `metaKeywords`, `metaDesc`, `h1`, `h2`, `p1`, `p2`) VALUES
 (2, 3, 'Plubmber | equipmanager.dk ', 'a,b,c,d,ff', 'aaa', 'h111 ', 'h222 ', 'hd111 ', 'hd222 '),
-(3, 4, 'Plumbin Hack | equipmanager.dk', 'asdfas,asda,as', 'test descritpion', 'he', 'hr', 'pe', 'ps');
+(3, 4, 'Plumbin Hack | equipmanager.dk', 'asdfas,asda,as', 'test descritpion', 'he', 'hr', 'pe', 'ps'),
+(4, 5, 'Fugiat necessitatib', 'Dolor omnis placeat', 'Consequatur Laborum', 'Ad eos non pariatur', 'Omnis labore est mod', 'Quia dolores adipisi', 'Perspiciatis volupt'),
+(6, 7, 'Quia modi eos possim', 'Quidem dolore eu ill', 'Duis ea obcaecati quuuuuuu', 'Accusantium consequa', 'Ad voluptatem Molli', 'Irure iusto nemo rep', 'Excepteur excepturi '),
+(8, 9, 'asdfas | equipmanager.dk', 'asfa,rdgdf,dfgdf', 'asfasaaaaaa', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -766,19 +778,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `web_blogs`
 --
 ALTER TABLE `web_blogs`
-  MODIFY `web_blogID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `web_blogID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `web_blog_cat`
 --
 ALTER TABLE `web_blog_cat`
-  MODIFY `blogCatID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `blogCatID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `web_cat`
 --
 ALTER TABLE `web_cat`
-  MODIFY `web_catID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `web_catID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `web_company`
@@ -790,13 +802,13 @@ ALTER TABLE `web_company`
 -- AUTO_INCREMENT for table `web_pages`
 --
 ALTER TABLE `web_pages`
-  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `web_page_meta`
 --
 ALTER TABLE `web_page_meta`
-  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `web_success`

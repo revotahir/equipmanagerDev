@@ -143,14 +143,16 @@ $route['process-update-testi/:any'] = 'superadmin/processUpdateTestimonial';
 $route['change-testi-status/:any/:any'] = 'superadmin/changeTestimonialStatus';
 // super blog
 $route['manage-super-blog'] = 'superadmin/ManageSuperBlog';
+$route['change-blog-cat-status/:any/:any'] = 'superadmin/changeBlogCatStatus';
 $route['delet-blog-cat/:any'] = 'superadmin/DltBlogCat';
 $route['update-blog-cat/:any'] = 'superadmin/updateBlogCat';
 $route['update-blog-category-data/:any/:any'] = 'superadmin/updateBlogCatData';
 $route['add-blog'] = 'superadmin/addSuperBlog';
+$route['change-blog-status/:any/:any'] = 'superadmin/changeBlogStatus';
 $route['show-super-blog'] = 'superadmin/showSuperBlog';
 $route['dlet-blog/:any'] = 'superadmin/deletSuperBlog';
 $route['update-blog/:any'] = 'superadmin/updateSuperBlog';
-$route['process-update-blog/:any'] = 'superadmin/processUpdateBlog';
+$route['process-update-blog/:any/:any'] = 'superadmin/processUpdateBlog';
 $route['manage-blog-category'] = 'superadmin/manageBlogCat';
 $route['add-blog-category-data'] = 'superadmin/blogCatData';
 // success metrics

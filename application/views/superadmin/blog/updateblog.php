@@ -38,14 +38,8 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-
-    <title>Update Blog</title>
-    <style>
-        .bg-dark-green img {
-            background-color: #0b2523 !important;
-            border-radius: 10px;
-        }
-    </style>
+    <script src="https://cdn.tiny.cloud/1/k3dyp6z9t18y59wacjgbp7fd0k4awtdhmq2j8qe570fxys3c/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+    <title>Edit Blog</title>
 </head>
 
 <body>
@@ -69,110 +63,149 @@
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Update Blog</h5>
+                                    <h5 class="mb-0">Edit Blog</h5>
                                 </div>
                                 <hr />
-                                <?php foreach ($blogData as $blgData) { ?>
-                                    <form action="<?= base_url('process-update-blog/' . $blgData['web_blogID']) ?>" method="post" enctype="multipart/form-data">
-                                        <div class="row mb-3">
-                                            <label
-                                                for="blogImage"
-                                                class="col-sm-3 col-form-label">Upload Image</label>
-                                            <div class="col-sm-9">
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    id="blogImage"
-                                                    name="blogImage" />
-                                                <div class="mt-2 text-muted">
-                                                    <small>Acceptable image formats JPG, JPEG, PNG, Max Size 1024KB</small>
-                                                </div>
-                                                <!-- Show current icon -->
-                                                <?php if (!empty($blgData['web_blogImg'])) { ?>
-                                                    <div class="mt-2 bg-dark-green">
-                                                        <small>Current Icon:</small>
-                                                        <img src="<?= base_url('assets/uploads/superadmin/blog/' . $blgData['web_blogImg']) ?>" alt="icon" style="width: 50px; height: 50px; object-fit:cover" class="ms-2">
-                                                    </div>
-                                                <?php } ?>
+                                <form action="<?= base_url('process-update-blog/').$blogData[0]['web_blogID'].'/'.$blogData[0]['pageID']?>" method="post" enctype="multipart/form-data">
+                                    <div class="row mb-3">
+                                        <label
+                                            for="blogImage"
+                                            class="col-sm-3 col-form-label">Upload Image</label>
+                                        <div class="col-sm-9">
+                                            <input
+                                                type="file"
+                                                class="form-control"
+                                                id="blogImage"
+                                                name="blogImage" />
+                                            <div class="mt-2 text-muted">
+                                                <small>Acceptable image formats JPG, JPEG, PNG, Max Size 1024KB</small>
                                             </div>
+                                            <span>Curent Image</span><br>
+                                             <img src="<?= base_url('assets/uploads/superadmin/blog/').$blogData[0]['web_blogImg']?> " width="50px" alt="">
                                         </div>
-                                        <div class="row mb-3">
-                                            <label for="blogCate" class="col-sm-3 col-form-label">Select Blog Category</label>
-                                            <div class="col-sm-9">
-                                                <select name="blogCate" id="blogCate" class="form-control">
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="blogCate" class="col-sm-3 col-form-label">Select Blog Category</label>
+                                        <div class="col-sm-9">
+                                            <?php
+                                            if (!empty($blogCatData)) {
+                                            ?>
+                                                <select name="blogCate" required id="blogCate" class="form-control">
                                                     <option value="">Select Category</option>
-                                                    <option value="manufacturing" <?= isset($blgData['web_blogCat']) && $blgData['web_blogCat'] == 'manufacturing' ? 'selected' : '' ?>>Manufacturing</option>
-                                                    <option value="industry" <?= isset($blgData['web_blogCat']) && $blgData['web_blogCat'] == 'industry' ? 'selected' : '' ?>>Industry</option>
+                                                    <?php
+                                                    foreach ($blogCatData as $category) {
+                                                    ?>
+                                                        <option 
+                                                        <?php 
+                                                            if($category['blogCatID']==$blogData[0]['blogCatID']){
+                                                                echo 'selected';
+                                                            }
+                                                        ?>
+                                                        value="<?= $category['blogCatID'] ?>"><?= $category['blogCat'] ?></option>
+                                                    <?php
+                                                    }
+                                                    ?>
                                                 </select>
-                                            </div>
+                                            <?php
+                                            }
+                                            ?>
                                         </div>
-                                        <div class="row mb-3">
-                                            <label
-                                                for="blogDate"
-                                                class="col-sm-3 col-form-label">Date</label>
-                                            <div class="col-sm-9">
-                                                <input
-                                                    type="date"
-                                                    class="form-control"
-                                                    id="blogDate"
-                                                    name="blogDate"
-                                                    value="<?= $blgData['web_blogDate'] ?? '' ?>"
-                                                    required />
-                                            </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="blogDate"
+                                            class="col-sm-3 col-form-label">Date</label>
+                                        <div class="col-sm-9">
+                                            <!-- prevent selecting future dates by setting max to today -->
+                                            <input type="date" value="<?= $blogData[0]['web_blogDate'] ?>" max="<?= date('Y-m-d') ?>" class="form-control" id="blogDate" name="blogDate" required />
+                                            <small id="blogDateDisplay" class="text-muted"><?php
+                                                $d = strtotime($blogData[0]['web_blogDate']);
+                                                echo $d ? date('M j, Y', $d) : $blogData[0]['web_blogDate'];
+                                                ?></small>
                                         </div>
-                                        <div class="row mb-3">
-                                            <label
-                                                for="blogTitle"
-                                                class="col-sm-3 col-form-label">Title</label>
-                                            <div class="col-sm-9">
-                                                <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    id="blogTitle"
-                                                    name="blogTitle"
-                                                    required
-                                                    value="<?= $blgData['web_blogTitle'] ?>"
-                                                    placeholder="Enter Title" />
-                                            </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="blogTitle"
+                                            class="col-sm-3 col-form-label">Blog Title</label>
+                                        <div class="col-sm-9">
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="blogTitle"
+                                                value="<?= $blogData[0]['web_blogTitle'] ?>"
+                                                name="blogTitle"
+                                                required
+                                                placeholder="Enter Title" />
                                         </div>
-                                        <div class="row mb-3">
-                                            <label for="blogDesp" class="col-sm-3 col-form-label">Blog Description</label>
-                                            <div class="col-sm-9">
-                                                <textarea
-                                                    class="form-control"
-                                                    id="blogDesp"
-                                                    name="blogDesp"
-                                                    rows="3"
-                                                    required
-                                                    placeholder="Write Blog Description"><?= $blgData['web_blogDesp'] ?></textarea>
-                                            </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="blogDesp" class="col-sm-3 col-form-label">Blog Description</label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="blogDesp"
+                                                name="blogDesp"
+                                                rows="3"
+                                                required
+                                                placeholder="Write Blog Description"><?= $blogData[0]['web_blogDesp'] ?></textarea>
                                         </div>
-                                        <div class="row mb-3">
-                                            <label for="blogDespSec" class="col-sm-3 col-form-label">Blog Description (optional)</label>
-                                            <div class="col-sm-9">
-                                                <textarea
-                                                    class="form-control"
-                                                    id="blogDespSec"
-                                                    name="blogDespSec"
-                                                    rows="3"
-                                                    placeholder="Write Blog Description"><?= $blgData['web_blogDesp'] ?></textarea>
-                                            </div>
+                                    </div>
+                                    <div class="card-title d-flex align-items-center">
+                                        <h5 class="mb-0">Category page SEO (Optional)</h5>
+                                    </div>
+                                    <hr />
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaTittle"
+                                            class="col-sm-3 col-form-label">Page Tittle<br><span>(Don't fill if you want auto generate)</span></label>
+                                        <div class="col-sm-9">
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                value="<?= $blogData[0]['metaTittle'] ?>"
+                                                id="metaTittle"
+                                                name="metaTittle"
+                                                placeholder="Page Title" />
                                         </div>
-
-
-                                        <div class="row">
-                                            <label class="col-sm-3 col-form-label"></label>
-                                            <div class="col-sm-9">
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-primary px-5 btn-clash">
-                                                    Update Blog
-                                                </button>
-                                            </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaDesc"
+                                            class="col-sm-3 col-form-label">Meta Description</label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="metaDesc"
+                                                name="metaDesc"
+                                                rows="3"
+                                                placeholder="Meta Description"><?= $blogData[0]['metaDesc'] ?></textarea>
                                         </div>
-                                    </form>
-                                <?php
-                                } ?>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaKeyword"
+                                            class="col-sm-3 col-form-label">Meta Keyword<br><span>(Seperate each keywork by coma , )</span></label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="metaKeyword"
+                                                name="metaKeyword"
+                                                rows="3"
+                                                placeholder="Meta Keywords"><?= $blogData[0]['metaKeywords'] ?></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-sm-3 col-form-label"></label>
+                                        <div class="col-sm-9">
+                                            <button
+                                                type="submit"
+                                                class="btn btn-primary px-5 btn-clash">
+                                                Update Blog
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -207,6 +240,66 @@
     <!--app-->
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+
+    <script>
+        tinymce.init({
+            selector: '#blogDesp',
+            plugins: 'code table lists',
+            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | indent outdent | bullist numlist | code | table',
+            setup: function(editor) {
+                editor.on('change', function() {
+                    tinymce.triggerSave();
+                });
+                // ensure the editor is populated with the server-side value
+                editor.on('init', function() {
+                    var content = <?= json_encode($blogData[0]['web_blogDesp'] ?? '') ?>;
+                    if (content) editor.setContent(content);
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // Keep the small human-readable date in sync with the date input
+        (function () {
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            function formatHuman(dateValue) {
+                if (!dateValue) return '';
+                var parts = dateValue.split('-'); // expected yyyy-mm-dd
+                if (parts.length !== 3) return dateValue;
+                var y = parseInt(parts[0], 10);
+                var m = parseInt(parts[1], 10) - 1; // month index
+                var d = parseInt(parts[2], 10);
+                if (isNaN(y) || isNaN(m) || isNaN(d) || m < 0 || m > 11) return dateValue;
+                return months[m] + ' ' + d + ', ' + y;
+            }
+
+            $(function() {
+                var $date = $('#blogDate');
+                var $display = $('#blogDateDisplay');
+
+                function updateDisplay() {
+                    var val = $date.val();
+                    // If user somehow selected a future date (typing, browser oddities), clamp it to today
+                    var today = (new Date()).toISOString().slice(0, 10);
+                    if (val && val > today) {
+                        // reset to today and show a message
+                        $date.val(today);
+                        val = today;
+                        toastr.warning('Future dates are not allowed — the date has been set to today.');
+                    }
+                    $display.text(formatHuman(val));
+                }
+
+                // Initialize display from current value
+                updateDisplay();
+
+                // Update whenever the input changes
+                $date.on('change input', updateDisplay);
+            });
+        })();
+    </script>
+
     <?php
     if ($this->session->flashdata('error') != '') {
     ?>
@@ -217,6 +310,20 @@
                 "hideMethod": "fadeOut"
             }
             toastr.error('Please fill out all fields!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('successadde') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('New Blog Added!');
         </script>
     <?php
     }

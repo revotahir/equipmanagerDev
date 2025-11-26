@@ -423,12 +423,25 @@ class superadmin extends MY_Controller
         $this->session->set_flashdata('successDeleted', 'Blog Category deleted successfully!');
         redirect(base_url('manage-blog-category'));
     }
+    public function changeBlogCatStatus()
+    {
+        if ($this->uri->segment(3) == 1) {
+            $newStatus = 0;
+            $this->session->set_flashdata('statusDeactivated', 'Category deactivated successfully!');
+        } else {
+            $newStatus = 1;
+            $this->session->set_flashdata('statusActivated', 'Category activated successfully!');
+        }
+        $this->generic->Update('web_pages', array('pageID' => $this->uri->segment(2)), array('pageStatus' => $newStatus));
+        redirect(base_url('manage-blog-category'));
+    }
     public function updateBlogCat()
     {
         $this->data['blogCatData'] = $this->generic->GetBlogCatData(array('bc.blogCatID' => $this->uri->segment(2)));
         $this->load->view('superadmin/blog/EditBlogCat', $this->data);
     }
-    public function updateBlogCatData() {
+    public function updateBlogCatData()
+    {
         $catName = $this->input->post('catName');
         //add page
         //get all seo part inputs
@@ -453,28 +466,38 @@ class superadmin extends MY_Controller
             'p1' => $headingDesc1,
             'p2' => $headingDesc2
         );
-        $this->generic->Update('web_page_meta',array('pageID' => $this->uri->segment(3)), $seodata);
+        $this->generic->Update('web_page_meta', array('pageID' => $this->uri->segment(3)), $seodata);
         //add blog cat data
         $blogcatData = array(
             'blogCat' => $this->input->post('catName'),
             'blogCatDesc' => $this->input->post('catDesc'),
         );
-        $this->generic->Update('web_blog_cat',array('pageID' => $this->uri->segment(3)), $blogcatData);
-         $this->session->set_flashdata('updatedCat', 'Blog Category deleted successfully!');
+        $this->generic->Update('web_blog_cat', array('pageID' => $this->uri->segment(3)), $blogcatData);
+        $this->session->set_flashdata('updatedCat', 'Blog Category deleted successfully!');
         redirect(base_url('manage-blog-category'));
     }
     public function ManageSuperBlog()
     {
-        $this->data['blogCatData'] = $this->generic->GetData('web_blog_cat');
+        $this->data['blogCatData'] = $this->generic->GetBlogCatData(array('p.pageStatus'=>1));
         $this->load->view('superadmin/blog/addblog', $this->data);
     }
 
     // show super blog page load
     public function showSuperBlog()
     {
-        $this->data['showblogdata'] = $this->generic->GetData('web_blogs', array(), 'web_blogID', 'DESC');
-        $this->data['blogCatData'] = $this->generic->GetData('web_blog_cat');
+        $this->data['showblogdata'] = $this->generic->GetBlogData();
         $this->load->view('superadmin/blog/showblog', $this->data);
+    }
+    public function changeBlogStatus(){
+          if ($this->uri->segment(3) == 1) {
+            $newStatus = 0;
+            $this->session->set_flashdata('statusDeactivated', 'Category deactivated successfully!');
+        } else {
+            $newStatus = 1;
+            $this->session->set_flashdata('statusActivated', 'Category activated successfully!');
+        }
+        $this->generic->Update('web_pages', array('pageID' => $this->uri->segment(2)), array('pageStatus' => $newStatus));
+        redirect(base_url('show-super-blog'));
     }
 
     // add blog
@@ -484,7 +507,7 @@ class superadmin extends MY_Controller
         $blogDate = $this->input->post('blogDate');
         $blogTitle = $this->input->post('blogTitle');
         $blogDesp = $this->input->post('blogDesp');
-         $metaTitle = $this->input->post('metaTittle');
+        $metaTitle = $this->input->post('metaTittle');
         // normalize title: trim, replace any whitespace sequence with a hyphen, then lowercase
         $Slug = strtolower(preg_replace('/\s+/', '-', trim($blogTitle)));
         $metaKeywords = $this->input->post('metaKeyword');
@@ -541,7 +564,7 @@ class superadmin extends MY_Controller
             }
         }
         $data = array(
-            'pageID'=>$pageID[0]['result'],
+            'pageID' => $pageID[0]['result'],
             'blogCatID' => $blogCate,
             'web_blogDate' => $blogDate,
             'web_blogTitle' => $blogTitle,
@@ -557,9 +580,9 @@ class superadmin extends MY_Controller
     public function deletSuperBlog()
     {
         // Delete blog from database
-        // $blogcat=$this->generic->GetData('web_blogs', array('web_blogID' => $this->uri->segment(2)));
-        // $this->generic->Delete('web_page',array('pageID'=>$blogcat[0]['pageID']));
-        // $this->generic->Delete('web_page_meta',array('pageID'=>$blogcat[0]['pageID']));
+        $blogcat=$this->generic->GetData('web_blogs', array('web_blogID' => $this->uri->segment(2)));
+        $this->generic->Delete('web_pages',array('pageID'=>$blogcat[0]['pageID']));
+        $this->generic->Delete('web_page_meta',array('pageID'=>$blogcat[0]['pageID']));
         $this->generic->Delete('web_blogs', array('web_blogID' => $this->uri->segment(2)));
         $this->session->set_flashdata('successDeleted', 'Blog deleted successfully!');
         redirect(base_url('show-super-blog'));
@@ -568,8 +591,10 @@ class superadmin extends MY_Controller
     // update blog
     public function updateSuperBlog()
     {
+        //load category
+        $this->data['blogCatData']=$this->generic->GetBlogCatData(array('p.pageStatus'=>1));
         // Get blog data
-        $this->data['blogData'] = $this->generic->GetData('web_blogs', array('web_blogID' => $this->uri->segment(2)));
+        $this->data['blogData'] = $this->generic->GetBlogData(array('wb.web_blogID' => $this->uri->segment(2)));
         // Load view
         $this->load->view('superadmin/blog/updateblog', $this->data);
     }
@@ -577,16 +602,43 @@ class superadmin extends MY_Controller
     // process blog update
     public function processUpdateBlog()
     {
+        
+
+
+
         $blogID = $this->uri->segment(2);
         $blogCate = $this->input->post('blogCate');
         $blogDate = $this->input->post('blogDate');
         $blogTitle = $this->input->post('blogTitle');
         $blogDesp = $this->input->post('blogDesp');
-        $blogDespSec = $this->input->post('blogDespSec');
-
+        
+        //get all seo part inputs
+        $metaTitle = $this->input->post('metaTittle');
+        $metaKeywords = $this->input->post('metaKeyword');
+        $metaDesc = $this->input->post('metaDesc');
+        $heading1 = $this->input->post('heading1');
+        $heading2 = $this->input->post('heading2');
+        $headingDesc1 = $this->input->post('headingDesc1');
+        $headingDesc2 = $this->input->post('headingDesc2');
+        if ($metaTitle) {
+            $pageTittle = $metaTitle;
+        } else {
+            $pageTittle = $blogTitle . " | equipmanager.dk";
+        }
+        $seodata = array(
+            'metaTittle' => $pageTittle,
+            'metaKeywords' => $metaKeywords,
+            'metaDesc' => $metaDesc,
+            'h1' => $heading1,
+            'h2' => $heading2,
+            'p1' => $headingDesc1,
+            'p2' => $headingDesc2
+        );
+        $this->generic->Update('web_page_meta', array('pageID' => $this->uri->segment(3)), $seodata);
+        $blogdata=$this->generic->GetData('web_blogs',array('web_blogID'=>$this->uri->segment(2)));
         //check if we have image posted
         if (empty($_FILES['blogImage']['name'])) {
-            $blogImage = 'testimonial.svg';
+            $blogImage = $blogdata[0]['web_blogImg'];
         } else {
             //upload person image
             $config['upload_path']          = './assets/uploads/superadmin/blog';
@@ -605,16 +657,14 @@ class superadmin extends MY_Controller
             }
         }
         $data = array(
-            'web_blogCat' => $blogCate,
+            'blogCatID' => $blogCate,
             'web_blogDate' => $blogDate,
             'web_blogTitle' => $blogTitle,
             'web_blogDesp' => $blogDesp,
-            'web_blogDespSec' => $blogDespSec,
             'web_blogImg' => $blogImage,
-            'web_blogStatus' => 1,
         );
         $this->generic->Update('web_blogs', array('web_blogID' => $blogID), $data);
-        $this->session->set_flashdata('success', 'Person deleted successfully!');
+        $this->session->set_flashdata('successupdated', 'Person deleted successfully!');
         redirect(base_url('show-super-blog'));
     }
 

@@ -354,6 +354,25 @@ class Generic_model extends CI_Model
             return false;
         }
     }
+    public function GetBlogData($where = false)
+    {
+        $this->db->select('*');
+        $this->db->from('web_blogs as wb');
+        $this->db->join('web_blog_cat as wbc', 'wbc.blogCatID=wb.blogCatID', 'inner');
+        $this->db->join('web_pages as p', 'wb.pageID=p.pageID', 'inner');
+        $this->db->join('web_page_meta as pm', 'p.pageID=pm.pageID', 'inner');
+        $this->db->order_by('wb.web_blogID', 'DESC');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
 
 
 

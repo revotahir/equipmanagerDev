@@ -39,6 +39,72 @@
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
     <title>All Blogs</title>
+    <style>
+        .bg-dark-green img {
+            background-color: #0b2523 !important;
+            border-radius: 10px;
+        }
+
+        .checkbox-apple {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            margin: 20px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .checkbox-apple label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 25px;
+            border-radius: 50px;
+            background: linear-gradient(to bottom, #b3b3b3, #e6e6e6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-apple label:after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 23px;
+            height: 23px;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-apple input[type="checkbox"]:checked+label {
+            background: linear-gradient(to bottom, #4cd964, #5de24e);
+        }
+
+        .checkbox-apple input[type="checkbox"]:checked+label:after {
+            transform: translateX(25px);
+        }
+
+        .checkbox-apple label:hover {
+            background: linear-gradient(to bottom, #b3b3b3, #e6e6e6);
+        }
+
+        .checkbox-apple label:hover:after {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .yep {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 25px;
+        }
+    </style>
 </head>
 
 <body>
@@ -52,7 +118,7 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                   All Blogs
+                    All Blogs
                 </div>
             </div>
             <!--end breadcrumb-->
@@ -63,11 +129,12 @@
                         <table class="table align-middle">
                             <thead class="table-secondary bg-sky-blue font-clash-green">
                                 <tr>
-                                    <th>Blog Image</th>
-                                    <th>Blog Category</th>
                                     <th>Upload Date</th>
+                                    <th>Image</th>
                                     <th>Title</th>
-                                    <th>Description</th>
+                                    <th>Blog Category</th>
+                                    <th>Status</th>
+                                    <th></th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -77,33 +144,108 @@
                                     foreach ($showblogdata as $superBlog) {
                                 ?>
                                         <tr>
-                                            <td class="bg-dark-green">
-                                                <img src="<?= base_url('assets/uploads/superadmin/blog/' . $superBlog['web_blogImg']) ?>" alt="icon"
-                                                    style="width: 150px; height: 150px; object-fit:cover" />
-                                            </td>
-                                            <?php
-                                            // Check the blog post's category ID first
-                                            if ($superBlog['blogCatID'] == '') {
-                                            ?>
-                                                <td>Empty</td>
+                                            <td class="bg-dark-green" style="width: 10%;">
                                                 <?php
-                                            } else {
-                                                // If it's not 0, loop to find the actual category name
-                                                foreach ($blogCatData as $blogCat) {
-                                                    if ($superBlog['blogCatID'] == $blogCat['blogCatID']) {
+                                                $d = strtotime($superBlog['web_blogDate']);
+                                                echo $d ? date('M j, Y', $d) : $superBlog['web_blogDate'];
                                                 ?>
-                                                        <td><?= $blogCat['blogCat'] ?></td>
-                                            <?php
-                                                        // Stop looping once the match is found (improves efficiency)
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                            ?>
-                                            <td><?= $superBlog['web_blogDate'] ?></td>
-                                            <td><?= $superBlog['web_blogTitle'] ?></td>
-                                            <td><?= $superBlog['web_blogDesp'] ?></td>
+                                            </td>
                                             <td>
+                                                <img src="<?= base_url('assets/uploads/superadmin/blog/').$superBlog['web_blogImg']?> " width="50px" alt="">
+                                            </td>
+
+                                            <td><?= $superBlog['web_blogTitle'] ?></td>
+                                            <td><?= $superBlog['blogCat'] ?></td>
+                                            <td><?php
+                                                if ($superBlog['pageID'] == 1) {
+                                                    echo 'Active';
+                                                } else {
+                                                    echo 'Inactive';
+                                                }
+                                                ?></td>
+                                            <td>
+                                                <a href="<?= base_url('change-blog-status/' . $superBlog['pageID']) ?>/<?= $superBlog['pageStatus'] ?>">
+                                                    <div class="checkbox-apple">
+                                                        <input class="yep" id="check-apple" type="checkbox" <?= ($superBlog['pageStatus'] == 1) ? 'checked' : '' ?> />
+                                                        <label for="check-apple"></label>
+                                                    </div>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                  <a
+                                                    href="#"
+                                                    class="text-info"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModal_<?= $superBlog['blogCatID'] ?>"
+                                                    title="View SEO Config"><i class="bi bi-eye-fill"></i>
+                                                </a>
+
+                                                <!-- Modal -->
+                                                <div
+                                                    class="modal fade"
+                                                    id="exampleModal_<?= $superBlog['blogCatID'] ?>"
+                                                    tabindex="-1"
+                                                    aria-labelledby="exampleModalLabel_<?= $superBlog['blogCatID'] ?>"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel_<?= $superBlog['blogCatID'] ?>"></h5>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- body code -->
+
+                                                                <div class="row">
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+                                                                            <div class="border p-3 rounded">
+                                                                                <H3><?= $superBlog['web_blogTitle'] ?> </H3>
+                                                                                <hr/>
+                                                                                <p>
+                                                                                    <?= $superBlog['web_blogDesp'] ?>
+                                                                                </p>
+                                                                                <h6 class="mb-0 text-uppercase">SEO Content for <?= $superBlog['blogCat'] ?></h6>
+                                                                                <hr />
+                                                                                <div class="table-responsive mt-3">
+                                                                                    <table class="table align-middle">
+                                                                                        <thead class="table-secondary bg-sky-blue font-clash-green">
+                                                                                            <tr>
+                                                                                                <th>Attribute</th>
+                                                                                                <th>Value</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td>Meta Title</td>
+                                                                                                <td><?= $superBlog['metaTittle'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Meta Description</td>
+                                                                                                <td><?= $superBlog['metaDesc'] ?></td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td>Meta Keywords</td>
+                                                                                                <td><?= $superBlog['metaKeywords'] ?></td>
+                                                                                            </tr>
+                                                                                        </tbody>
+                                                                                    </table>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- body code end here -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <a href="<?= base_url('update-blog/' . $superBlog['web_blogID']) ?>" class="text-warning ms-2"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom"
@@ -164,6 +306,19 @@
     <!--app-->
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+     <script>
+        // Plain JS: delegate clicks on the toggle area and redirect to the enclosing anchor's href.
+        document.addEventListener('click', function(e) {
+            var wrapper = e.target.closest('.checkbox-apple');
+            if (!wrapper) return;
+            var anchor = wrapper.closest('a');
+            if (!anchor) return;
+            e.preventDefault();
+            // Use href (absolute or relative)
+            var href = anchor.getAttribute('href');
+            if (href) window.location.href = href;
+        });
+    </script>
     <?php
     if ($this->session->flashdata('success-edited') != '') {
     ?>
@@ -193,7 +348,7 @@
     }
     ?>
     <?php
-    if ($this->session->flashdata('success') != '') {
+    if ($this->session->flashdata('statusDeactivated') != '') {
     ?>
         <script type="text/javascript">
             toastr.options = {
@@ -201,7 +356,35 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr.success('Blog Added!');
+            toastr.info('Blog Deactivated!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('statusActivated') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Blog Active!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('successupdated') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('Blog Updated!');
         </script>
     <?php
     }
