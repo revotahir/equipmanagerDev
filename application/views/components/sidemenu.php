@@ -83,7 +83,7 @@
               <li>
                   <a class="has-arrow" href="javascript:;">
                       <div class="parent-icon">
-                          <i class="bx bx-window-alt"></i>
+                          <i class="bi bi-graph-up"></i>
                       </div>
                       <div class="menu-title font-clash">Manage Metrics</div>
                   </a>
@@ -99,7 +99,7 @@
               <li>
                   <a class="has-arrow" href="javascript:;">
                       <div class="parent-icon">
-                          <i class="bx bx-window-alt"></i>
+                          <i class="bi bi-people"></i>
                       </div>
                       <div class="menu-title font-clash">Manage Company Partners
                       </div>
