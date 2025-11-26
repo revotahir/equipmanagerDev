@@ -38,7 +38,7 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-
+    <script src="https://cdn.tiny.cloud/1/k3dyp6z9t18y59wacjgbp7fd0k4awtdhmq2j8qe570fxys3c/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
     <title>Add Blog</title>
 </head>
 
@@ -85,11 +85,22 @@
                                     <div class="row mb-3">
                                         <label for="blogCate" class="col-sm-3 col-form-label">Select Blog Category</label>
                                         <div class="col-sm-9">
-                                            <select name="blogCate" id="blogCate" class="form-control">
-                                                <option value="">Select Category</option>
-                                                <option value="manufacturing">Manufacturing</option>
-                                                <option value="industry">Industry</option>
-                                            </select>
+                                            <?php
+                                            if (!empty($blogCatData)) {
+                                            ?>
+                                                <select name="blogCate" id="blogCate" class="form-control">
+                                                    <option value="">Select Category</option>
+                                                    <?php
+                                                    foreach ($blogCatData as $category) {
+                                                    ?>
+                                                        <option value="<?= $category['blogCatID'] ?>"><?= $category['blogCat'] ?></option>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                </select>
+                                            <?php
+                                            }
+                                            ?>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -131,18 +142,6 @@
                                                 placeholder="Write Blog Description"></textarea>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <label for="blogDespSec" class="col-sm-3 col-form-label">Blog Description (optional)</label>
-                                        <div class="col-sm-9">
-                                            <textarea
-                                                class="form-control"
-                                                id="blogDespSec"
-                                                name="blogDespSec"
-                                                rows="3"
-                                                placeholder="Write Blog Description"></textarea>
-                                        </div>
-                                    </div>
-
 
                                     <div class="row">
                                         <label class="col-sm-3 col-form-label"></label>
@@ -189,6 +188,20 @@
     <!--app-->
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+
+    <script>
+        tinymce.init({
+            selector: '#blogDesp',
+            plugins: 'code table lists',
+            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | indent outdent | bullist numlist | code | table',
+            setup: function(editor) {
+                editor.on('change', function() {
+                    tinymce.triggerSave();
+                });
+            }
+        });
+    </script>
+
     <?php
     if ($this->session->flashdata('error') != '') {
     ?>

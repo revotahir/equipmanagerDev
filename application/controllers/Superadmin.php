@@ -411,13 +411,15 @@ class superadmin extends MY_Controller
     }
     public function ManageSuperBlog()
     {
-        $this->load->view('superadmin/blog/addblog');
+        $this->data['blogCatData'] = $this->generic->GetData('web_blog_cat');
+        $this->load->view('superadmin/blog/addblog', $this->data);
     }
 
     // show super blog page load
     public function showSuperBlog()
     {
         $this->data['showblogdata'] = $this->generic->GetData('web_blogs', array(), 'web_blogID', 'DESC');
+        $this->data['blogCatData'] = $this->generic->GetData('web_blog_cat');
         $this->load->view('superadmin/blog/showblog', $this->data);
     }
 
@@ -428,7 +430,6 @@ class superadmin extends MY_Controller
         $blogDate = $this->input->post('blogDate');
         $blogTitle = $this->input->post('blogTitle');
         $blogDesp = $this->input->post('blogDesp');
-        $blogDespSec = $this->input->post('blogDespSec');
 
         //check if we have image posted
         if (empty($_FILES['blogImage']['name'])) {
@@ -451,13 +452,11 @@ class superadmin extends MY_Controller
             }
         }
         $data = array(
-            'web_blogCat' => $blogCate,
+            'blogCatID' => $blogCate,
             'web_blogDate' => $blogDate,
             'web_blogTitle' => $blogTitle,
             'web_blogDesp' => $blogDesp,
-            'web_blogDespSec' => $blogDespSec,
             'web_blogImg' => $blogImage,
-            'web_blogStatus' => 1,
         );
         $this->generic->InsertData('web_blogs', $data);
         $this->session->set_flashdata('success', 'Person deleted successfully!');
