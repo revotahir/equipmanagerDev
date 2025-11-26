@@ -38,7 +38,7 @@
     <link href="<?= base_url() ?>assets/css/semi-dark.css" rel="stylesheet" />
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
-    <title>Show All Blogs</title>
+    <title>All Blogs</title>
 </head>
 
 <body>
@@ -52,7 +52,7 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Show All Blogs
+                   All Blogs
                 </div>
             </div>
             <!--end breadcrumb-->
@@ -83,7 +83,7 @@
                                             </td>
                                             <?php
                                             // Check the blog post's category ID first
-                                            if ($superBlog['blogCatID'] == 0) {
+                                            if ($superBlog['blogCatID'] == '') {
                                             ?>
                                                 <td>Empty</td>
                                                 <?php

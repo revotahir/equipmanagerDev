@@ -143,6 +143,9 @@ $route['process-update-testi/:any'] = 'superadmin/processUpdateTestimonial';
 $route['change-testi-status/:any/:any'] = 'superadmin/changeTestimonialStatus';
 // super blog
 $route['manage-super-blog'] = 'superadmin/ManageSuperBlog';
+$route['delet-blog-cat/:any'] = 'superadmin/DltBlogCat';
+$route['update-blog-cat/:any'] = 'superadmin/updateBlogCat';
+$route['update-blog-category-data/:any/:any'] = 'superadmin/updateBlogCatData';
 $route['add-blog'] = 'superadmin/addSuperBlog';
 $route['show-super-blog'] = 'superadmin/showSuperBlog';
 $route['dlet-blog/:any'] = 'superadmin/deletSuperBlog';

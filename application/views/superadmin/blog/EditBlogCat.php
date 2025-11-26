@@ -39,7 +39,7 @@
     <link href="<?= base_url() ?>assets/css/header-colors.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
 
-    <title>Manage Blog Category</title>
+    <title>Edit Blog Category</title>
 </head>
 
 <body>
@@ -53,7 +53,7 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Blog Category Management
+                    Blog Category Update
                 </div>
             </div>
             <!--end breadcrumb-->
@@ -63,15 +63,15 @@
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Add Blog Category</h5>
+                                    <h5 class="mb-0">Update Blog Category</h5>
                                 </div>
                                 <hr />
-                                <form action="<?= base_url('add-blog-category-data') ?>" method="post">
+                                <form action="<?= base_url('update-blog-category-data/').$blogCatData[0]['blogCatID'].'/'.$blogCatData[0]['pageID'] ?>" method="post">
 
                                     <div class="row mb-3">
                                         <label for="catName" class="col-sm-3 col-form-label">Category Name</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" name="catName" placeholder="Category Name" id="catName">
+                                            <input type="text" value="<?= $blogCatData[0]['blogCat']?>" class="form-control" name="catName" placeholder="Category Name" id="catName">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -83,7 +83,7 @@
                                                 name="catDesc"
                                                 rows="3"
                                                 required
-                                                placeholder="Blog Category Description"></textarea>
+                                                placeholder="Blog Category Description"><?= $blogCatData[0]['blogCatDesc']?></textarea>
                                         </div>
                                     </div>
                                     <div class="card-title d-flex align-items-center">
@@ -98,6 +98,7 @@
                                             <input
                                                 type="text"
                                                 class="form-control"
+                                                value="<?=$blogCatData[0]['metaTittle'] ?>"
                                                 id="metaTittle"
                                                 name="metaTittle"
                                                 placeholder="Page Title" />
@@ -113,7 +114,7 @@
                                                 id="metaDesc"
                                                 name="metaDesc"
                                                 rows="3"
-                                                placeholder="Meta Description"></textarea>
+                                                placeholder="Meta Description"><?=$blogCatData[0]['metaDesc'] ?></textarea>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -126,7 +127,7 @@
                                                 id="metaKeyword"
                                                 name="metaKeyword"
                                                 rows="3"
-                                                placeholder="Meta Keywords"></textarea>
+                                                placeholder="Meta Keywords"><?=$blogCatData[0]['metaKeywords'] ?></textarea>
                                         </div>
                                     </div>
                                     <hr>
@@ -138,6 +139,7 @@
                                                 class="form-control"
                                                 type="text"
                                                 id="heading1"
+                                                value="<?=$blogCatData[0]['h1'] ?>"
                                                 name="heading1"
                                                 placeholder="Heading 1" />
                                         </div>
@@ -146,6 +148,7 @@
                                             <input
                                                 class="form-control"
                                                 type="text"
+                                                value="<?=$blogCatData[0]['h2'] ?>"
                                                 id="heading2"
                                                 name="heading2"
                                                 placeholder="Heading 2" />
@@ -159,6 +162,7 @@
                                                 class="form-control"
                                                 type="text"
                                                 id="headingDesc1"
+                                                value="<?=$blogCatData[0]['p1'] ?>"
                                                 name="headingDesc1"
                                                 placeholder="Heading Description 1" />
                                         </div>
@@ -167,6 +171,7 @@
                                             <input
                                                 class="form-control"
                                                 type="text"
+                                                value="<?=$blogCatData[0]['p2'] ?>"
                                                 id="headingDesc2"
                                                 name="headingDesc2"
                                                 placeholder="Heading Description 2" />
@@ -178,7 +183,7 @@
                                             <button
                                                 type="submit"
                                                 class="btn btn-primary px-5 btn-clash">
-                                                Add Blog Category
+                                                Update Blog Category
                                             </button>
                                         </div>
                                     </div>
@@ -190,154 +195,7 @@
             </div>
             <!--end row-->
 
-            <!--end breadcrumb-->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="mb-0">Category List</h5>
-                    <div class="table-responsive mt-3">
-                        <table class="table align-middle">
-                            <thead class="table-secondary bg-sky-blue font-clash-green">
-                                <tr>
-                                    <th>Sr.</th>
-                                    <th>Category Name</th>
-                                    <th>Category Description</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($blogCat)) {
-                                    $sr=1;
-                                    foreach ($blogCat as $cat) { ?>
-                                        <tr>
-                                            <th><?=$sr.'.' ?> </th>
-                                            <td><?= $cat['blogCat'] ?></td>
-                                            <td>
-                                                <?= $cat['blogCatDesc']?> 
-                                            </td>
-                                            <td>
-                                                <?php 
-                                                        if($cat['pageStatus']==1){
-                                                            echo 'Active';
-                                                        }else{
-                                                            echo 'Inactive';
-                                                        }
-                                                ?>
-                                            </td>
-                                            <td>
-                                                <a
-                                                    href="#"
-                                                    class="text-info"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#exampleModal_<?= $cat['blogCatID'] ?>"
-                                                    title="View SEO Config"><i class="bi bi-eye-fill"></i>
-                                                </a>
-
-                                                <!-- Modal -->
-                                                <div
-                                                    class="modal fade"
-                                                    id="exampleModal_<?= $cat['blogCatID'] ?>"
-                                                    tabindex="-1"
-                                                    aria-labelledby="exampleModalLabel_<?= $cat['blogCatID'] ?>"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog modal-l">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="exampleModalLabel_<?= $cat['blogCatID'] ?>"></h5>
-                                                                <button
-                                                                    type="button"
-                                                                    class="btn-close"
-                                                                    data-bs-dismiss="modal"
-                                                                    aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <!-- body code -->
-
-                                                                <div class="row">
-                                                                    <div class="card">
-                                                                        <div class="card-body">
-                                                                            <div class="border p-3 rounded">
-                                                                                <h6 class="mb-0 text-uppercase">SEO Content for <?= $cat['blogCat'] ?></h6>
-                                                                                <hr />
-                                                                                <div class="table-responsive mt-3">
-                                                                                    <table class="table align-middle">
-                                                                                        <thead class="table-secondary bg-sky-blue font-clash-green">
-                                                                                            <tr>
-                                                                                                <th>Attribute</th>
-                                                                                                <th>Value</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody>
-                                                                                            <tr>
-                                                                                                <td>Meta Title</td>
-                                                                                                <td><?= $cat['metaTittle'] ?></td>
-                                                                                            </tr>
-                                                                                            <tr>
-                                                                                                <td>Meta Description</td>
-                                                                                                <td><?= $cat['metaDesc'] ?></td>
-                                                                                            </tr>
-                                                                                            <tr>
-                                                                                                <td>Meta Keywords</td>
-                                                                                                <td><?= $cat['metaKeywords'] ?></td>
-                                                                                            </tr>
-                                                                                            <tr>
-                                                                                                <td>Heading 1</td>
-                                                                                                <td><?= $cat['h1'] ?></td>
-                                                                                            </tr>
-                                                                                            <tr>
-                                                                                                <td>Heading 2</td>
-                                                                                                <td><?= $cat['h2'] ?></td>
-                                                                                            </tr>
-                                                                                            <tr>
-                                                                                                <td>Heading Description 1</td>
-                                                                                                <td><?= $cat['p1'] ?></td>
-                                                                                            </tr>
-                                                                                            <tr>
-                                                                                                <td>Heading Description 2</td>
-                                                                                                <td><?= $cat['p2'] ?></td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <!-- body code end here -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <a href="<?= base_url('update-blog-cat/' . $cat['blogCatID']) ?>" class="text-warning ms-2"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom"
-                                                    title="Edit">
-                                                    <i class="bi bi-pencil-fill"></i>
-                                                </a>
-                                                <a href="<?= base_url('delet-blog-cat/' . $cat['blogCatID']) ?>"
-                                                    class="text-danger ms-2"
-                                                    onclick="return confirm('Are you sure you want to delete this blog Category?');"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="bottom"
-                                                    title="Delete">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </a>
-
-                                            </td>
-                                        </tr>
-                                    <?php $sr++;}
-                                } else { ?>
-                                    <tr>
-                                        <td colspan="7" class="text-center">No Blog Category Added Yet!</td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+          
         </main>
         <!--end page main-->
 
@@ -366,7 +224,7 @@
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
     <?php
-    if ($this->session->flashdata('updatedCat') != '') {
+    if ($this->session->flashdata('success-edited') != '') {
     ?>
         <script type="text/javascript">
             toastr.options = {
@@ -374,7 +232,7 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            toastr.success('Blog Category Updated!');
+            toastr.success('Testimonial Updated!');
         </script>
     <?php
     }

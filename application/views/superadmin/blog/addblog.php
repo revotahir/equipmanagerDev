@@ -88,7 +88,7 @@
                                             <?php
                                             if (!empty($blogCatData)) {
                                             ?>
-                                                <select name="blogCate" id="blogCate" class="form-control">
+                                                <select name="blogCate" required id="blogCate" class="form-control">
                                                     <option value="">Select Category</option>
                                                     <?php
                                                     foreach ($blogCatData as $category) {
@@ -108,18 +108,15 @@
                                             for="blogDate"
                                             class="col-sm-3 col-form-label">Date</label>
                                         <div class="col-sm-9">
-                                            <input
-                                                type="date"
-                                                class="form-control"
-                                                id="blogDate"
-                                                name="blogDate"
-                                                required />
+                                            <!-- prevent selecting future dates by setting max to today -->
+                                            <input type="date" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" class="form-control" id="blogDate" name="blogDate" required />
+                                            <small id="blogDateDisplay" class="text-muted"><?= date('M j, Y') ?></small>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <label
                                             for="blogTitle"
-                                            class="col-sm-3 col-form-label">Title</label>
+                                            class="col-sm-3 col-form-label">Blog Title</label>
                                         <div class="col-sm-9">
                                             <input
                                                 type="text"
@@ -142,7 +139,49 @@
                                                 placeholder="Write Blog Description"></textarea>
                                         </div>
                                     </div>
-
+                                    <div class="card-title d-flex align-items-center">
+                                        <h5 class="mb-0">Category page SEO (Optional)</h5>
+                                    </div>
+                                    <hr />
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaTittle"
+                                            class="col-sm-3 col-form-label">Page Tittle<br><span>(Don't fill if you want auto generate)</span></label>
+                                        <div class="col-sm-9">
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="metaTittle"
+                                                name="metaTittle"
+                                                placeholder="Page Title" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaDesc"
+                                            class="col-sm-3 col-form-label">Meta Description</label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="metaDesc"
+                                                name="metaDesc"
+                                                rows="3"
+                                                placeholder="Meta Description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="metaKeyword"
+                                            class="col-sm-3 col-form-label">Meta Keyword<br><span>(Seperate each keywork by coma , )</span></label>
+                                        <div class="col-sm-9">
+                                            <textarea
+                                                class="form-control"
+                                                id="metaKeyword"
+                                                name="metaKeyword"
+                                                rows="3"
+                                                placeholder="Meta Keywords"></textarea>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <label class="col-sm-3 col-form-label"></label>
                                         <div class="col-sm-9">
@@ -202,6 +241,47 @@
         });
     </script>
 
+    <script>
+        // Keep the small human-readable date in sync with the date input
+        (function () {
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            function formatHuman(dateValue) {
+                if (!dateValue) return '';
+                var parts = dateValue.split('-'); // expected yyyy-mm-dd
+                if (parts.length !== 3) return dateValue;
+                var y = parseInt(parts[0], 10);
+                var m = parseInt(parts[1], 10) - 1; // month index
+                var d = parseInt(parts[2], 10);
+                if (isNaN(y) || isNaN(m) || isNaN(d) || m < 0 || m > 11) return dateValue;
+                return months[m] + ' ' + d + ', ' + y;
+            }
+
+            $(function() {
+                var $date = $('#blogDate');
+                var $display = $('#blogDateDisplay');
+
+                function updateDisplay() {
+                    var val = $date.val();
+                    // If user somehow selected a future date (typing, browser oddities), clamp it to today
+                    var today = (new Date()).toISOString().slice(0, 10);
+                    if (val && val > today) {
+                        // reset to today and show a message
+                        $date.val(today);
+                        val = today;
+                        toastr.warning('Future dates are not allowed — the date has been set to today.');
+                    }
+                    $display.text(formatHuman(val));
+                }
+
+                // Initialize display from current value
+                updateDisplay();
+
+                // Update whenever the input changes
+                $date.on('change input', updateDisplay);
+            });
+        })();
+    </script>
+
     <?php
     if ($this->session->flashdata('error') != '') {
     ?>
@@ -212,6 +292,20 @@
                 "hideMethod": "fadeOut"
             }
             toastr.error('Please fill out all fields!');
+        </script>
+    <?php
+    }
+    ?>
+    <?php
+    if ($this->session->flashdata('successadde') != '') {
+    ?>
+        <script type="text/javascript">
+            toastr.options = {
+                "closeButton": true,
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            toastr.success('New Blog Added!');
         </script>
     <?php
     }

@@ -318,7 +318,8 @@ class Generic_model extends CI_Model
 
 
     //super admin panel 
-    public function GetWebCategoryData($where=false){
+    public function GetWebCategoryData($where = false)
+    {
         $this->db->select('*');
         $this->db->from('web_cat as wc');
         $this->db->join('web_pages as p', 'wc.pageID=p.pageID', 'inner');
@@ -335,7 +336,24 @@ class Generic_model extends CI_Model
             return false;
         }
     }
-
+    public function GetBlogCatData($where = false)
+    {
+        $this->db->select('*');
+        $this->db->from('web_blog_cat as bc');
+        $this->db->join('web_pages as p', 'bc.pageID=p.pageID', 'inner');
+        $this->db->join('web_page_meta as pm', 'p.pageID=pm.pageID', 'inner');
+        $this->db->order_by('bc.blogCatID', 'DESC');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
 
 
 
