@@ -161,12 +161,16 @@ $route['add-success'] = 'superadmin/addSuccess';
 $route['delet-metrics/:any'] = 'superadmin/deleteSuccess';
 $route['update-success/:any'] = 'superadmin/updateSuccess';
 $route['process-update-success/:any'] = 'superadmin/processUpdateSuccess';
+// change status 
+$route['change-success-cat-status/:any/:any'] = 'superadmin/changeSuccessCatStatus';
 // company partner
 $route['manage-company'] = 'superadmin/manageCompany';
 $route['add-partner'] = 'superadmin/addPartner';
 $route['delet-partner/:any'] = 'superadmin/deletePartner';
 $route['update-partner/:any'] = 'superadmin/updatePartner';
 $route['process-update-partner/:any'] = 'superadmin/processUpdatePartner';
+// change status 
+$route['change-partner-status/:any/:any'] = 'superadmin/changePartnerStatus';
 
 
 $route['login-data'] = 'welcome/LoginData';

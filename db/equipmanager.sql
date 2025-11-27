@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 26, 2025 at 06:57 PM
+-- Generation Time: Nov 27, 2025 at 01:21 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -347,7 +347,6 @@ INSERT INTO `users` (`userID`, `userName`, `userPhone`, `userEmail`, `userPass`,
 
 CREATE TABLE `web_blogs` (
   `web_blogID` int(11) NOT NULL,
-  `pageID` int(11) NOT NULL,
   `web_blogImg` varchar(300) NOT NULL,
   `blogCatID` int(11) NOT NULL,
   `web_blogDate` varchar(30) NOT NULL,
@@ -359,8 +358,9 @@ CREATE TABLE `web_blogs` (
 -- Dumping data for table `web_blogs`
 --
 
-INSERT INTO `web_blogs` (`web_blogID`, `pageID`, `web_blogImg`, `blogCatID`, `web_blogDate`, `web_blogTitle`, `web_blogDesp`) VALUES
-(6, 9, '5d3941770f26300df2d786ea848e6689.png', 1, '2025-11-26', 'asdfasaa', '<p>sfafsfa</p>');
+INSERT INTO `web_blogs` (`web_blogID`, `web_blogImg`, `blogCatID`, `web_blogDate`, `web_blogTitle`, `web_blogDesp`) VALUES
+(1, 'a6ec3e33feb18c5288873880f25cca89.png', 2, '2025-11-27', 'ASas', '<p>ASAs</p>'),
+(4, '1165c39fab3b9c55efe17b406e1749ff.png', 0, '2025-11-29', 'asdaqweqweqwe', '<p>qweqweqweqwe</p>');
 
 -- --------------------------------------------------------
 
@@ -372,16 +372,18 @@ CREATE TABLE `web_blog_cat` (
   `blogCatID` int(11) NOT NULL,
   `pageID` int(11) NOT NULL,
   `blogCat` varchar(200) NOT NULL,
-  `blogCatDesc` varchar(2500) NOT NULL
+  `blogCatDesc` varchar(2500) NOT NULL,
+  `blogCatStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=active 0=inactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `web_blog_cat`
 --
 
-INSERT INTO `web_blog_cat` (`blogCatID`, `pageID`, `blogCat`, `blogCatDesc`) VALUES
-(1, 4, 'Plumbin Hack', 'aassdfasdfa'),
-(3, 7, 'Willa Flowerss', 'Excepturi vitae recu');
+INSERT INTO `web_blog_cat` (`blogCatID`, `pageID`, `blogCat`, `blogCatDesc`, `blogCatStatus`) VALUES
+(1, 4, 'Plumbin Hack', 'aassdfasdfa', 1),
+(2, 6, 'Angelica Leon', 'Aut quibusdam rem om', 1),
+(3, 7, 'Willa Flowers', 'Excepturi vitae recu', 1);
 
 -- --------------------------------------------------------
 
@@ -416,6 +418,15 @@ CREATE TABLE `web_company` (
   `web_companyStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT ' 1=Active and 0=Deactive '
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `web_company`
+--
+
+INSERT INTO `web_company` (`web_companyID`, `web_companyIcon`, `web_companyStatus`) VALUES
+(1, '2f26e95a124e10ff22c66781796ef860.svg', 1),
+(2, 'c6c317090783df0c060f4ff559d503ce.svg', 1),
+(3, '45ad4c1515f1341ef10fb88bd6cf4a60.svg', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -437,8 +448,8 @@ INSERT INTO `web_pages` (`pageID`, `slug`, `pageType`, `pageStatus`) VALUES
 (3, 'plubmber', 2, 1),
 (4, 'plumbin-hack', 4, 1),
 (5, 'adam-kirby', 2, 1),
-(7, 'willa-flowers', 4, 1),
-(9, 'asdfas', 5, 1);
+(6, 'angelica-leon', 4, 1),
+(7, 'willa-flowers', 4, 1);
 
 -- --------------------------------------------------------
 
@@ -466,8 +477,8 @@ INSERT INTO `web_page_meta` (`metaID`, `pageID`, `metaTittle`, `metaKeywords`, `
 (2, 3, 'Plubmber | equipmanager.dk ', 'a,b,c,d,ff', 'aaa', 'h111 ', 'h222 ', 'hd111 ', 'hd222 '),
 (3, 4, 'Plumbin Hack | equipmanager.dk', 'asdfas,asda,as', 'test descritpion', 'he', 'hr', 'pe', 'ps'),
 (4, 5, 'Fugiat necessitatib', 'Dolor omnis placeat', 'Consequatur Laborum', 'Ad eos non pariatur', 'Omnis labore est mod', 'Quia dolores adipisi', 'Perspiciatis volupt'),
-(6, 7, 'Quia modi eos possim', 'Quidem dolore eu ill', 'Duis ea obcaecati quuuuuuu', 'Accusantium consequa', 'Ad voluptatem Molli', 'Irure iusto nemo rep', 'Excepteur excepturi '),
-(8, 9, 'asdfas | equipmanager.dk', 'asfa,rdgdf,dfgdf', 'asfasaaaaaa', NULL, NULL, NULL, NULL);
+(5, 6, 'Reprehenderit dolor', 'Consectetur volupta', 'Dolore natus corrupt', 'Beatae placeat qui ', 'Dolor nostrud omnis ', 'Nostrum soluta ex at', 'Odit quidem ut magni'),
+(6, 7, 'Quia modi eos possim', 'Quidem dolore eu ill', 'Duis ea obcaecati qu', 'Accusantium consequa', 'Ad voluptatem Molli', 'Irure iusto nemo rep', 'Excepteur excepturi ');
 
 -- --------------------------------------------------------
 
@@ -482,6 +493,14 @@ CREATE TABLE `web_success` (
   `web_successDes` varchar(2000) NOT NULL,
   `web_successStatus` tinyint(1) NOT NULL COMMENT '1=Active and 0=Deactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_success`
+--
+
+INSERT INTO `web_success` (`web_successID`, `web_successIcon`, `web_successName`, `web_successDes`, `web_successStatus`) VALUES
+(1, '222d39bbbe351eb89f85d25fe88712f6.svg', '2,000+', 'Listed Tools', 1),
+(2, '38d7783322d38928d8fe90b39527d548.svg', '500+', 'Active Companies', 1);
 
 -- --------------------------------------------------------
 
@@ -778,7 +797,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `web_blogs`
 --
 ALTER TABLE `web_blogs`
-  MODIFY `web_blogID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `web_blogID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `web_blog_cat`
@@ -796,25 +815,25 @@ ALTER TABLE `web_cat`
 -- AUTO_INCREMENT for table `web_company`
 --
 ALTER TABLE `web_company`
-  MODIFY `web_companyID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `web_companyID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `web_pages`
 --
 ALTER TABLE `web_pages`
-  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `web_page_meta`
 --
 ALTER TABLE `web_page_meta`
-  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `web_success`
 --
 ALTER TABLE `web_success`
-  MODIFY `web_successID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `web_successID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `web_testimonial`
