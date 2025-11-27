@@ -27,6 +27,9 @@ class Welcome extends MY_Controller
 	 */
 	public function index()
 	{
+		$this->load->view('website/home');
+	}
+	public function login(){
 		$this->load->view('login');
 	}
 	// <!-- ============================================================== -->

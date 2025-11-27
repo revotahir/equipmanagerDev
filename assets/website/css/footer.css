@@ -1,0 +1,193 @@
+.footer {
+  display: flex;
+  justify-content: center;
+  background-color: var(--primary-dark-green);
+  padding: 60px 0 30px 0;
+  border-bottom: 1px solid var(--white);
+}
+.inner-footer-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.sub_email {
+  width: 80%;
+}
+.sub_email form {
+  border: 1px solid var(--primary-parrot-green);
+  padding: 10px 18px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.sub_email form:focus-within {
+  border-color: var(--white);
+  transition: all 0.3s ease;
+}
+.sub_email form input {
+  background-color: transparent;
+  border: none;
+  color: var(--white);
+  padding: 0px 14px;
+  width: 90%;
+  height: 31px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.sub_email form input::-webkit-input-placeholder {
+  color: var(--white);
+  opacity: 1;
+}
+
+.sub_email form input::-moz-placeholder {
+  color: var(--white);
+  opacity: 1;
+}
+
+.sub_email form input:-ms-input-placeholder {
+  color: var(--white);
+  opacity: 1;
+}
+
+.sub_email form input::-ms-input-placeholder {
+  color: var(--white);
+  opacity: 1;
+}
+
+.sub_email form input::placeholder {
+  color: var(--white);
+  opacity: 1;
+}
+.btn-submit {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+.btn-submit:hover svg path {
+  transition: all 0.3s ease;
+  stroke: var(--white);
+}
+.btn-submit svg path {
+  transition: all 0.3s ease;
+  stroke: var(--primary-parrot-green);
+}
+.footer-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 34%;
+}
+.footer-logo span {
+  color: var(--white);
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+}
+.info {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.title {
+  color: var(--white);
+  font-size: 18px;
+  font-family: "ClashGrotesk", sans-serif;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.info ul {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.info ul li a {
+  color: var(--white);
+  font-size: 16px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 400;
+  transition: all 0.3s ease;
+}
+.info ul li a:hover {
+  transition: all 0.3s ease;
+  color: var(--primary-parrot-green);
+}
+.icon-list {
+  display: flex;
+  gap: 10px;
+}
+.icon-list a,
+.icon-list span {
+  color: var(--white);
+  font-size: 16px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 400;
+  transition: all 0.3s ease;
+}
+.icon-list a:hover,
+.icon-list span:hover {
+  color: var(--primary-parrot-green);
+  transition: all 0.3s ease;
+}
+
+/* ----------------
+second part of footer
+------------------- */
+.footer-bottom {
+  background-color: var(--primary-dark-green);
+  padding: 30px 0;
+  display: flex;
+  justify-content: center;
+}
+.terms-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.terms-section > div:nth-child(1) span {
+  color: var(--white);
+  font-size: 16px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+.terms-section > div:nth-child(2) ul {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.terms-section > div:nth-child(2) ul li,
+.terms-section > div:nth-child(2) ul li a {
+  color: var(--white);
+  font-size: 16px;
+  font-family: "Manrope", sans-serif;
+  transition: all 0.3s ease;
+  font-weight: 400;
+}
+.terms-section > div:nth-child(2) ul li a:hover {
+  transition: all 0.3s ease;
+  color: var(--primary-parrot-green);
+}
+.social-links {
+  display: flex;
+  gap: 5px;
+}
+.social-links a {
+  background-color: #ffffff33;
+  backdrop-filter: blur(22px);
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  border-radius: 12px;
+  transition: all 0.5s ease;
+}
+.social-links a:hover svg {
+  transition: all 0.5s ease;
+  transform: scale(1.4);
+}

@@ -1,0 +1,465 @@
+.off_white {
+  background-color: var(--off-white);
+}
+.product-detail {
+  display: flex;
+  justify-content: center;
+  padding: 120px 0;
+}
+.inner-product-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.product-title {
+  display: flex;
+  justify-content: space-between;
+}
+.share-save {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.save-btn label {
+  display: flex;
+  gap: 10px;
+}
+.share-btn a,
+.save-btn span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "ClashGrotesk", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: underline;
+  color: var(--title-black);
+}
+.share-btn:hover a,
+.save-btn:hover span {
+  color: var(--primary-dark-green);
+}
+
+/* product-img-showcase */
+.product-img-showcase {
+  display: flex;
+  gap: 20px;
+}
+.product-showcase-main-img {
+  width: 65%;
+  display: flex;
+}
+.product-showcase-main-img img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 20px 0 0 20px;
+}
+.product-showcase-sub-img {
+  width: 35%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.product-showcase-sub-img img {
+  cursor: pointer;
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+.product-showcase-sub-img img:nth-child(2) {
+  border-radius: 0 20px 0 0;
+}
+.product-showcase-sub-img img:nth-child(4) {
+  border-radius: 0 0 20px 0;
+}
+
+/* heart animation start */
+.heart-svg {
+  width: 20px;
+  height: 20px;
+}
+.custom-heart-toggle .heart-input {
+  display: none;
+  cursor: pointer;
+}
+
+.custom-heart-toggle {
+  cursor: pointer;
+  font-size: 20px;
+  transition: 100ms;
+}
+
+.heart-icon-wrapper {
+  display: flex;
+  transition: 100ms;
+  animation: heart-disappear-animation 400ms ease;
+}
+
+.custom-heart-toggle
+  .heart-input:checked
+  ~ .heart-icon-wrapper
+  .heart-svg
+  path {
+  fill: #ff5353;
+  stroke-width: 0;
+}
+
+.custom-heart-toggle .heart-input:checked ~ .heart-icon-wrapper {
+  animation: heart-appear-animation 400ms ease;
+}
+
+.custom-heart-toggle:hover {
+  transform: scale(1.1);
+}
+
+@keyframes heart-appear-animation {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heart-disappear-animation {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+/* heart animation end */
+
+/* heavy-duty-main */
+.heavy-duty-main {
+  display: flex;
+  gap: 20px;
+}
+.heavy-duty {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.owner-info-main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  border: 1px solid #d2d2d2;
+  padding: 20px;
+  border-radius: 20px;
+}
+.owner-info {
+  display: flex;
+  gap: 20px;
+}
+.single-owner-info {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  width: 33%;
+  border-right: 1px solid #52646421;
+  &.single-owner-info:nth-child(3) {
+    border: none;
+  }
+}
+.single-owner-info svg {
+  width: 40px;
+  height: 44px;
+}
+.single-owner-info div {
+  display: flex;
+  flex-direction: column;
+  border: none;
+}
+.owner-para-fat {
+  color: var(--text-gray);
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 30px;
+}
+.owner-para-thin {
+  color: var(--text-gray);
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 30px;
+}
+.heavy-duty-feature {
+  width: 35%;
+  background-color: var(--white);
+  padding: 27px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.single-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.single-feature div {
+  background-color: var(--primary-dark-green);
+  padding: 10px;
+  border-radius: 10px;
+}
+.single-feature div svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* booking form */
+
+.cnt-form {
+  background-color: var(--white);
+  padding: 27px;
+  border-radius: 20px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cnt-full-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.col-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.form-group label {
+  color: #000000;
+  font-family: "Clash Grotesk", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 16px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #1e1e1e29;
+  border-radius: 8px;
+  height: 50px;
+  padding: 0 14px;
+  font-family: "Clash Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000000;
+  outline: none;
+  background-color: var(--white);
+  transition: border-color 0.3s ease;
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: none;
+  padding: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #0f2f2c;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: center;
+}
+
+/* calender and book form */
+.calender-main {
+  display: flex;
+  gap: 20px;
+}
+.calender {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid #d2d2d2;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+/* year */
+.year {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(5, 1fr);
+}
+.year span:hover {
+  cursor: pointer;
+  color: var(--primary-dark-green);
+}
+.arrow {
+  display: flex;
+  justify-content: space-between;
+  grid-column: 1 / -1;
+}
+
+.prev,
+.next {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+}
+.prev svg,
+.next svg {
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s ease;
+}
+.prev:hover svg path,
+.next:hover svg path {
+  transition: all 0.3s ease;
+  fill: var(--primary-dark-green);
+}
+
+/* month */
+.month {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(4, 1fr);
+}
+.month span:hover {
+  cursor: pointer;
+  color: var(--primary-dark-green);
+}
+.booking-form {
+  width: 35%;
+}
+
+/* cleander main full with month and date */
+.arrow-section {
+  display: flex;
+}
+.prev-section {
+  display: flex;
+  width: 50%;
+  align-items: center;
+  gap: 100px;
+}
+.next-section {
+  display: flex;
+  width: 50%;
+  align-items: center;
+  gap: 100px;
+  justify-content: end;
+}
+.mon-year {
+  display: flex;
+  gap: 10px;
+}
+.year-calender {
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.text-month-name {
+  color: #1a1a1a;
+  font-family: "Manrope", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+.month-calender {
+  font-family: "Manrope", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.month-calender:hover,
+.year-calender:hover {
+  color: var(--primary-dark-green);
+  cursor: pointer;
+}
+.months-date {
+  display: flex;
+}
+.first-month {
+  width: 50%;
+  padding: 30px 30px 0 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  border-right: 1px solid #d2d2d2;
+}
+.days-name {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.days-date {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.days-date span {
+  padding: 9px 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.days-date span:hover {
+  transition: all 0.3s ease;
+  background-color: var(--primary-parrot-green);
+}
+/* hide main when selecting year/month */
+.booking-calender-main.hidden {
+  display: none;
+}
+.text-day-num.empty {
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* keep empty leading cells inert */
+.days-date span.empty {
+  pointer-events: none;
+  cursor: default;
+}
+
+.second-month {
+  width: 50%;
+  padding: 30px 30px 0 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.active {
+  background-color: var(--primary-parrot-green);
+}
+.hide {
+  display: none;
+}
+.show-sm {
+  display: none;
+}

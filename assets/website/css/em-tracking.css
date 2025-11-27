@@ -1,0 +1,114 @@
+/* sqaure-line clip path */
+.sqaure-line {
+  position: relative;
+}
+.sqaure-line::before,
+.sqaure-line::after {
+  position: absolute;
+  top: 0;
+  height: 75%; /* adjust this value (e.g. 50%, 60%, 80%) */
+  content: "";
+  display: block;
+  left: 0;
+  border: 1px solid var(--primary-parrot-green);
+  border-right: none;
+  width: 50%;
+  z-index: 1;
+  clip-path: polygon(0 0, 90% 0, 75% 100%, 100% 100%, 0 100%, 0 0);
+}
+.sqaure-line::after {
+  left: unset;
+  right: 0;
+  transform: rotateY(180deg);
+}
+
+/* feature */
+.feature {
+  display: flex;
+  justify-content: center;
+  padding: 120px 0;
+  background-color: var(--off-white);
+}
+.inner-feature {
+  display: flex;
+  gap: 30px;
+}
+.feature-info {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 10% 0 0;
+  gap: 30px;
+}
+.feature-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.feature-single-list {
+  background-color: var(--white);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+.feature-single-list:hover {
+  transition: all 0.3s ease;
+  background-color: var(--primary-dark-green);
+}
+.feature-single-list:hover > div > h4 {
+  transition: all 0.3s ease;
+  color: var(--white);
+}
+.feature-single-list:hover > div > p {
+  transition: all 0.3s ease;
+  color: var(--white);
+}
+.feature-single-list:hover svg rect {
+  transition: all 0.3s ease;
+  fill: var(--primary-parrot-green);
+}
+.feature-single-list:hover svg path {
+  transition: all 0.3s ease;
+  stroke: var(--white);
+}
+.feature-img {
+  width: 50%;
+}
+.feature-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 22px;
+}
+
+/* customer */
+.customer {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 120px 0;
+  background-color: var(--off-white);
+}
+.inner-customer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.customer-boxs {
+  display: flex;
+  gap: 20px;
+  padding: 20px 0 0 0;
+}
+.single-customer-box {
+  box-shadow: 0px 4px 60px 0px #0000000f;
+  border-radius: 20px;
+  background-color: var(--white);
+  padding: 24px;
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

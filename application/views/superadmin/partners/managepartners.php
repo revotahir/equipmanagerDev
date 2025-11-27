@@ -220,7 +220,7 @@
                                 } else {
                                     ?>
                                     <tr>
-                                        <td colspan="3" class="text-center">No Partners Added Yet!</td>
+                                        <td colspan="4" class="text-center">No Partners Added Yet!</td>
                                     </tr>
                                 <?php
                                 }

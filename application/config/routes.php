@@ -61,6 +61,7 @@ $route['forgot-password'] = 'welcome/forgotpassword';
 $route['forgot-password-data'] = 'welcome/forgotpasswordData';
 $route['reset-password'] = 'welcome/resetPassword';
 $route['reset-password-data'] = 'welcome/resetPasswordData';
+$route['login'] = 'welcome/login';
 $route['login-data'] = 'welcome/loginData';
 
 //dashboards

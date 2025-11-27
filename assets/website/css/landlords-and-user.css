@@ -1,0 +1,120 @@
+.dual-btn {
+  display: flex;
+  gap: 30px;
+}
+.setp-process {
+  display: flex;
+  justify-content: center;
+  padding: 120px 0;
+  background-color: var(--off-white);
+}
+.inner-setp-process {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.workforce {
+  background-color: var(--white);
+  padding: 24px;
+  border-radius: 22px;
+  display: flex;
+  gap: 30px;
+  box-shadow: 0px 4px 60px 0px #0000000f;
+}
+.for-equip-info {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.for-equip-img {
+  width: 50%;
+}
+.for-equip-img img {
+  width: 100%;
+  border-radius: 22px;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.timeline-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.timeline-card > div > span {
+  color: var(--primary-dark-green);
+  font-family: "Clash Grotesk", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+.timeline-line {
+  padding: 0 0 0 15px;
+}
+
+/* feature */
+.feature {
+  display: flex;
+  justify-content: center;
+  padding: 120px 0;
+}
+.inner-feature {
+  display: flex;
+  gap: 30px;
+}
+.feature-info {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 10% 0 0;
+  gap: 30px;
+}
+.feature-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.feature-single-list {
+  background-color: var(--off-white);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+.feature-single-list:hover {
+  transition: all 0.3s ease;
+  background-color: var(--primary-dark-green);
+}
+.feature-single-list:hover > div > h4 {
+  transition: all 0.3s ease;
+  color: var(--white);
+}
+.feature-single-list:hover > div > p {
+  transition: all 0.3s ease;
+  color: var(--white);
+}
+.feature-single-list:hover svg rect {
+  transition: all 0.3s ease;
+  fill: var(--primary-parrot-green);
+}
+.feature-single-list:hover svg path {
+  transition: all 0.3s ease;
+  stroke: var(--white);
+}
+.feature-img {
+  width: 50%;
+}
+.feature-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 22px;
+}
