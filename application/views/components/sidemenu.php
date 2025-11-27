@@ -43,7 +43,7 @@
 
               <!-- manage Testimonial -->
               <li>
-                  <a  href="<?= base_url('manage-super-testimonial') ?>">
+                  <a href="<?= base_url('manage-super-testimonial') ?>">
                       <div class="parent-icon">
                           <i class="bi bi-chat-left-quote"></i>
                       </div>
@@ -81,35 +81,22 @@
               <!-- mannage  Blog end here-->
               <!-- manage Success Metrics -->
               <li>
-                  <a class="has-arrow" href="javascript:;">
+                  <a href="<?= base_url('manage-success') ?>">
                       <div class="parent-icon">
                           <i class="bi bi-graph-up"></i>
                       </div>
                       <div class="menu-title font-clash">Manage Metrics</div>
                   </a>
-                  <ul>
-
-                      <li>
-                          <a href="<?= base_url('manage-success') ?>"><i class="bi bi-arrow-right-short"></i>Add Success Metrics</a>
-                      </li>
-                  </ul>
               </li>
               <!-- mannage  Success Metrics end here-->
               <!-- manage Company Partners -->
               <li>
-                  <a class="has-arrow" href="javascript:;">
+                  <a href="<?= base_url('manage-company') ?>">
                       <div class="parent-icon">
                           <i class="bi bi-people"></i>
                       </div>
-                      <div class="menu-title font-clash">Manage Company Partners
-                      </div>
+                      <div class="menu-title font-clash">Manage Company Partners</div>
                   </a>
-                  <ul>
-
-                      <li>
-                          <a href="<?= base_url('manage-company') ?>"><i class="bi bi-arrow-right-short"></i>Add Company Partners</a>
-                      </li>
-                  </ul>
               </li>
               <!-- mannage  Company Partners end here-->
           </ul>
