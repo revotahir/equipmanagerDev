@@ -376,6 +376,23 @@ class Generic_model extends CI_Model
 
 
 
+    //website modales
+    public function GetPageData($where=false){
+$this->db->select('*');
+        $this->db->from('web_pages as p');
+        $this->db->join('web_page_meta as pm', 'p.pageID=pm.pageID', 'inner');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
+
 
 
 

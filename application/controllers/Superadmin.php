@@ -37,7 +37,16 @@ class superadmin extends MY_Controller
             redirect(base_url());
         }
     }
+    public function changeWebsiteMode() {
+        $curentStatus=$this->generic->GetData('web_setting');
+        if($curentStatus[0]['websiteStatus']==1){
+            $this->generic->Update('web_setting',array('settingID'=>1),array('websiteStatus'=>0));
+        }else{
+            $this->generic->Update('web_setting',array('settingID'=>1),array('websiteStatus'=>1));
 
+        }
+        redirect(base_url().$_GET['curentUrl']);
+    }
 
     // manage super category page load
     public function ManageSuperCategory()

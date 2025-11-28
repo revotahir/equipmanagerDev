@@ -13,28 +13,29 @@ File: style.css
 
 @font-face {
   font-family: "ClashGrotesk";
-  src: url("../font/ClashGrotesk-Regular.otf") format("opentype");
+  /* corrected path: fonts are under assets/website/font/ClashGrotesk-OTF/ */
+  src: url("../font/ClashGrotesk-OTF/ClashGrotesk-Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: "ClashGrotesk";
-  src: url("../font/ClashGrotesk-Medium.otf") format("opentype");
+  src: url("../font/ClashGrotesk-OTF/ClashGrotesk-Medium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
   font-family: "ClashGrotesk";
-  src: url("../font/ClashGrotesk-Semibold.otf") format("opentype");
+  src: url("../font/ClashGrotesk-OTF/ClashGrotesk-Semibold.otf") format("opentype");
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
   font-family: "ClashGrotesk";
-  src: url("../font/ClashGrotesk-Bold.otf") format("opentype");
+  src: url("../font/ClashGrotesk-OTF/ClashGrotesk-Bold.otf") format("opentype");
   font-weight: 700;
   font-style: normal;
 }
@@ -812,14 +813,14 @@ CTA Seation
 
 /* catbtn-next */
 .categorySwiper-next {
-  top: 510px !important;
+  top: 550px !important;
   background-color: var(--primary-dark-green) !important;
   border: 1px solid var(--primary-dark-green) !important;
   right: 46% !important;
 }
 /* catbtn-prev */
 .categorySwiper-prev {
-  top: 510px !important;
+  top: 550px !important;
   background-color: var(--primary-dark-green) !important;
   border: 1px solid var(--primary-dark-green) !important;
   left: 46% !important;

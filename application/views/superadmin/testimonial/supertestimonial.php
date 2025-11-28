@@ -131,7 +131,7 @@
                                     <div class="row mb-3">
                                         <label for="testiRating" class="col-sm-3 col-form-label">Rating</label>
                                         <div class="col-sm-9">
-                                            <select name="testiRating" id="testiRating" class="form-control">
+                                            <select name="testiRating" required id="testiRating" class="form-control">
                                                 <option value="">Select Rating</option>
                                                 <option value="1">1 Star</option>
                                                 <option value="2">2 Star</option>
@@ -221,11 +221,11 @@
                 <div class="card-body">
                     <h5 class="mb-0">Manage Testimonial</h5>
                     <div class="table-responsive mt-3">
-                        <table class="table align-middle">
+                        <table class="table align-middle manage-testimonial">
                             <thead class="table-secondary bg-sky-blue font-clash-green">
                                 <tr>
-                                    <th>Testimonial Rating</th>
-                                    <th>Testimonial Description</th>
+                                    <th style="width: 10%;">Testimonial Rating</th>
+                                    <th style="width: 35%;">Testimonial Description</th>
                                     <th>Client Image</th>
                                     <th>Client Name</th>
                                     <th>Client Location</th>
@@ -238,8 +238,24 @@
                                 <?php if (!empty($showtestimonialdata)) {
                                     foreach ($showtestimonialdata as $superTesti) { ?>
                                         <tr>
-                                            <th><?= !empty($superTesti['web_testimonialRating']) ? $superTesti['web_testimonialRating'] . ' Star' : '' ?></th>
-                                            <td><?= $superTesti['web_testimonialDesp'] ?></td>
+                                            <th style="width: 10%;"><?= !empty($superTesti['web_testimonialRating']) ? $superTesti['web_testimonialRating'] . ' Star' : '' ?></th>
+                                            <td style="width: 35%;">
+                                                <?php
+                                                // Prepare short (10 words) and full descriptions safely
+                                                $fullDesc = $superTesti['web_testimonialDesp'] ?? '';
+                                                // split on whitespace, preserve words
+                                                $words = preg_split('/\s+/', strip_tags($fullDesc));
+                                                $shortDesc = implode(' ', array_slice($words, 0, 10));
+                                                $needsToggle = count($words) > 10;
+                                                ?>
+                                                <div class="testi-desc">
+                                                    <span class="text-short"><?= htmlspecialchars($shortDesc) ?><?= $needsToggle ? '...' : '' ?></span>
+                                                    <span class="text-full" style="display:none"><?= nl2br(htmlspecialchars($fullDesc)) ?></span>
+                                                    <?php if ($needsToggle) { ?>
+                                                        &nbsp;<a href="#" class="toggle-desc" style="color:#34FF67;">Read more</a>
+                                                    <?php } ?>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <img src="<?= base_url('assets/uploads/superadmin/testimonial/' . $superTesti['web_testimonialImg']) ?>" alt="Image" width="50" height="50" class="ms-2">
                                             </td>
@@ -311,6 +327,28 @@
     <!--app-->
     <script src="<?= base_url() ?>assets/js/app.js"></script>
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+    <style>
+        /* Enforce column sizing and wrapping for the testimonial table */
+        .manage-testimonial {
+            width: 100%;
+            table-layout: fixed; /* allow column widths to be respected */
+        }
+
+        .manage-testimonial td,
+        .manage-testimonial th {
+            white-space: normal; /* allow wrapping */
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        /* first column (rating) and second (description) widths */
+        .manage-testimonial th:nth-child(1),
+        .manage-testimonial td:nth-child(1) { width: 10%; }
+
+        .manage-testimonial th:nth-child(2),
+        .manage-testimonial td:nth-child(2) { width: 35%; }
+    </style>
+
     <script>
         // Plain JS: delegate clicks on the toggle area and redirect to the enclosing anchor's href.
         document.addEventListener('click', function(e) {
@@ -323,6 +361,29 @@
             var href = anchor.getAttribute('href');
             if (href) window.location.href = href;
         });
+            // Read more / Read less toggle for testimonials
+            document.addEventListener('click', function(e) {
+                var toggle = e.target.closest('.toggle-desc');
+                if (!toggle) return;
+                e.preventDefault();
+                var container = toggle.closest('.testi-desc');
+                if (!container) return;
+                var shortEl = container.querySelector('.text-short');
+                var fullEl = container.querySelector('.text-full');
+                if (!shortEl || !fullEl) return;
+                var isShowingFull = shortEl.style.display === 'none';
+                if (isShowingFull) {
+                    // currently showing full -> collapse
+                    shortEl.style.display = '';
+                    fullEl.style.display = 'none';
+                    toggle.textContent = 'Read more';
+                } else {
+                    // expand
+                    shortEl.style.display = 'none';
+                    fullEl.style.display = '';
+                    toggle.textContent = 'Read less';
+                }
+            });
     </script>
     <?php
     if ($this->session->flashdata('statusDeactivated') != '') {

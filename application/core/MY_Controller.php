@@ -18,6 +18,7 @@ class MY_Controller extends CI_Controller {
             'welcome/forgotpasswordData', // Exclude the forget pass OTP page
             'welcome/resetPassword', // Exclude the forget pass reset page
             'welcome/resetPasswordData', // Exclude the forget pass reset data page
+            'welcome/login', // Exclude the forget pass reset data page
         );
          // Get the current controller and method
          $current_controller = $this->router->fetch_class();

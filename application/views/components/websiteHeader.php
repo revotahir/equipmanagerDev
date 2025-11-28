@@ -72,7 +72,8 @@
               <li><a href="em-tracking.html">HOW IT WORK</a></li>
               <li><a href="marketplace.html">MARKETPLACE</a></li>
               <li><a href="#">FEATURES</a></li>
-              <li><a href="landlords-and-user.html">TESTIMONIALS</a></li>
+              <li><a href="landlords-and-user.html">BLOGS</a></li>
+              <li><a href="landlords-and-user.html">ABOUT US</a></li>
             </ul>
             <!-- button white -->
             <a href="<?= base_url('login')?> " class="btn-white">LOG IN</a>

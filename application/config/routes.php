@@ -177,12 +177,14 @@ $route['change-partner-status/:any/:any'] = 'superadmin/changePartnerStatus';
 $route['login-data'] = 'welcome/LoginData';
 
 
-
+//website mode change
+$route['change-website-mode']='superadmin/changeWebsiteMode';
 //test email
 $route['test-mail'] = 'welcome/TestMail';
 
 
 $route['logout'] = 'welcome/LogOut';
+$route[':any'] = 'welcome';
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

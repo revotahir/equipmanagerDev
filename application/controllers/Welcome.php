@@ -27,9 +27,37 @@ class Welcome extends MY_Controller
 	 */
 	public function index()
 	{
-		$this->load->view('website/home');
+		//get website setting
+		$setting = $this->generic->GetData('web_setting');
+		if (isset($this->session->userdata('loginData')['userType']) && $this->session->userdata('loginData')['userType'] == 1) {
+			$admintype = true;
+		} else {
+			$admintype = false;
+		}
+		if ($setting[0]['websiteStatus'] == 1 || $admintype == true) {
+			if ($this->uri->segment(1)) {
+				$page = $this->generic->GetData('web_pages', array('slug' => $this->uri->segment(1)));
+			} else {
+				// uri segment is empty so it is home page 
+				$this->data['pageData'] = $this->generic->GetPageData(array('p.slug' => ''));
+				//load testimonial
+				$this->data['testimonials'] = $this->generic->GetData('web_testimonial', array('web_testimonialStatus' => 1));
+				//load stats
+				$this->data['stats'] = $this->generic->GetData('web_success', array('web_successStatus' => 1));
+				//load company logos
+				$this->data['logos'] = $this->generic->GetData('web_company', array('web_companyStatus' => 1));
+				//load market place categories
+				$this->data['categories'] = $this->generic->GetWebCategoryData(array('p.pageStatus' => 1));
+
+
+				$this->load->view('website/home', $this->data);
+			}
+		} else {
+			$this->load->view('comingsoon/comingsoon');
+		}
 	}
-	public function login(){
+	public function login()
+	{
 		$this->load->view('login');
 	}
 	// <!-- ============================================================== -->
