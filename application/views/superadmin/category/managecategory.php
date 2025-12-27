@@ -53,7 +53,7 @@
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
                 <div class="breadcrumb-title pe-3" style="border: none">
-                    Super Category Management
+                    Marketplace Category Management
                 </div>
             </div>
             <!--end breadcrumb-->
@@ -64,7 +64,7 @@
                         <div class="card-body">
                             <div class="border p-4 rounded">
                                 <div class="card-title d-flex align-items-center">
-                                    <h5 class="mb-0">Add Super Category</h5>
+                                    <h5 class="mb-0">Add Marketplace Category</h5>
                                 </div>
                                 <hr />
                                 <form action="<?= base_url('add-super-category') ?>" method="post" enctype="multipart/form-data">
@@ -98,6 +98,18 @@
                                                 name="catName"
                                                 required
                                                 placeholder="Enter Category Name" />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label
+                                            for="catName"
+                                            class="col-sm-3 col-form-label">Category Type</label>
+                                        <div class="col-sm-9">
+                                            <select name="catType" required id="catType" class="form-control">
+                                                <option value="">Select Category Type</option>
+                                                <option value="1">Equipment</option>
+                                                <option value="2">Worfworce</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="row mb-3">

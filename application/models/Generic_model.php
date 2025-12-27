@@ -178,6 +178,7 @@ class Generic_model extends CI_Model
         $this->db->select('*');
         $this->db->from('projectworkforcelink as pwl');
         $this->db->join('workforce as w', 'pwl.workforceID = w.workforceID', 'inner');
+        $this->db->join('projects as p', 'p.ProjectID = pwl.ProjectID', 'inner');
         if ($where) {
             $this->db->where($where);
         }
@@ -210,7 +211,7 @@ class Generic_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('projects as p');
-        $this->db->join('projectcategory as pc', 'p.pCatID = pc.pCatID', 'inner');
+        $this->db->join('projectcategory as pc', 'p.pCatID = pc.pCatID', 'left');
         $this->db->order_by('p.projectID', 'DESC');
         if ($where) {
             $this->db->where($where);
@@ -373,12 +374,45 @@ class Generic_model extends CI_Model
             return false;
         }
     }
-
+    //support module 
+    public function GetTicketsWithCat($where = false)
+    {
+        $this->db->select('*');
+        $this->db->from('supporttickets as t');
+        $this->db->join('supportticketscat as tc', 't.supportTicketsCatID=tc.supportTicketsCatID', 'inner');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
+    public function GetTicketsWithUsers($where = false)
+    {
+        $this->db->select('*');
+        $this->db->from('supporttickets as t');
+        $this->db->join('users as u', 'u.userID=t.userID', 'inner');
+        if ($where) {
+            $this->db->where($where);
+        }
+        $q = $this->db->get();
+        //    die($this->db->last_query());
+        if ($q->num_rows() > 0) {
+            return $q->result_array();
+        } else {
+            return false;
+        }
+    }
 
 
     //website modales
-    public function GetPageData($where=false){
-$this->db->select('*');
+    public function GetPageData($where = false)
+    {
+        $this->db->select('*');
         $this->db->from('web_pages as p');
         $this->db->join('web_page_meta as pm', 'p.pageID=pm.pageID', 'inner');
         if ($where) {
@@ -394,7 +428,34 @@ $this->db->select('*');
     }
 
 
+    //listing module 
+    public function GetMarketPlaceListingData($where = false)
+    {
+        // 1️⃣ Equipment items (itemType = 1)
+        $equipmentItems = $this->db
+            ->select('*')
+            ->from('shopitem si')
+            ->join('shopequipments se', 'si.itemID = se.itemID','inner')
+            ->join('equipment e', 'e.equipmentID = se.equipmentID ','inner')
+            ->where('si.itemType', 1)
+            ->where($where)
+            ->get()
+            ->result_array();
 
+        // 2️⃣ Workforce items (itemType = 2)
+        $workforceItems = $this->db
+            ->select('*')
+            ->from('shopitem si')
+            ->join('shopworkforce sw', 'si.itemID = sw.itemID','inner')
+            ->join('workforce w', 'w.workforceID= sw.workforceID ','inner')
+            ->where('si.itemType', 2)
+            ->where($where)
+            ->get()
+            ->result_array();
+
+        // 3️⃣ Merge both results
+        return array_merge($equipmentItems, $workforceItems);
+    }
 
 
 

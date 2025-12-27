@@ -110,14 +110,14 @@
 
 						<h1>We are coming soon...</h1>
 
-	        			<p class="subtitle">Exclusive, carefully selected materials like carbon fiber, aluminium, soft lambskin and genuine cowhide leather guarantee absolute comfort and style. And because the leather patinates over time, iSOON ages beautifully.</p>
+	        			<p class="subtitle"></p>
 
 	        		</div>
 				</div>
 		    </div>
 
 		    <!-- Social Media -->
-			<div class="social-nav social-footer">
+			<!-- <div class="social-nav social-footer">
 				<ul>
 					<li>
 						<a href="https://www.facebook.com/themehelite" target="_blank"><i class="fa fa-facebook"></i></a>
@@ -135,7 +135,7 @@
 						<a href="#" target="_blank"><i class="fa fa-instagram"></i></a>
 					</li>
 				</ul>
-			</div>
+			</div> -->
 
 
 		</div>

@@ -98,6 +98,23 @@
                       <div class="menu-title font-clash">Manage Company Partners</div>
                   </a>
               </li>
+              <li>
+                  <a class="has-arrow" href="javascript:;">
+                      <div class="parent-icon">
+                          <i class="bi bi-headset"></i>
+                      </div>
+                      <div class="menu-title font-clash">Support</div>
+                  </a>
+                  <ul>
+
+                      <li>
+                          <a href="<?= base_url('ticket-category') ?>"><i class="bi bi-arrow-right-short"></i>Manage Ticket Categories</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('all-tickets') ?>"><i class="bi bi-arrow-right-short"></i>All Tickets </a>
+                      </li>
+                  </ul>
+              </li>
               <!-- mannage  Company Partners end here-->
           </ul>
           <!--end navigation-->
@@ -198,7 +215,42 @@
                       </li>
                   </ul>
               </li>
+              <li>
+                  <a class="has-arrow" href="javascript:;">
+                      <div class="parent-icon">
+                          <i class="bi bi-cart2"></i>
+                      </div>
+                      <div class="menu-title font-clash">Marketplace</div>
+                  </a>
+                  <ul>
+
+                      <li>
+                          <a href="<?= base_url('add-listing') ?>"><i class="bi bi-arrow-right-short"></i>Add Listing</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('all-listing') ?>"><i class="bi bi-arrow-right-short"></i>All Listing </a>
+                      </li>
+                  </ul>
+              </li>
               <!-- mannage  Equipment end here-->
+              <!-- support menu  -->
+              <li>
+                  <a class="has-arrow" href="javascript:;">
+                      <div class="parent-icon">
+                          <i class="bi bi-headset"></i>
+                      </div>
+                      <div class="menu-title font-clash">Support</div>
+                  </a>
+                  <ul>
+
+                      <li>
+                          <a href="<?= base_url('add-new-ticket') ?>"><i class="bi bi-arrow-right-short"></i>Add New Ticket</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('all-tickets') ?>"><i class="bi bi-arrow-right-short"></i>All Tickets </a>
+                      </li>
+                  </ul>
+              </li>
           </ul>
           <!--end navigation-->
       </aside>

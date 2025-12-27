@@ -120,6 +120,32 @@ $route['mark-project-as-inprogress'] = 'project/MarkInProgressProject';
 //--all projects
 $route['all-projects'] = 'project/AllProjects';
 $route['delete-project/:any'] = 'project/DeletProject';
+//support ticket 
+$route['add-new-ticket']='support/addNewTicket';
+$route['add-ticket-data']='support/addNewTicketData';
+$route['ticket-chat']='support/ticketChat';
+$route['add-new-chat-ajax']='support/newChatAjax'; //add new chat ajax
+$route['all-tickets']='support/allTickets';
+//--admin side support
+$route['ticket-category']='support/ticketCategory';
+$route['add-ticket-cat-data']='support/ticketCategoryData';
+$route['change-ticket-cat-status/:any/:any']='support/ticketCategoryStatus';
+$route['delet-ticket-cat/:any']='support/ticketCategoryDlt';
+$route['update-ticket-cat-data/:any']='support/ticketCategoryUpdate';
+$route['marked-ticket-complete/:any']='support/ticketMarketCompleted';
+
+
+//manage company admin listing
+//--add listing
+$route['add-listing']='listing/addListing';
+$route['add-equipment-listing-data']='listing/addEquipmentListingData';
+$route['fetch-equipment-availablity-from-project']='listing/fetchEquipmentAvailablity'; //--ajax
+$route['fetch-workforce-availablity']='listing/fetchWorkforceAvailablity'; //--ajax
+$route['add-workforce-listing-data']='listing/addWorkforceListingData'; 
+$route['add-step-3-data']='listing/step3Data';
+//==all listing module
+$route['all-listing']='listing/allListing';
+
 
 
 

@@ -30,8 +30,8 @@ class MY_Controller extends CI_Controller {
         if(!$is_base_url){
         // Check if the user is logged in
         if (!in_array($current_page, $excluded_pages) && !$this->session->userdata('loginData')) {
-            die('You are not logged in. Please log in to access this page.');
-            redirect(base_url()); // Redirect to the login page or home page
+            // die('You are not logged in. Please log in to access this page.');
+            redirect(base_url('login')); // Redirect to the login page or home page
         }
         $this->load->library('email');
         $this->config->load('email'); // Load SMTP settings

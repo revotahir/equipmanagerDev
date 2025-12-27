@@ -123,6 +123,7 @@ class superadmin extends MY_Controller
             'pageID' => $pageID[0]['result'],
             'web_catDesp' => $superCatDesp,
             'web_catIcon' => $personImage,
+            'web_cat_type'=>$this->input->post('catType')
         );
         $this->generic->InsertData('web_cat', $data);
         $this->session->set_flashdata('success', 'Person deleted successfully!');

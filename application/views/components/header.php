@@ -71,13 +71,14 @@
        <div class="mobile-toggle-icon d-xl-none">
          <i class="bi bi-list"></i>
        </div>
-       <strong>Website Mode</strong>
+      
        <?php
         if ($this->session->userdata('loginData')['userType'] == 1) {
           $CI = &get_instance();
           $CI->load->model('Generic_model', 'generic'); // avoid repeated loads in many views
           $setting = $CI->generic->GetData('web_setting');
         ?>
+         <strong>Website Mode</strong>
          <div>
            <a href="<?= base_url('change-website-mode') ?>?curentUrl=<?= uri_string()?>" >
              <div class="maintinance-toggle">
