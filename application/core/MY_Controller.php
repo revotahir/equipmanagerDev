@@ -1,12 +1,15 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class MY_Controller extends CI_Controller {
-    public function __construct() {
+class MY_Controller extends CI_Controller
+{
+    public function __construct()
+    {
         parent::__construct();
-           // List of controllers/methods to exclude from the session check
-           $excluded_pages = array(
+        // List of controllers/methods to exclude from the session check
+        $excluded_pages = array(
             'welcome', // Exclude the default Welcome controller (base URL)
+            'welcome/index', // Exclude the welcome index when CI routes unknown URIs here via 404_override
             'welcome/LoginData', // Exclude the login page
             'welcome/RegisterView', // Exclude the login page
             'welcome/comapnyRegisterationData', // Exclude the login page
@@ -20,24 +23,27 @@ class MY_Controller extends CI_Controller {
             'welcome/resetPasswordData', // Exclude the forget pass reset data page
             'welcome/login', // Exclude the forget pass reset data page
         );
-         // Get the current controller and method
-         $current_controller = $this->router->fetch_class();
-         $current_method = $this->router->fetch_method();
-         $current_page = $current_controller . '/' . $current_method;
-         // Check if the current request is for the base URL
-         $is_base_url = ($this->uri->uri_string() === '');
+
+        // Get the current controller and method
+        $current_controller = $this->router->fetch_class();
+        $current_method = $this->router->fetch_method();
+        $current_page = $current_controller . '/' . $current_method;
+        // Check if the current request is for the base URL
+        $is_base_url = ($this->uri->uri_string() === '');
         //  var_dump($this->session->userdata('loginData')); 
-        if(!$is_base_url){
-        // Check if the user is logged in
-        if (!in_array($current_page, $excluded_pages) && !$this->session->userdata('loginData')) {
-            // die('You are not logged in. Please log in to access this page.');
-            redirect(base_url('login')); // Redirect to the login page or home page
+        if (!$is_base_url) {
+            // Check if the user is logged in.
+            // Allow any request handled by the `welcome` controller to pass
+            // so `404_override` can dispatch unknown slugs (like "about-us") to it.
+            if ($current_controller !== 'welcome' && !in_array($current_page, $excluded_pages) && !$this->session->userdata('loginData')) {
+                redirect(base_url('login')); // Redirect to the login page or home page
+            }
+            $this->load->library('email');
+            $this->config->load('email'); // Load SMTP settings
         }
-        $this->load->library('email');
-        $this->config->load('email'); // Load SMTP settings
     }
-    }
-    public function send_email($to, $subject, $message) {
+    public function send_email($to, $subject, $message)
+    {
         $this->email->from('info@nexphi.com', 'Equip Manager');
         $this->email->to($to);
         $this->email->subject($subject);

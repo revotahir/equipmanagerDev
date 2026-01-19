@@ -40,6 +40,23 @@
                       </li>
                   </ul>
               </li>
+              <li>
+                  <a  href="<?= base_url('admin-marketplace-listing') ?>">
+                      <div class="parent-icon">
+                          <i class="bi bi-cart2"></i>
+                      </div>
+                      <div class="menu-title font-clash">Marketplace Listing</div>
+                  </a>
+                  <!-- <ul>
+
+                      <li>
+                          <a href="<?= base_url('add-listing') ?>"><i class="bi bi-arrow-right-short"></i>Add Listing</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('all-listing') ?>"><i class="bi bi-arrow-right-short"></i>All Listing </a>
+                      </li>
+                  </ul> -->
+              </li>
 
               <!-- manage Testimonial -->
               <li>

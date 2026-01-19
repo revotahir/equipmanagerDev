@@ -60,6 +60,8 @@ class listing extends MY_Controller
 				//if editing mode is enabled
 				if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
 					$this->data['shopItem'] = $this->generic->GetMarketPlaceListingData(array('si.itemID' => $_GET['itemID']));
+					//get work force availablity 
+					$this->data['workforceAvailability'] = $this->generic->GetWorkforceofPRoject(array('pwl.workforceID' => $this->data['shopItem'][0]['workforceID'], 'p.itemID!=' => $this->data['shopItem'][0]['itemID']));
 				}
 				$this->load->view('listingMarketplace/addlistingstep2', $this->data);
 			}
@@ -225,8 +227,14 @@ class listing extends MY_Controller
 			'saleType' => $_GET['rentalType'],
 			'itemStatus' => 0
 		);
-		$this->generic->InsertData('shopitem', $shopItem);
-		$itemID = $this->generic->GetMaxID('shopitem', 'itemID');
+		if ($this->input->post('itemID') == '') {
+			$this->generic->InsertData('shopitem', $shopItem);
+			$itemID = $this->generic->GetMaxID('shopitem', 'itemID');
+		} else {
+			$this->generic->Update('shopitem', array('itemID' => $this->input->post('itemID')), $shopItem);
+			$itemID[0]['result'] = $this->input->post('itemID');
+		}
+
 		$workforceData = array(
 			'itemID' => $itemID[0]['result'],
 			'workforceID' => $this->input->post('workforce'),
@@ -259,9 +267,16 @@ class listing extends MY_Controller
 			return null;
 		};
 
-		$cvFile = $handleSingle('cv', 'cv');
-		$certFile = $handleSingle('certificate', 'cert');
+		// Check if files are posted before processing
+		$cvFile = null;
+		$certFile = null;
 
+		if (isset($_FILES['cv'])) {
+			$cvFile = $handleSingle('cv', 'cv');
+		}
+		if (isset($_FILES['certificate'])) {
+			$certFile = $handleSingle('certificate', 'cert');
+		}
 		if ($cvFile) {
 			$workforceData['workforceCV'] = $cvFile;
 		}
@@ -269,26 +284,52 @@ class listing extends MY_Controller
 			$workforceData['workforceCertif'] = $certFile;
 		}
 
-		// insert workforce listing row
-		$this->generic->InsertData('shopworkforce', $workforceData);
-		$itemID = $this->generic->GetMaxID('shopitem', 'itemID');
-		$this->session->set_flashdata('drafted', 'Please fill all fields!');
-		redirect(base_url('add-listing?listingID=' . $itemID[0]['result']));
+		// insert or update  workforce listing row
+		if ($this->input->post('itemID') != '') {
+			$this->generic->Update('shopworkforce', array('itemID' => $this->input->post('itemID')), $workforceData);
+			//update project
+			$newdates = array(
+				'pStartDate' => $this->input->post('avlEmpStart'),
+				'pEndDate' => $this->input->post('avlEmpEnd')
+			);
+			$this->generic->Update('projects', array('itemID' => $itemID[0]['result']), $newdates);
+
+			$this->session->set_flashdata('updated', 'Please fill all fields!');
+			redirect(base_url('add-listing?listingID=' . $this->input->post('itemID') . '&edit=1'));
+		} else {
+			$this->generic->InsertData('shopworkforce', $workforceData);
+			$itemID = $this->generic->GetMaxID('shopitem', 'itemID');
+			$this->session->set_flashdata('drafted', 'Please fill all fields!');
+			redirect(base_url('add-listing?listingID=' . $itemID[0]['result']));
+		}
 	}
 
 	public function step3Data()
 	{
-		$deliveryData = array(
-			'eqpDeliveryOpt' => $this->input->post('devliveryOpt'),
-			'eqpRules' => $this->input->post('rules'),
-		);
+
 		$listing = $this->generic->GetData('shopitem', array('itemID' => $_GET['listingID']));
+		if ($listing[0]['itemType'] == 1) {
+			$deliveryData = array(
+				'eqpDeliveryOpt' => $this->input->post('devliveryOpt'),
+				'eqpRules' => $this->input->post('rules'),
+			);
+		}else{
+			$deliveryData = array(
+			'workforceDeliveryOpt' => $this->input->post('devliveryOpt'),
+			'workforceRules' => $this->input->post('rules'),
+		);
+		}
 		if ($listing[0]['saleType'] == 0) { //rental equipment
+			if($listing[0]['itemType'] == 1){
 			$deliveryData['noteForRenter'] = $this->input->post('rentalNotes');
 			$deliveryData['addRequirments'] = $this->input->post('rentalReq');
+			}else{
+				$deliveryData['workforcenoteForRenter'] = $this->input->post('rentalNotes');
+			$deliveryData['workforceaddRequirments'] = $this->input->post('rentalReq');
+			}
 			//add equipment to projects for em tracking 
 			//--get added equipment details
-			if ($this->input->post('edit')=='') {
+			if ($this->input->post('edit') == '') {
 				if ($listing[0]['itemType'] == 1) {
 					$addedequipment = $this->generic->GetData('shopequipments', array('itemID' => $_GET['listingID']));
 					$projectdata = array(
@@ -369,7 +410,32 @@ class listing extends MY_Controller
 		if (isset($_GET['listingType']) && $_GET['listingType'] != '') {
 			$where['si.saleType'] = $_GET['ItemType'];
 		}
+		if (isset($_GET['listingStatus']) && $_GET['listingStatus'] != '') {
+			$where['si.itemStatus'] = $_GET['listingStatus'];
+		}
 		$this->data['listing'] = $this->generic->GetMarketPlaceListingData($where);
 		$this->load->view('listingMarketplace/all-listing', $this->data);
+	}
+	public function dltListing()
+	{
+		//update equipment quantity
+		$itemListing=$this->generic->GetData('shopitem', array('itemID' => $_GET['itemID']));
+		if($itemListing[0]['itemType']==1){
+			$eqpListing=$this->generic->GetData('shopequipments', array('itemID' => $_GET['itemID']));
+			//get equipment
+			$equipment=$this->generic->GetData('equipment',array('equipmentID'=>$eqpListing[0]['equipmentID']));
+			$newqty=$equipment[0]['equipInUseQuantity']-$eqpListing[0]['equipQty'];
+			$this->generic->Update('equipment',array('equipmentID'=>$eqpListing[0]['equipmentID']),array('equipInUseQuantity'=>$newqty));
+		}
+		$this->generic->Delete('shopitem', array('itemID' => $_GET['itemID']));
+		$this->generic->Delete('shopequipments', array('itemID' => $_GET['itemID']));
+		$this->generic->Delete('shopworkforce', array('itemID' => $_GET['itemID']));
+		//delet from projects
+		$project = $this->generic->GetData('projects', array('itemID' => $_GET['itemID']));
+		$this->generic->Delete('projects', array('itemID' => $_GET['itemID']));
+		$this->generic->Delete('projectequipmentlink', array('ProjectID' => $project[0]['ProjectID']));
+		$this->generic->Delete('projectworkforcelink', array('ProjectID' => $project[0]['ProjectID']));
+		$this->session->set_flashdata('listingdeleted', 'Please fill all fields!');
+		redirect(base_url('all-listing'));
 	}
 }

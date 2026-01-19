@@ -64,6 +64,12 @@ $route['reset-password-data'] = 'welcome/resetPasswordData';
 $route['login'] = 'welcome/login';
 $route['login-data'] = 'welcome/loginData';
 
+//website market place 
+$route['work-force-marketplace']='welcome/workforceMarketPlace';
+$route['equipment-marketplace']='welcome/equipmentMarketPlace';
+$route['equipment-detail']='welcome/equipmentDetailMarketPlace';
+$route['workforce-detail']='welcome/WorkforceDetailMarketPlace';
+
 //dashboards
 $route['company-dashboard'] = 'welcome/companyDashboard';
 
@@ -145,6 +151,8 @@ $route['add-workforce-listing-data']='listing/addWorkforceListingData';
 $route['add-step-3-data']='listing/step3Data';
 //==all listing module
 $route['all-listing']='listing/allListing';
+//--delet listing
+$route['delete-listing']='listing/dltListing';
 
 
 
@@ -199,6 +207,11 @@ $route['process-update-partner/:any'] = 'superadmin/processUpdatePartner';
 // change status 
 $route['change-partner-status/:any/:any'] = 'superadmin/changePartnerStatus';
 
+//market place listing
+$route['admin-marketplace-listing']='superadmin/MarketplaceListing';
+$route['mark-listing-approved']='superadmin/MarketplaceListingMarkedApproved';
+$route['mark-listing-rejected']='superadmin/MarketplaceListingMarkedRejected';
+$route['change-website-listing-status/:any/:any']='superadmin/ChangeMarketplacelistingWebsiteStatus';
 
 $route['login-data'] = 'welcome/LoginData';
 
@@ -210,7 +223,9 @@ $route['test-mail'] = 'welcome/TestMail';
 
 
 $route['logout'] = 'welcome/LogOut';
-$route[':any'] = 'welcome';
 $route['default_controller'] = 'welcome';
-$route['404_override'] = '';
+$route['(:any)'] = 'welcome';
+
+// Route any unmatched URI to the default controller
+$route['404_override'] = 'welcome';
 $route['translate_uri_dashes'] = FALSE;

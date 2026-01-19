@@ -178,7 +178,7 @@
 .wish {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+
 }
 .wish > span {
   background-color: #ffffffab;
@@ -186,8 +186,9 @@
   border-radius: 360px;
   color: var(--primary-dark-green);
   font-family: "Manrope", sans-serif;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 500;
+  margin-left: 10px;
 }
 
 /* heart animation start */

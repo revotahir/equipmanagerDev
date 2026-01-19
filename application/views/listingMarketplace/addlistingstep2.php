@@ -141,6 +141,33 @@
       }
     }
   </style>
+  <style>
+    .star-rating {
+      display: flex;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .star-rating label .star-icon::before {
+      content: "\f587";
+      /* bi-star outline */
+      color: grey;
+    }
+
+    .star-rating label.hovered .star-icon::before,
+    .star-rating label.selected .star-icon::before {
+      content: "\f586";
+      /* bi-star-fill */
+      color: #ffc107;
+    }
+  </style>
 </head>
 
 <body>
@@ -229,14 +256,14 @@
                         <div class="col-6">
                           <label class="form-label">Equipment</label>
                           <select name="eqpID" id="eqpID"
-                          <?php
+                            <?php
                             if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
                             ?>
                             disabled
                             <?php
-                            } 
+                            }
                             ?>
-                          onchange="return getavailabality()" required class="form-control">
+                            onchange="return getavailabality()" required class="form-control">
                             <option value="">Select Equipment</option>
                             <?php
                             if ($eqp) {
@@ -260,19 +287,19 @@
                             }
                             ?>
                           </select>
-                         
+
                         </div>
                         <div class="col-6">
                           <label for="qty" class="form-label">Quantity</label>
                           <input type="number"
-                          <?php
+                            <?php
                             if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
                             ?>
                             disabled
                             <?php
-                            } 
+                            }
                             ?>
-                          name="eqpQty" required id="eqpQty"
+                            name="eqpQty" required id="eqpQty"
                             <?php
                             if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
                             ?>
@@ -284,14 +311,14 @@
                             ?>
                             class="form-control" placeholder="Select Equipment">
                         </div>
-                         <?php
-                            if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
-                            ?>
-                            <input type="hidden" name="eqpID" value="<?= $shopItem[0]['equipmentID'] ?>">
-                            <input type="hidden" name="eqpQty" value="<?= $shopItem[0]['equipQty'] ?>">
-                            <?php
-                            }
-                            ?>
+                        <?php
+                        if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                        ?>
+                          <input type="hidden" name="eqpID" value="<?= $shopItem[0]['equipmentID'] ?>">
+                          <input type="hidden" name="eqpQty" value="<?= $shopItem[0]['equipQty'] ?>">
+                        <?php
+                        }
+                        ?>
                         <div class="col-6">
                           <label class="form-label">Availability (Start - End)</label>
                           <input
@@ -377,20 +404,21 @@
                             ?>
                             placeholder="Add  brand/model" />
                         </div>
-                        <div class="col-6">
-                          <label class="form-label">Condition</label>
-                          <textarea
-                            class="form-control"
-                            rows="4"
-                            name="eqpCond"
-                            required
-                            id="eqpCond"
-                            cols="4"
-                            placeholder="Write Here"><?php
-                                                      if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
-                                                      ?><?= $shopItem[0]['eqpCondition'] ?> <?php  } ?></textarea>
-                        </div>
-                        <div class="col-6">
+
+                        <div class="col-12">
+                          
+                          <div class="star-rating">
+                            <label class="form-label">Condition &nbsp;&nbsp;</label> 
+                            <input type="radio" id="star1" name="eqpCond" value="1" required <?php if (isset($_GET['itemID']) && $_GET['itemID'] != '' && $shopItem[0]['eqpCondition'] == 1) echo 'checked'; ?>>
+                            <label for="star1" data-bs-toggle="tooltip" title="Major defects affecting performance, nearing end-of-life, requires significant attention or
+replacement."><i class="bi bi-star star-icon"></i></label>
+                            <input type="radio" id="star2" name="eqpCond" value="2" <?php if (isset($_GET['itemID']) && $_GET['itemID'] != '' && $shopItem[0]['eqpCondition'] == 2) echo 'checked'; ?>>
+                            <label for="star2" data-bs-toggle="tooltip" title="Noticeable wear, functional but approaching mid-lifecycle, maintenance recommended."><i class="bi bi-star star-icon"></i></label>
+                            <input type="radio" id="star3" name="eqpCond" value="3" <?php if (isset($_GET['itemID']) && $_GET['itemID'] != '' && $shopItem[0]['eqpCondition'] == 3) echo 'checked'; ?>>
+                            <label for="star3" data-bs-toggle="tooltip" title="Minor wear, fully functional, standard maintenance needed."><i class="bi bi-star star-icon"></i></label>
+                            <input type="radio" id="star4" name="eqpCond" value="4" <?php if (isset($_GET['itemID']) && $_GET['itemID'] != '' && $shopItem[0]['eqpCondition'] == 4) echo 'checked'; ?>>
+                            <label for="star4" data-bs-toggle="tooltip" title="Like new, no defects, optimal performance."><i class="bi bi-star star-icon"></i></label>
+                          </div>
                           <label class="form-label">Specs</label>
                           <textarea
                             class="form-control"
@@ -579,13 +607,32 @@
                         ?>
                         <div class="col-6">
                           <label class="form-label">Select Workforce</label>
-                          <select name="workforce" id="workforce" required onchange="return getEmplAvailability()" class="form-control">
+                          <select
+                            <?php
+                            if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                            ?>
+                            disabled
+                            <?php
+                            }
+                            ?>
+
+                            name="workforce" id="workforce" required onchange="return getEmplAvailability()" class="form-control">
                             <option value="">Select Workforce</option>
                             <?php
                             if ($employe) {
                               foreach ($employe as $row) {
                             ?>
-                                <option value="<?= $row['workforceID'] ?>"><?= $row['personName'] ?></option>
+                                <option
+                                  <?php
+                                  if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                                    if ($shopItem[0]['workforceID'] == $row['workforceID']) {
+                                      echo 'selected';
+                                    }
+                                  }
+
+                                  ?>
+
+                                  value="<?= $row['workforceID'] ?>"><?= $row['personName'] ?></option>
                               <?php
                               }
                             } else {
@@ -596,6 +643,13 @@
                             ?>
                           </select>
                         </div>
+                        <?php
+                        if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                        ?>
+                          <input type="hidden" name="workforce" value="<?= $shopItem[0]['workforceID'] ?>">
+                        <?php
+                        }
+                        ?>
                         <div class="col-6">
                           <label class="form-label">Availability (Start - End)</label>
                           <input
@@ -603,10 +657,20 @@
                             class="form-control"
                             id="avlEmplRange"
                             required
+                            readonly
                             placeholder="Select Workforce first"
                             disabled />
                           <input type="hidden" name="avlEmpStart" id="avlEmpStart" />
                           <input type="hidden" name="avlEmpEnd" id="avlEmpEnd" />
+                          <?php
+                          if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                          ?>
+                            <span><strong>Selected dates: </strong>
+                              <?= date('j M, Y', strtotime($shopItem[0]['workforceAvailableStart'])) ?> - <?= date('j M, Y', strtotime($shopItem[0]['workforceAvailableEnd'])) ?>
+                            </span>
+                          <?php
+                          }
+                          ?>
                         </div>
                         <div class="col-12">
                           <label class="form-label">Marketplace Category</label>
@@ -616,7 +680,16 @@
                             if ($webcat) {
                               foreach ($webcat as $row) {
                             ?>
-                                <option value="<?= $row['web_catID'] ?>"><?= $row['web_catName'] ?></option>
+                                <option
+                                  <?php
+                                  if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                                    if ($shopItem[0]['web_catID'] == $row['web_catID']) {
+                                      echo 'selected';
+                                    }
+                                  }
+
+                                  ?>
+                                  value="<?= $row['web_catID'] ?>"><?= $row['web_catName'] ?></option>
                               <?php
                               }
                             } else {
@@ -629,17 +702,40 @@
                           </select>
                         </div>
 
-                        <div class="col-6">
+                        <div class="col-12">
                           <label class="form-label">Upload CV </label>
                           <input
                             type="file"
                             class="form-control"
                             name="cv"
                             id="cv"
+                            <?php
+                            if (isset($_GET['itemID']) && $_GET['itemID'] == '') {
+
+                            ?>
                             required
+                            <?php
+                            }
+                            ?>
                             placeholder="Upload CV Here" />
                         </div>
-                        <div class="col-6">
+                        <?php
+                        if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+
+                        ?>
+                          <div class="mt-3">
+                            <label class="form-label">Existing Images</label>
+                            <div class="row">
+                              <div class="col-1 mb-2">
+                                <img src="<?= base_url('assets/website/documents/' . $shopItem[0]['workforceCV'])  ?>" width="150px" alt="">
+                              </div>
+                            </div>
+                          </div>
+                        <?php
+
+                        }
+                        ?>
+                        <div class="col-12">
                           <label class="form-label">Certificate</label>
                           <input
                             type="file"
@@ -648,6 +744,22 @@
                             class="form-control"
                             placeholder="Upload Certificates Here" />
                         </div>
+                        <?php
+                        if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+
+                        ?>
+                          <div class="mt-3">
+                            <label class="form-label">Existing Images</label>
+                            <div class="row">
+                              <div class="col-1 mb-2">
+                                <img src="<?= base_url('assets/website/documents/' . $shopItem[0]['workforceCertif'])  ?>" width="150px" alt="">
+                              </div>
+                            </div>
+                          </div>
+                        <?php
+
+                        }
+                        ?>
                         <div class="col-6">
                           <label class="form-label">Location(City)</label>
                           <div class="position-relative">
@@ -656,6 +768,13 @@
                               class="form-control"
                               id="cityInput"
                               name="cityInput"
+                              <?php
+                              if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                              ?>
+                              value="<?= $shopItem[0]['workforceCity'] ?>"
+                              <?php
+                              }
+                              ?>
                               placeholder="Type city name..."
                               autocomplete="off">
                             <div id="cityDropdown" class="cities-dropdown"></div>
@@ -668,6 +787,13 @@
                               type="text"
                               class="form-control"
                               id="eqpadd"
+                              <?php
+                              if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                              ?>
+                              value="<?= $shopItem[0]['WorkforceAdd'] ?>"
+                              <?php
+                              }
+                              ?>
                               name="eqpadd"
                               placeholder="Complete Address">
                           </div>
@@ -676,10 +802,42 @@
                           <label class="form-label">Rental Price Type</label>
                           <select name="priceType" required id="priceType" class="form-control">
                             <option value="">Select Options</option>
-                            <option value="1">Per Day</option>
-                            <option value="2">Per Week</option>
-                            <option value="3">Per Month</option>
-                            <option value="4">Per Year</option>
+                            <option
+                              <?php
+                              if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                                if ($shopItem[0]['workforceRentalType'] == 1) {
+                                  echo 'selected';
+                                }
+                              }
+                              ?>
+                              value="1">Per Day</option>
+                            <option
+                              <?php
+                              if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                                if ($shopItem[0]['workforceRentalType'] == 2) {
+                                  echo 'selected';
+                                }
+                              }
+                              ?>
+                              value="2">Per Week</option>
+                            <option
+                              <?php
+                              if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                                if ($shopItem[0]['workforceRentalType'] == 3) {
+                                  echo 'selected';
+                                }
+                              }
+                              ?>
+                              value="3">Per Month</option>
+                            <option
+                              <?php
+                              if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                                if ($shopItem[0]['workforceRentalType'] == 4) {
+                                  echo 'selected';
+                                }
+                              }
+                              ?>
+                              value="4">Per Year</option>
                           </select>
                         </div>
                         <div class="col-6">
@@ -688,6 +846,14 @@
                             type="number"
                             class="form-control"
                             id="workforcePrice"
+                            required
+                            <?php
+                            if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                            ?>
+                            value="<?= $shopItem[0]['workforcePrice'] ?>"
+                            <?php
+                            }
+                            ?>
                             name="workforcePrice"
                             placeholder="Add Amount $10.00" />
                         </div>
@@ -697,7 +863,17 @@
                             <button
                               type="submit"
                               class="btn btn-primary btn-clash">
-                              Next
+                              <?php
+                              if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
+                              ?>
+                                Update & Next
+                              <?php
+                              } else {
+                              ?>
+                                Next
+                              <?php
+                              }
+                              ?>
                             </button>
                           </div>
                         </div>
@@ -823,6 +999,47 @@
           }
         });
       };
+      // Seed blocked ranges from server data if available, then initialize picker
+      (function() {
+        // indicate whether server-side availability variable exists
+        var hasServerAvail = <?php echo isset($workforceAvailability) ? 'true' : 'false'; ?>;
+        var serverRanges = <?php
+                            $sr = array();
+                            if (isset($workforceAvailability) && !empty($workforceAvailability)) {
+                              foreach ($workforceAvailability as $p) {
+                                $s = isset($p['pStartDate']) ? date('Y-m-d', strtotime($p['pStartDate'])) : null;
+                                $e = isset($p['pEndDate']) ? date('Y-m-d', strtotime($p['pEndDate'])) : null;
+                                $sr[] = array('start' => $s, 'end' => $e);
+                              }
+                            }
+                            echo json_encode($sr);
+                            ?>;
+
+        if (Array.isArray(serverRanges) && serverRanges.length) {
+          // there are blocked ranges from server; add them
+          serverRanges.forEach(function(r) {
+            if (r.start && r.end) blockedRanges.push({
+              start: moment(r.start, 'YYYY-MM-DD'),
+              end: moment(r.end, 'YYYY-MM-DD')
+            });
+          });
+          drInput.prop('disabled', false).removeClass('disabled').attr('placeholder', enabledPlaceholder);
+          <?php if (isset($shopItem[0]['workforceAvailableStart']) && isset($shopItem[0]['workforceAvailableEnd'])): ?>
+            $('#avlEmpStart').val('<?= date('Y-m-d', strtotime($shopItem[0]['workforceAvailableStart'])) ?>');
+            $('#avlEmpEnd').val('<?= date('Y-m-d', strtotime($shopItem[0]['workforceAvailableEnd'])) ?>');
+          <?php endif; ?>
+        } else if (hasServerAvail) {
+          // variable is set but empty -> show full calendar (no blocked ranges)
+          drInput.prop('disabled', false).removeClass('disabled').attr('placeholder', enabledPlaceholder);
+          <?php if (isset($shopItem[0]['workforceAvailableStart']) && isset($shopItem[0]['workforceAvailableEnd'])): ?>
+            $('#avlEmpStart').val('<?= date('Y-m-d', strtotime($shopItem[0]['workforceAvailableStart'])) ?>');
+            $('#avlEmpEnd').val('<?= date('Y-m-d', strtotime($shopItem[0]['workforceAvailableEnd'])) ?>');
+          <?php endif; ?>
+        }
+
+        // initialize picker after seeding ranges (always call)
+        initPicker();
+      })();
     })();
   </script>
   <script>
@@ -958,6 +1175,33 @@
         });
       };
     })();
+  </script>
+  <script>
+    $(document).ready(function() {
+      $('[data-bs-toggle="tooltip"]').tooltip();
+      $('.star-rating label').hover(function() {
+        $(this).prevAll('label').addBack().addClass('hovered');
+      }, function() {
+        $(this).prevAll('label').addBack().removeClass('hovered');
+      });
+      $('.star-rating input').change(function() {
+        var $starRating = $(this).closest('.star-rating');
+        $starRating.find('label').removeClass('selected');
+        $(this).next('label').prevAll('label').addBack().addClass('selected');
+      });
+      // Trigger change on load for pre-checked
+      $('.star-rating input:checked').trigger('change');
+
+      // Validate that condition is selected on form submission
+      $('form').on('submit', function(e) {
+        var eqpCondChecked = $('input[name="eqpCond"]:checked').length > 0;
+        if (!eqpCondChecked) {
+          e.preventDefault();
+          alert('Please select a condition rating');
+          return false;
+        }
+      });
+    });
   </script>
 </body>
 

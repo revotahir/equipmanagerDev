@@ -37,6 +37,25 @@ class Welcome extends MY_Controller
 		if ($setting[0]['websiteStatus'] == 1 || $admintype == true) {
 			if ($this->uri->segment(1)) {
 				$page = $this->generic->GetData('web_pages', array('slug' => $this->uri->segment(1)));
+				if ($page) {
+					if ($page[0]['pageType'] == 1) {
+						$this->data['pageData'] = $this->generic->GetPageData(array('p.pageID' => $page[0]['pageID']));
+						//all utality pages will load 
+						if ($page[0]['slug'] == 'about-us') {
+							$this->load->view('website/about', $this->data);
+						} else if ($page[0]['slug'] == 'contact-us') {
+							$this->load->view('website/contact-us', $this->data);
+						} else if ($page[0]['slug'] == 'how-it-works') {
+							$this->load->view('website/how-it-works', $this->data);
+						} else if ($page[0]['slug'] == 'features') {
+							$this->load->view('website/features', $this->data);
+						} else if ($page[0]['slug'] == 'marketplace') {
+							$this->load->view('website/marketplace', $this->data);
+						}
+					}
+				} else {
+					redirect(base_url('login'));
+				}
 			} else {
 				// uri segment is empty so it is home page 
 				$this->data['pageData'] = $this->generic->GetPageData(array('p.slug' => ''));
@@ -60,6 +79,39 @@ class Welcome extends MY_Controller
 	{
 		$this->load->view('login');
 	}
+	// <!-- ============================================================== -->
+	// <!-- Website Marketplace functions -->
+	// <!-- ============================================================== -->
+
+	public function workforceMarketPlace()
+	{
+		//load cateogry for workforce 
+		$this->data['workforceCat'] = $this->generic->GetWebCategoryData(array('wc.web_cat_type' => 2, 'p.pageStatus' => 1));
+		$this->data['workforcelisting'] = $this->generic->GetMarketPlaceWorkforceData(array('si.itemStatus' => 1, 'si.liveStatus' => 1));
+		$this->load->view('website/workforceMarketplace', $this->data);
+	}
+	public function equipmentMarketPlace()
+	{
+		//load cateogry for workforce 
+		$this->data['equipmentCat'] = $this->generic->GetWebCategoryData(array('wc.web_cat_type' => 1, 'p.pageStatus' => 1));
+		$this->data['equipmentlisting'] = $this->generic->GetMarketPlaceEquipmentData(array('si.itemStatus' => 1, 'si.liveStatus' => 1));
+		$this->load->view('website/equipmentMarketplace', $this->data);
+	}
+	public function equipmentDetailMarketPlace(){
+		$itemid=$_GET['item'];
+		$decoded=base64_decode(strtr($itemid, '-_', '+/'));
+		$itemid=explode('|', $decoded)[0];
+		$this->data['equipment'] = $this->generic->GetMarketPlaceEquipmentData(array('si.itemStatus' => 1, 'si.liveStatus' => 1,'si.itemID'=>$itemid));
+		$this->load->view('website/equipmentDetail',$this->data);
+	}
+	public function WorkforceDetailMarketPlace(){
+		$itemid=$_GET['item'];
+		$decoded=base64_decode(strtr($itemid, '-_', '+/'));
+		$itemid=explode('|', $decoded)[0];
+		$this->data['workforce'] = $this->generic->GetMarketPlaceWorkforceData(array('si.itemStatus' => 1, 'si.liveStatus' => 1,'si.itemID'=>$itemid));
+		$this->load->view('website/WorkforceDetail',$this->data);
+	}
+	
 	// <!-- ============================================================== -->
 	// <!-- Login function -->
 	// <!-- ============================================================== -->

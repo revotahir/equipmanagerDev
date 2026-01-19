@@ -1,3 +1,4 @@
+
 .header {
   display: flex;
   justify-content: center;
@@ -33,6 +34,95 @@
 .navigation ul li a:hover {
   color: var(--black);
 }
+/* =========================
+   DROPDOWN (DESKTOP + MOBILE)
+========================= */
+
+.dropdown-hvr-act {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dropdown-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-toggle svg {
+  transition: transform 0.3s ease;
+}
+
+/* rotate arrow when open */
+.dropdown-hvr-act:hover .dropdown-toggle svg,
+.dropdown-hvr-act:focus-within .dropdown-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* Base dropdown style */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  min-width: 180px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 10px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 20px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.98);
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px !important;
+  z-index: 99;
+}
+
+/* Show dropdown (hover + click) */
+.dropdown-hvr-act:hover .dropdown,
+.dropdown-hvr-act:focus-within .dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Small animation for items */
+.dropdown li {
+  transform: translateY(5px);
+  padding: 6px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: all 0.25s ease;
+}
+
+.dropdown-hvr-act:hover .dropdown li,
+.dropdown-hvr-act:focus-within .dropdown li {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.dropdown li a {
+  font-size: 15px;
+}
+
+.dropdown li:hover {
+  background: rgba(0,0,0,0.05);
+}
+
 
 /* ------------------------------
    Toggle button

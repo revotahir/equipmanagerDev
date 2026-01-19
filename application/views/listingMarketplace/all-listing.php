@@ -40,6 +40,67 @@
   <link rel="stylesheet" href="<?= base_url() ?>assets/toastr/toastr.min.css" />
 
   <title>All Listing</title>
+    <style>
+    .checkbox-apple {
+      position: relative;
+      width: 50px;
+      height: 25px;
+      margin: 20px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .checkbox-apple label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50px;
+      height: 25px;
+      border-radius: 50px;
+      background: linear-gradient(to bottom, #b3b3b3, #e6e6e6);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-apple label:after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background-color: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-apple input[type="checkbox"]:checked+label {
+      background: linear-gradient(to bottom, #4cd964, #5de24e);
+    }
+
+    .checkbox-apple input[type="checkbox"]:checked+label:after {
+      transform: translateX(25px);
+    }
+
+    .checkbox-apple label:hover {
+      background: linear-gradient(to bottom, #b3b3b3, #e6e6e6);
+    }
+
+    .checkbox-apple label:hover:after {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .yep {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50px;
+      height: 25px;
+    }
+  </style>
 </head>
 
 <body>
@@ -70,7 +131,7 @@
                   <hr />
                   <div class="row mb-3">
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                       <select name="ItemType" id="ItemType" class="form-control">
                         <option value="">Select Item Type</option>
                         <option value="1" 
@@ -89,7 +150,7 @@
                         >Workforce</option>
                       </select>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                       <select name="listingType" id="listingType" class="form-select">
                         <option value="">Select Listing Type</option>
                         <option value="1" 
@@ -106,6 +167,35 @@
                           }
                         ?>
                         >Rental</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-4">
+                      <select name="listingStatus" id="listingStatus" class="form-select">
+                        <option value="">Select Status</option>
+                        <option value="1"
+                          <?php
+                          if (isset($_GET['listingStatus']) && $_GET['listingStatus'] == 1) {
+                            echo 'selected';
+                          }
+                          ?>>Approved</option>
+                        <option value="2"
+                          <?php
+                          if (isset($_GET['listingStatus']) && $_GET['listingStatus'] == 2) {
+                            echo 'selected';
+                          }
+                          ?>>Pending Approvals</option>
+                        <option value="3"
+                          <?php
+                          if (isset($_GET['listingStatus']) && $_GET['listingStatus'] == 3) {
+                            echo 'selected';
+                          }
+                          ?>>Rejected</option>
+                        <option value="0"
+                          <?php
+                          if (isset($_GET['listingStatus']) && $_GET['listingStatus'] == 0) {
+                            echo 'selected';
+                          }
+                          ?>>Drafts</option>
                       </select>
                     </div>
                   </div>
@@ -150,6 +240,7 @@
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Status</th>
+                  <th>Website Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -224,6 +315,24 @@
                         }
                         ?>
                       </td>
+                       <td>
+                        <?php 
+                        if($row['itemStatus']==1){
+                        ?>
+                        <a href="<?= base_url('change-website-listing-status/' . $row['itemID']) ?>/<?= $row['liveStatus'] ?>" data-bs-toggle="tooltip"
+                          data-bs-placement="bottom"
+                          title="Status">
+                          <div class="checkbox-apple">
+                            <input class="yep" id="check-apple" type="checkbox" <?= ($row['liveStatus'] == 1) ? 'checked' : '' ?> />
+                            <label for="check-apple"></label>
+                          </div>
+                        </a>
+                        <?php 
+                        }else{
+                          echo 'Not Available';
+                        }
+                        ?>
+                      </td>
                       <td>
                         <div
                           class="table-actions d-flex align-items-center gap-3 fs-6">
@@ -234,8 +343,8 @@
                             data-bs-placement="bottom"
                             title="Edit"><i class="bi bi-pencil-fill"></i></a>
                           <a
-                            href="javascript:;"
-                            onclick=""
+                            href="<?= base_url('delete-listing?itemID='.$row['itemID']) ?>"
+                            onclick="return confirm('Are you sure you want to Delete the Listing?')";
                             class="text-danger"
                             data-bs-toggle="tooltip"
                             data-bs-placement="bottom"
@@ -249,7 +358,7 @@
                 } else {
                   ?>
                   <tr>
-                    <td colspan="8" class="text-center">No Listing Found</td>
+                    <td colspan="9" class="text-center">No Listing Found</td>
                   </tr>
                 <?php
                 }
@@ -288,8 +397,44 @@
   <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
   <!--app-->
   <script src="<?= base_url() ?>assets/js/app.js"></script>
-  <?php
-  if ($this->session->flashdata('deletedproject') != '') {
+  <script>
+    // Plain JS: delegate clicks on the toggle area and redirect to the enclosing anchor's href.
+    document.addEventListener('click', function(e) {
+      var wrapper = e.target.closest('.checkbox-apple');
+      if (!wrapper) return;
+      var anchor = wrapper.closest('a');
+      if (!anchor) return;
+      e.preventDefault();
+      // Use href (absolute or relative)
+      var href = anchor.getAttribute('href');
+      if (href) window.location.href = href;
+    });
+    // Read more / Read less toggle for testimonials
+    document.addEventListener('click', function(e) {
+      var toggle = e.target.closest('.toggle-desc');
+      if (!toggle) return;
+      e.preventDefault();
+      var container = toggle.closest('.testi-desc');
+      if (!container) return;
+      var shortEl = container.querySelector('.text-short');
+      var fullEl = container.querySelector('.text-full');
+      if (!shortEl || !fullEl) return;
+      var isShowingFull = shortEl.style.display === 'none';
+      if (isShowingFull) {
+        // currently showing full -> collapse
+        shortEl.style.display = '';
+        fullEl.style.display = 'none';
+        toggle.textContent = 'Read more';
+      } else {
+        // expand
+        shortEl.style.display = 'none';
+        fullEl.style.display = '';
+        toggle.textContent = 'Read less';
+      }
+    });
+  </script>
+    <?php
+  if ($this->session->flashdata('live') != '') {
   ?>
     <script type="text/javascript">
       toastr.options = {
@@ -297,7 +442,35 @@
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
       }
-      toastr.success('Project Deleted!');
+      toastr.success('Listing is Live!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('notLive') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.info('Listing is not Live!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('listingdeleted') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.success('Listing  Deleted!');
     </script>
   <?php
   }

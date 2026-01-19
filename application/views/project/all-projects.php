@@ -245,7 +245,13 @@
                   ?>
                   <tr>
                     <td><?=$project['pName']?></td>
-                    <td><?=$project['pCatName']?></td>
+                    <td><?php 
+                    if($project['pCatName']==0){
+                      echo "Website Listing";
+                    }else{
+                      echo $project['pCatName'];
+                    }
+                    ?></td>
                     <td><?=$project['pLocation']?></td>
                     <td><?= date('j M, Y', strtotime($project['pStartDate'])) ?></td>
                     <td><?= date('j M, Y', strtotime($project['pEndDate'])) ?></td>
@@ -273,6 +279,21 @@
                       <div
                         class="table-actions d-flex align-items-center gap-3 fs-6"
                       >
+                      <?php 
+                    if($project['pCatName']==0){
+
+                      ?>
+ <a
+                          href="<?=base_url('add-listing?itemID='.$project['itemID'])?>"
+                          class="text-warning"
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="bottom"
+                          title="Edit"
+                          ><i class="bi bi-pencil-fill"></i
+                        ></a>
+                      <?php 
+                    }else{
+                      ?>
                         <a
                           href="<?=base_url('add-project?id='.$project['ProjectID'].'&step=1')?>"
                           class="text-warning"
@@ -281,6 +302,9 @@
                           title="Edit"
                           ><i class="bi bi-pencil-fill"></i
                         ></a>
+                        <?php 
+                    }
+                    ?>
                         <a
                           href="javascript:;"
                           onclick="return confirm('Are you sure you want to delete this project?') ? window.location.href='<?=base_url('delete-project/'.$project['ProjectID'])?>' : false;"

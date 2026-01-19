@@ -435,7 +435,10 @@ class Generic_model extends CI_Model
         $equipmentItems = $this->db
             ->select('*')
             ->from('shopitem si')
+            ->join('users u', 'u.userID = si.userID ','inner')
+            ->join('companydetail c', 'c.companyID = si.companyID ','inner')
             ->join('shopequipments se', 'si.itemID = se.itemID','inner')
+            ->join('web_cat wc', 'wc.web_catID = se.web_catID  ','inner')
             ->join('equipment e', 'e.equipmentID = se.equipmentID ','inner')
             ->where('si.itemType', 1)
             ->where($where)
@@ -446,7 +449,10 @@ class Generic_model extends CI_Model
         $workforceItems = $this->db
             ->select('*')
             ->from('shopitem si')
+            ->join('users u', 'u.userID = si.userID ','inner')
+            ->join('companydetail c', 'c.companyID = si.companyID ','inner')
             ->join('shopworkforce sw', 'si.itemID = sw.itemID','inner')
+            ->join('web_cat wc', 'wc.web_catID = sw.web_catID  ','inner')
             ->join('workforce w', 'w.workforceID= sw.workforceID ','inner')
             ->where('si.itemType', 2)
             ->where($where)
@@ -455,6 +461,48 @@ class Generic_model extends CI_Model
 
         // 3️⃣ Merge both results
         return array_merge($equipmentItems, $workforceItems);
+    }
+    public function GetMarketPlaceWorkforceData($where = false)
+    {
+        
+
+        // 2️⃣ Workforce items (itemType = 2)
+        $workforceItems = $this->db
+            ->select('*')
+            ->from('shopitem si')
+            ->join('users u', 'u.userID = si.userID ','inner')
+            ->join('companydetail c', 'c.companyID = si.companyID ','inner')
+            ->join('shopworkforce sw', 'si.itemID = sw.itemID','inner')
+            ->join('web_cat wc', 'wc.web_catID = sw.web_catID  ','inner')
+            ->join('workforce w', 'w.workforceID= sw.workforceID ','inner')
+            ->where('si.itemType', 2)
+            ->where($where)
+            ->get()
+            ->result_array();
+//    die($this->db->last_query());
+        // 3️⃣ Merge both results
+        return  $workforceItems;
+    }
+    public function GetMarketPlaceEquipmentData($where = false)
+    {
+        
+
+       // 1️⃣ Equipment items (itemType = 1)
+        $equipmentItems = $this->db
+            ->select('*')
+            ->from('shopitem si')
+            ->join('users u', 'u.userID = si.userID ','inner')
+            ->join('companydetail c', 'c.companyID = si.companyID ','inner')
+            ->join('shopequipments se', 'si.itemID = se.itemID','inner')
+            ->join('web_cat wc', 'wc.web_catID = se.web_catID  ','inner')
+            ->join('equipment e', 'e.equipmentID = se.equipmentID ','inner')
+            ->where('si.itemType', 1)
+            ->where($where)
+            ->get()
+            ->result_array();
+//    die($this->db->last_query());
+        // 3️⃣ Merge both results
+        return  $equipmentItems;
     }
 
 

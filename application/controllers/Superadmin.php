@@ -892,4 +892,47 @@ class superadmin extends MY_Controller
         $this->session->set_flashdata('success-update', 'Partner added successfully!');
         redirect(base_url('manage-company'));
     }
+
+    //market place listing management
+    public function MarketplaceListing(){
+        $where=array();
+		if (isset($_GET['ItemType']) && $_GET['ItemType'] != '') {
+			$where['si.itemType'] = $_GET['ItemType'];
+		}
+		if (isset($_GET['listingType']) && $_GET['listingType'] != '') {
+			$where['si.saleType'] = $_GET['ItemType'];
+		}
+		if (isset($_GET['listingStatus']) && $_GET['listingStatus'] != '') {
+			$where['si.itemStatus'] = $_GET['listingStatus'];
+		}
+        $where['si.itemStatus!=']=4;
+		$this->data['listing'] = $this->generic->GetMarketPlaceListingData($where);
+		$this->load->view('superadmin/marketplaceListing/all-listing', $this->data);
+    }
+    public function MarketplaceListingMarkedApproved(){
+        $this->generic->Update('shopitem',array('itemID'=>$_GET['listingID']),array('itemStatus'=>1,'liveStatus'=>1));
+         $this->session->set_flashdata('approved', 'Partner added successfully!');
+        redirect(base_url('admin-marketplace-listing'));
+    }
+    public function MarketplaceListingMarkedRejected(){
+        $this->generic->Update('shopitem',array('itemID'=>$_GET['listingID']),array('itemStatus'=>3));
+         $this->session->set_flashdata('rejected', 'Partner added successfully!');
+        redirect(base_url('admin-marketplace-listing'));
+    }
+    public function ChangeMarketplacelistingWebsiteStatus(){
+        $curentStatus=$this->uri->segment(3);
+        if($curentStatus==1){
+            $this->generic->Update('shopitem',array('itemID'=>$this->uri->segment(2)),array('liveStatus'=>0));
+             $this->session->set_flashdata('notLive', 'Partner added successfully!');
+             
+        }else{
+            $this->generic->Update('shopitem',array('itemID'=>$this->uri->segment(2)),array('liveStatus'=>1));
+            $this->session->set_flashdata('live', 'Partner added successfully!');
+        }
+        if($this->session->userdata('loginData')['userType']==1){
+         redirect(base_url('admin-marketplace-listing'));
+        }else{
+            redirect(base_url('all-listing'));
+        }
+    }
 }

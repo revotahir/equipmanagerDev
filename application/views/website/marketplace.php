@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Equip Managemnt</title>
-    <link rel="icon" type="image/x-icon" href="assets/img/favicon.svg" />
-    <link rel="stylesheet" href="assets/css/style.css" />
-    <link rel="stylesheet" href="assets/css/header.css" />
-    <link rel="stylesheet" href="assets/css/footer.css" />
-    <link rel="stylesheet" href="assets/css/landlords-and-user.css" />
-    <link rel="stylesheet" href="assets/css/resopnsive.css" />
+    <link rel="icon" type="image/x-icon" href="<?= base_url() ?>assets/website/img/favicon.svg" />
+    <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/style.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/header.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/footer.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/market.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/resopnsive.css" />
     <!-- Link Swiper's CSS -->
     <link
       rel="stylesheet"
@@ -20,103 +20,13 @@
   </head>
   <body>
     <!-- header section-->
-    <header class="header">
-      <div class="container">
-        <nav class="navbar">
-          <div class="logo">
-            <a href="/">
-              <svg
-                width="199"
-                height="44"
-                viewBox="0 0 199 44"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M43.4637 21.7319C43.4637 33.7381 33.738 43.4637 21.7319 43.4637C16.869 43.4637 12.3751 41.8707 8.73635 39.1542L11.4696 36.421C11.8217 36.0689 12.3751 36.0186 12.7943 36.2869C15.4605 37.9805 18.6297 38.953 22.0169 38.953C31.5917 38.953 39.3387 31.206 39.3387 21.6313C39.3387 21.2791 39.3219 20.9102 39.3052 20.5581C39.2716 20.0047 38.8021 19.5687 38.2488 19.5687H35.2304C34.6268 19.5687 34.1237 20.0886 34.174 20.709C34.2076 21.0444 34.2076 21.3797 34.2076 21.7319C34.2076 28.5231 28.7075 34.0231 21.9163 34.0231C19.6023 34.0231 17.4392 33.3859 15.5946 32.2792C13.9681 31.3066 12.5763 29.9484 11.5702 28.3554C10.3461 26.4438 9.64184 24.1633 9.64184 21.7319C9.64184 20.9941 9.70891 20.2898 9.82629 19.5855C10.8492 13.8172 15.8797 9.44062 21.9331 9.44062C23.8279 9.44062 25.6389 9.8766 27.2487 10.6479C27.9026 10.9665 28.0536 11.8385 27.5505 12.3416L24.5154 15.3934L20.3401 19.5855L16.148 23.7776C15.8126 24.113 15.7455 24.6328 15.9803 25.0352C16.6678 26.2593 17.7074 27.2654 18.9818 27.8691C19.3843 28.0703 19.8706 27.9865 20.1892 27.6679L28.2715 19.5687L28.3889 19.4514L32.4636 15.3599L35.5323 12.2912C35.9012 11.9056 35.9515 11.3019 35.6161 10.8827C34.6436 9.65861 33.5033 8.55189 32.2457 7.62963C29.3783 5.53358 25.8569 4.29272 22.0337 4.29272C13.1632 4.29272 5.85217 10.9665 4.8293 19.552C4.74546 20.2227 4.71193 20.9102 4.71193 21.6145C4.71193 25.1526 5.76834 28.4392 7.57933 31.1725C7.84762 31.5917 7.79731 32.1451 7.44518 32.4972L4.79577 35.1466C4.76223 35.1801 4.74546 35.2137 4.71193 35.2472C1.76068 31.5414 0 26.8462 0 21.7319C0 9.72568 9.72568 0 21.7319 0C33.738 0 43.4637 9.72568 43.4637 21.7319Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M57.1895 26.9924V12.6001H67.4881V14.6747H59.5233V18.6941H67.1547V20.8057H59.5233V24.8993H67.4881V26.9924H57.1895Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M73.9158 25.2327C75.8051 25.2327 76.8424 24.3991 76.8424 22.621V20.7131C76.8424 18.9349 75.8051 18.1014 73.9158 18.1014C71.8598 18.1014 71.0077 19.0461 71.0077 21.6948C71.0077 24.3436 71.8598 25.2327 73.9158 25.2327ZM68.6924 21.6578C68.6924 18.2681 70.3224 16.1009 73.3231 16.1009C75.1754 16.1009 76.3979 16.8233 76.9165 18.0829H77.0091V16.3232H79.1392V30.7154H76.8424V25.3438H76.7683C76.3052 26.307 75.1013 27.2146 73.249 27.2146C70.2483 27.1961 68.6924 25.0289 68.6924 21.6578Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M81.3428 22.8988V16.3047H83.6581V22.4913C83.6581 24.3992 84.3805 25.1956 86.2328 25.1956C88.0851 25.1956 89.0297 24.4177 89.0297 22.3246V16.3047H91.3451V26.9738H89.1964V24.8437H89.1038C88.5852 26.0662 87.4553 27.1776 85.3622 27.1776C82.5838 27.1961 81.3428 25.3438 81.3428 22.8988Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M93.4941 26.9923V16.2491H95.8095V26.9923H93.4941ZM93.4941 14.9525L93.4756 12.5816H95.7909V14.9525H93.4941Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M103.089 25.2327C105.126 25.2327 105.997 24.288 105.997 21.6763C105.997 19.0646 105.163 18.0829 103.089 18.0829C101.199 18.0829 100.162 18.9164 100.162 20.6946V22.6024C100.162 24.3806 101.199 25.2327 103.089 25.2327ZM97.8652 30.6969V16.3047H99.9768V18.0643H100.088C100.588 16.8233 101.811 16.0824 103.644 16.0824C106.645 16.0824 108.312 18.2496 108.312 21.6393C108.312 25.0289 106.701 27.1776 103.793 27.1776C101.885 27.1776 100.699 26.2885 100.236 25.3068H100.162V30.6784H97.8652V30.6969Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M114.333 26.9924V12.6001H117.63L120.909 20.4909L122.168 23.9361H122.353L123.594 20.4909L126.817 12.6001H130.096V26.9924H127.799V18.4719L127.892 16.0824H127.744L126.836 18.4719L123.613 26.1218H120.816L117.574 18.4719L116.722 16.0824H116.519L116.648 18.4719V26.9924H114.333Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M136.116 25.3623C137.616 25.3623 139.265 24.7696 139.265 22.621V22.4357L135.875 22.9544C134.653 23.1211 134.227 23.3989 134.227 24.1954C134.227 25.0104 134.764 25.3623 136.116 25.3623ZM131.967 24.3436C131.967 22.5839 133.263 21.6578 135.523 21.3429L139.265 20.7872V20.213C139.265 18.6201 138.542 18.157 136.857 18.157C135.171 18.157 134.486 18.6941 134.486 20.1204V20.4353H132.245V20.213C132.245 17.8236 134.115 16.101 136.968 16.101C139.82 16.101 141.45 17.8977 141.45 20.5094V26.9924H139.302V25.3253H139.191C138.561 26.3441 137.338 27.2146 135.319 27.2146C133.449 27.1961 131.967 26.2144 131.967 24.3436Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M143.691 26.9923V16.3232H145.822V18.3237H145.914C146.414 17.1752 147.544 16.1194 149.637 16.1194C152.416 16.1194 153.657 17.8791 153.657 20.3056V27.0109H151.341V20.8242C151.341 18.9164 150.749 18.1199 148.785 18.1199C146.822 18.1199 146.044 18.8423 146.044 20.8428V27.0109H143.691V26.9923Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M159.491 25.3623C160.991 25.3623 162.64 24.7696 162.64 22.621V22.4357L159.25 22.9544C158.028 23.1211 157.602 23.3989 157.602 24.1954C157.602 25.0104 158.139 25.3623 159.491 25.3623ZM155.342 24.3436C155.342 22.5839 156.638 21.6578 158.898 21.3429L162.64 20.7872V20.213C162.64 18.6201 161.917 18.157 160.232 18.157C158.546 18.157 157.861 18.6941 157.861 20.1204V20.4353H155.62V20.213C155.62 17.8236 157.49 16.101 160.343 16.101C163.195 16.101 164.825 17.8977 164.825 20.5094V26.9924H162.677V25.3253H162.566C161.936 26.3441 160.713 27.2146 158.694 27.2146C156.824 27.1961 155.342 26.2144 155.342 24.3436Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M171.845 24.0102C173.587 24.0102 174.754 23.1767 174.754 21.3614V20.6946C174.754 18.9164 173.587 18.0829 171.808 18.0829C169.808 18.0829 168.937 18.8609 168.937 21.0465C168.937 23.2322 169.826 23.9917 171.845 24.0102ZM166.604 21.0465C166.604 18.0458 168.252 16.101 171.271 16.101C172.994 16.101 174.328 16.8233 174.828 18.0829H174.92V16.3232H177.05V26.2329C177.05 29.4003 175.198 30.8821 172.086 30.8821C168.974 30.8821 167.159 29.4374 167.159 26.8627H169.456C169.456 28.326 169.993 28.8261 172.142 28.8261C174.29 28.8261 174.735 28.2334 174.735 26.2514V24.1213H174.642C174.142 25.1586 172.901 26.0106 171.16 26.0106C168.234 25.9736 166.604 24.0472 166.604 21.0465Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M180.978 20.6576H186.627C186.72 18.8238 185.719 18.0644 183.904 18.0644C181.867 18.0458 181.089 18.9905 180.978 20.6576ZM178.773 21.6393C178.773 18.3237 180.755 16.101 183.923 16.101C186.794 16.101 188.813 17.8236 188.813 20.7502C188.813 21.3059 188.739 21.8801 188.683 22.2135H180.922C181.015 24.1584 181.719 25.1586 183.941 25.1586C185.719 25.1586 186.405 24.5659 186.405 23.5842V23.4175H188.702V23.6027C188.702 25.7884 186.794 27.2146 183.904 27.2146C180.44 27.1961 178.773 24.9734 178.773 21.6393Z"
-                  fill="#1E1E1E"
-                />
-                <path
-                  d="M190.684 26.9924V16.2491H192.814V17.9532H192.925C193.351 16.9715 194.333 16.101 195.907 16.101C198.148 16.101 199 17.731 199 19.7314V20.4353H196.685V20.0093C196.685 18.6015 196.277 18.0829 194.925 18.0829C193.573 18.0829 193.017 18.6201 193.017 20.0278V26.9924H190.684Z"
-                  fill="#1E1E1E"
-                />
-              </svg>
-            </a>
-          </div>
-          <div class="navigation">
-            <ul>
-              <li><a href="/">HOME</a></li>
-              <li><a href="em-tracking.html">HOW IT WORK</a></li>
-              <li><a href="marketplace.html">MARKETPLACE</a></li>
-              <li><a href="#">FEATURES</a></li>
-              <li><a href="landlords-and-user.html">TESTIMONIALS</a></li>
-            </ul>
-            <!-- button white -->
-            <a href="#" class="btn-white">LOG IN</a>
-            <!-- button white -->
-            <a href="contact-us.html" class="btn-dark-green">BOOK A DEMO</a>
-          </div>
-
-          <label class="burger" for="burger">
-            <input type="checkbox" id="burger" />
-            <span></span>
-            <span></span>
-            <span></span>
-          </label>
-        </nav>
-      </div>
-    </header>
-
+    <?php $this->load->view('components/websiteHeader'); ?>
     <!-- hero section start -->
-    <section class="reg-page">
+    <section class="reg-page market-page">
       <div class="container">
-        <div class="inner-login">
-          <div class="form">
-            <div class="main-box">
+        <div class="inner-login inner-login-2 market">
+          <div class="market-line">
+            <div class="main-box market-box-fix">
               <div class="img">
                 <svg
                   width="72"
@@ -132,17 +42,461 @@
                 </svg>
               </div>
               <h1 class="text-h1-upp text-center">
-                How Equip Manager Works for Owners & Renters
+                Find the Right Equipment for Your Next Project
               </h1>
-              <p class="text-para text-white text-center">
-                Whether you own valuable equipment or provide workforce
-                services, or you’re looking to rent or hire EquipManager makes
-                it simple, secure, and transparent.
-              </p>
-              <div class="dual-btn">
-                <a href="#" class="btn-parrot-green">Start Listing Now</a>
-                <a href="#" class="btn-white-transparent"> Find Equipment</a>
-              </div>
+              <!-- search -->
+              <section class="search-2">
+                <div class="inner-search-2">
+                  <span>Search Equipment</span>
+                  <form action="" method="post" class="search-main">
+                    <!-- Custom Select Element -->
+                    <div
+                      class="custom-select-element custom-select-element-2"
+                      data-custom-select-element
+                      data-custom-select-value
+                    >
+                      <div
+                        class="custom-select-label-wrapper"
+                        data-custom-select-triger
+                      >
+                        <div class="custom-select-icon-txt">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M8 10.75H4C3.27088 10.7493 2.57184 10.4593 2.05628 9.94372C1.54071 9.42816 1.25074 8.72912 1.25 8V4C1.25074 3.27088 1.54071 2.57184 2.05628 2.05628C2.57184 1.54071 3.27088 1.25074 4 1.25H8C8.72912 1.25074 9.42816 1.54071 9.94372 2.05628C10.4593 2.57184 10.7493 3.27088 10.75 4V8C10.7493 8.72912 10.4593 9.42816 9.94372 9.94372C9.42816 10.4593 8.72912 10.7493 8 10.75ZM4 2.75C3.66857 2.75031 3.35081 2.8821 3.11646 3.11646C2.8821 3.35081 2.75031 3.66857 2.75 4V8C2.75031 8.33143 2.8821 8.64919 3.11646 8.88354C3.35081 9.1179 3.66857 9.24969 4 9.25H8C8.33143 9.24969 8.64919 9.1179 8.88354 8.88354C9.1179 8.64919 9.24969 8.33143 9.25 8V4C9.24969 3.66857 9.1179 3.35081 8.88354 3.11646C8.64919 2.8821 8.33143 2.75031 8 2.75H4Z"
+                              fill="#585B7C"
+                            />
+                            <path
+                              d="M20 10.75H16C15.2709 10.7493 14.5718 10.4593 14.0563 9.94372C13.5407 9.42816 13.2507 8.72912 13.25 8V4C13.2507 3.27088 13.5407 2.57184 14.0563 2.05628C14.5718 1.54071 15.2709 1.25074 16 1.25H20C20.7291 1.25074 21.4282 1.54071 21.9437 2.05628C22.4593 2.57184 22.7493 3.27088 22.75 4V8C22.7493 8.72912 22.4593 9.42816 21.9437 9.94372C21.4282 10.4593 20.7291 10.7493 20 10.75ZM16 2.75C15.6686 2.75031 15.3508 2.8821 15.1165 3.11646C14.8821 3.35081 14.7503 3.66857 14.75 4V8C14.7503 8.33143 14.8821 8.64919 15.1165 8.88354C15.3508 9.1179 15.6686 9.24969 16 9.25H20C20.3314 9.24969 20.6492 9.1179 20.8835 8.88354C21.1179 8.64919 21.2497 8.33143 21.25 8V4C21.2497 3.66857 21.1179 3.35081 20.8835 3.11646C20.6492 2.8821 20.3314 2.75031 20 2.75H16Z"
+                              fill="#585B7C"
+                            />
+                            <path
+                              d="M8 22.75H4C3.27088 22.7493 2.57184 22.4593 2.05628 21.9437C1.54071 21.4282 1.25074 20.7291 1.25 20V16C1.25074 15.2709 1.54071 14.5718 2.05628 14.0563C2.57184 13.5407 3.27088 13.2507 4 13.25H8C8.72912 13.2507 9.42816 13.5407 9.94372 14.0563C10.4593 14.5718 10.7493 15.2709 10.75 16V20C10.7493 20.7291 10.4593 21.4282 9.94372 21.9437C9.42816 22.4593 8.72912 22.7493 8 22.75ZM4 14.75C3.66857 14.7503 3.35081 14.8821 3.11646 15.1165C2.8821 15.3508 2.75031 15.6686 2.75 16V20C2.75031 20.3314 2.8821 20.6492 3.11646 20.8835C3.35081 21.1179 3.66857 21.2497 4 21.25H8C8.33143 21.2497 8.64919 21.1179 8.88354 20.8835C9.1179 20.6492 9.24969 20.3314 9.25 20V16C9.24969 15.6686 9.1179 15.3508 8.88354 15.1165C8.64919 14.8821 8.33143 14.7503 8 14.75H4Z"
+                              fill="#585B7C"
+                            />
+                            <path
+                              d="M18.0002 23.335C17.7705 23.3355 17.5428 23.2905 17.3305 23.2027C17.1181 23.1149 16.9253 22.9859 16.7629 22.8233L13.177 19.2373C12.8492 18.909 12.665 18.464 12.665 18C12.665 17.536 12.8492 17.091 13.177 16.7627L16.7629 13.1768C17.0913 12.8489 17.5363 12.6648 18.0002 12.6648C18.4642 12.6648 18.9092 12.8489 19.2375 13.1768L22.8235 16.7627C23.1513 17.091 23.3354 17.536 23.3354 18C23.3354 18.464 23.1513 18.909 22.8235 19.2373L19.2375 22.8232C19.0752 22.9859 18.8823 23.1149 18.67 23.2027C18.4577 23.2905 18.23 23.3355 18.0002 23.335ZM18.0002 14.1641C17.9674 14.164 17.9349 14.1704 17.9045 14.183C17.8742 14.1956 17.8466 14.2141 17.8235 14.2373L14.2375 17.8232C14.2143 17.8464 14.1959 17.874 14.1833 17.9043C14.1708 17.9347 14.1643 17.9672 14.1643 18C14.1643 18.0328 14.1708 18.0653 14.1833 18.0957C14.1959 18.126 14.2143 18.1535 14.2375 18.1768L17.8235 21.7627C17.8467 21.7859 17.8742 21.8043 17.9046 21.8169C17.9349 21.8295 17.9674 21.8359 18.0002 21.8359C18.0331 21.8359 18.0656 21.8295 18.0959 21.8169C18.1262 21.8043 18.1538 21.7859 18.177 21.7627L21.7629 18.1768C21.7862 18.1535 21.8046 18.126 21.8171 18.0957C21.8297 18.0653 21.8362 18.0328 21.8362 18C21.8362 17.9672 21.8297 17.9347 21.8171 17.9043C21.8046 17.874 21.7862 17.8464 21.7629 17.8232L18.177 14.2373C18.1538 14.214 18.1263 14.1955 18.096 14.183C18.0656 14.1704 18.0331 14.164 18.0002 14.1641Z"
+                              fill="#585B7C"
+                            />
+                          </svg>
+
+                          <div class="custom-select-label-option-text">
+                            <span class="cos-label">CATEGORY</span>
+                            <span class="custom-select-label-txt"> </span>
+                          </div>
+                        </div>
+                        <div class="custom-select-chevron">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="25"
+                            height="24"
+                            viewBox="0 0 25 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M20.4201 8.95L13.9001 15.47C13.1301 16.24 11.8701 16.24 11.1001 15.47L4.58008 8.95"
+                              stroke="none"
+                              stroke-width="1.5"
+                              stroke-miterlimit="10"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="custom-select-options-dropdown-wrapper"
+                        data-custom-select-dropdown
+                      >
+                        <div class="custom-select-options-dropdown-container">
+                          <div
+                            class="custom-select-options-search"
+                            data-custom-select-options-search
+                          >
+                            <div class="label-input">
+                              <!-- Placeholder Icon -->
+                              <div class="input-placeholder-icon">
+                                <svg
+                                  class="svg-icon"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M20 11C20 15.97 15.97 20 11 20C6.03 20 2 15.97 2 11C2 6.03 6.03 2 11 2"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M18.9299 20.6898C19.4599 22.2898 20.6699 22.4498 21.5999 21.0498C22.4499 19.7698 21.8899 18.7198 20.3499 18.7198C19.2099 18.7098 18.5699 19.5998 18.9299 20.6898Z"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M14 5H20"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M14 8H17"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                </svg>
+                              </div>
+                              <input type="text" placeholder="Search here" />
+                            </div>
+                          </div>
+                          <div class="custom-select-options-lists-container">
+                            <ul
+                              class="custom-select-options-list"
+                              data-custom-select-options-list
+                            >
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 1</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 2</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 3</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 4</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 5</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 6</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 7</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 8</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 9</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>Heavy Machinery 10</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Custom Select Element -->
+                    <!-- Custom Select Element -->
+                    <div
+                      class="custom-select-element custom-select-element-2"
+                      data-custom-select-element
+                      data-custom-select-value
+                    >
+                      <div
+                        class="custom-select-label-wrapper"
+                        data-custom-select-triger
+                      >
+                        <div class="custom-select-icon-txt">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M19.1781 2.9731C17.2609 1.05586 14.7118 0 12.0004 0C9.28906 0 6.7399 1.05586 4.82271 2.9731C2.90547 4.89038 1.84961 7.43945 1.84961 10.1508C1.84961 15.6357 7.03578 20.1978 9.82198 22.6487C10.2092 22.9893 10.5435 23.2835 10.8099 23.5323C11.1437 23.844 11.5721 24 12.0004 24C12.4288 24 12.8571 23.844 13.1909 23.5323C13.4572 23.2834 13.7916 22.9893 14.1788 22.6487C16.965 20.1978 22.1512 15.6357 22.1512 10.1508C22.1511 7.43945 21.0953 4.89038 19.1781 2.9731ZM13.2502 21.5932C12.8545 21.9412 12.5128 22.2419 12.2311 22.505C12.1017 22.6258 11.899 22.6258 11.7696 22.505C11.4879 22.2418 11.1462 21.9412 10.7505 21.5932C8.13111 19.289 3.25539 15 3.25539 10.1508C3.25539 5.32885 7.17832 1.40592 12.0003 1.40592C16.8223 1.40592 20.7452 5.32885 20.7452 10.1508C20.7452 15 15.8696 19.289 13.2502 21.5932Z"
+                              fill="#585B7C"
+                            />
+                            <path
+                              d="M11.9997 5.29401C9.53309 5.29401 7.52637 7.30068 7.52637 9.7673C7.52637 12.2339 9.53309 14.2406 11.9997 14.2406C14.4663 14.2406 16.473 12.2339 16.473 9.7673C16.473 7.30068 14.4663 5.29401 11.9997 5.29401ZM11.9997 12.8347C10.3083 12.8347 8.93224 11.4586 8.93224 9.76725C8.93224 8.0759 10.3083 6.69984 11.9997 6.69984C13.6911 6.69984 15.0671 8.0759 15.0671 9.76725C15.0671 11.4586 13.6911 12.8347 11.9997 12.8347Z"
+                              fill="#585B7C"
+                            />
+                          </svg>
+
+                          <div class="custom-select-label-option-text">
+                            <span class="cos-label">LOCATION</span>
+                            <span class="custom-select-label-txt"> </span>
+                          </div>
+                        </div>
+                        <div class="custom-select-chevron">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="25"
+                            height="24"
+                            viewBox="0 0 25 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M20.4201 8.95L13.9001 15.47C13.1301 16.24 11.8701 16.24 11.1001 15.47L4.58008 8.95"
+                              stroke="none"
+                              stroke-width="1.5"
+                              stroke-miterlimit="10"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="custom-select-options-dropdown-wrapper"
+                        data-custom-select-dropdown
+                      >
+                        <div class="custom-select-options-dropdown-container">
+                          <div
+                            class="custom-select-options-search"
+                            data-custom-select-options-search
+                          >
+                            <div class="label-input">
+                              <!-- Placeholder Icon -->
+                              <div class="input-placeholder-icon">
+                                <svg
+                                  class="svg-icon"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M20 11C20 15.97 15.97 20 11 20C6.03 20 2 15.97 2 11C2 6.03 6.03 2 11 2"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M18.9299 20.6898C19.4599 22.2898 20.6699 22.4498 21.5999 21.0498C22.4499 19.7698 21.8899 18.7198 20.3499 18.7198C19.2099 18.7098 18.5699 19.5998 18.9299 20.6898Z"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M14 5H20"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M14 8H17"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                </svg>
+                              </div>
+                              <input type="text" placeholder="Search here" />
+                            </div>
+                          </div>
+                          <div class="custom-select-options-lists-container">
+                            <ul
+                              class="custom-select-options-list"
+                              data-custom-select-options-list
+                            >
+                              <li class="custom-select-option">
+                                <span>New York, USA</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 1</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 2</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 3</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 4</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 5</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 6</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 7</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 8</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 9</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>New York, USA 10</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Custom Select Element -->
+                    <!-- Custom Select Element -->
+                    <div
+                      class="custom-select-element custom-select-element-2"
+                      data-custom-select-element
+                      data-custom-select-value
+                    >
+                      <div
+                        class="custom-select-label-wrapper"
+                        data-custom-select-triger
+                      >
+                        <div class="custom-select-icon-txt">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M12 22.5C9.9233 22.5 7.89323 21.8842 6.16652 20.7304C4.4398 19.5767 3.09399 17.9368 2.29927 16.0182C1.50455 14.0996 1.29661 11.9884 1.70176 9.95156C2.1069 7.91476 3.10693 6.04383 4.57538 4.57538C6.04383 3.10693 7.91476 2.1069 9.95156 1.70176C11.9884 1.29661 14.0996 1.50455 16.0182 2.29927C17.9368 3.09399 19.5767 4.4398 20.7304 6.16652C21.8842 7.89323 22.5 9.9233 22.5 12C22.5 14.7848 21.3938 17.4555 19.4246 19.4246C17.4555 21.3938 14.7848 22.5 12 22.5ZM12 3C10.22 3 8.47992 3.52785 6.99987 4.51678C5.51983 5.50571 4.36628 6.91132 3.68509 8.55585C3.0039 10.2004 2.82567 12.01 3.17294 13.7558C3.5202 15.5016 4.37737 17.1053 5.63604 18.364C6.89472 19.6226 8.49836 20.4798 10.2442 20.8271C11.99 21.1743 13.7996 20.9961 15.4442 20.3149C17.0887 19.6337 18.4943 18.4802 19.4832 17.0001C20.4722 15.5201 21 13.78 21 12C21 9.61306 20.0518 7.32387 18.364 5.63604C16.6761 3.94822 14.387 3 12 3Z"
+                              fill="#585B7C"
+                            />
+                            <path
+                              d="M15.75 15.75C15.5808 15.749 15.417 15.6909 15.285 15.585L11.535 12.585C11.4466 12.5152 11.3751 12.4263 11.3257 12.325C11.2764 12.2237 11.2505 12.1127 11.25 12V6C11.25 5.80109 11.329 5.61032 11.4697 5.46967C11.6103 5.32902 11.8011 5.25 12 5.25C12.1989 5.25 12.3897 5.32902 12.5303 5.46967C12.671 5.61032 12.75 5.80109 12.75 6V11.64L16.215 14.415C16.3695 14.5387 16.4689 14.7186 16.4914 14.9153C16.5138 15.112 16.4576 15.3096 16.335 15.465C16.2652 15.5534 16.1763 15.6249 16.075 15.6742C15.9737 15.7236 15.8627 15.7495 15.75 15.75Z"
+                              fill="#585B7C"
+                            />
+                          </svg>
+
+                          <div class="custom-select-label-option-text">
+                            <span class="cos-label">AVAILABILITY</span>
+                            <span class="custom-select-label-txt"> </span>
+                          </div>
+                        </div>
+                        <div class="custom-select-chevron">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="25"
+                            height="24"
+                            viewBox="0 0 25 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M20.4201 8.95L13.9001 15.47C13.1301 16.24 11.8701 16.24 11.1001 15.47L4.58008 8.95"
+                              stroke="none"
+                              stroke-width="1.5"
+                              stroke-miterlimit="10"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="custom-select-options-dropdown-wrapper"
+                        data-custom-select-dropdown
+                      >
+                        <div class="custom-select-options-dropdown-container">
+                          <div
+                            class="custom-select-options-search"
+                            data-custom-select-options-search
+                          >
+                            <div class="label-input">
+                              <!-- Placeholder Icon -->
+                              <div class="input-placeholder-icon">
+                                <svg
+                                  class="svg-icon"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M20 11C20 15.97 15.97 20 11 20C6.03 20 2 15.97 2 11C2 6.03 6.03 2 11 2"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M18.9299 20.6898C19.4599 22.2898 20.6699 22.4498 21.5999 21.0498C22.4499 19.7698 21.8899 18.7198 20.3499 18.7198C19.2099 18.7098 18.5699 19.5998 18.9299 20.6898Z"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M14 5H20"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                  <path
+                                    d="M14 8H17"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  ></path>
+                                </svg>
+                              </div>
+                              <input type="text" placeholder="Search here" />
+                            </div>
+                          </div>
+                          <div class="custom-select-options-lists-container">
+                            <ul
+                              class="custom-select-options-list"
+                              data-custom-select-options-list
+                            >
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 1</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 2</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 3</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 4</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 5</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 6</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 7</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 8</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 9</span>
+                              </li>
+                              <li class="custom-select-option">
+                                <span>2 July - 10 July 2025 10</span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Custom Select Element -->
+
+                    <a href="#" class="btn-dark-green btn-responsive">SEARCH</a>
+                  </form>
+                </div>
+              </section>
             </div>
           </div>
         </div>
@@ -150,319 +504,938 @@
     </section>
     <!-- hero section end -->
 
-    <!-- Step-by-Step Process -->
-    <section class="setp-process">
+    <!-- Equipment Grid -->
+    <section class="equipment">
       <div class="container">
-        <div class="inner-setp-process">
-          <h2 class="text-h2 text-center">Step-by-Step Process</h2>
+        <div class="inner-equipment">
+          <div class="title">
+            <h2 class="text-h2">Equipment Grid</h2>
 
-          <!-- top box -->
-          <div class="workforce">
-            <div class="for-equip-info">
-              <h3 class="text-h3 text-gray-black">
-                For Equipment & Workforce Owners:
-              </h3>
-
-              <!-- timeline -->
-              <div class="timeline">
-                <!-- timeline card start-->
-                <div class="timeline-card">
-                  <img src="assets/img/create-comp.svg" alt="Register" />
-                  <div>
-                    <span>1 . Create Your Company Account</span>
-                    <p class="text-para">Sign up in minutes.</p>
-                  </div>
-                </div>
-                <!-- line -->
-                <div class="timeline-line">
-                  <img src="assets/img/circle-line.svg" alt="line" />
-                </div>
-                <!-- timeline card end-->
-
-                <!-- timeline card start-->
-                <div class="timeline-card">
-                  <img src="assets/img/list-eqip.svg" alt="Register" />
-                  <div>
-                    <span>2 . List Equipment</span>
-                    <p class="text-para">
-                      Upload details, photos, and availability.
-                    </p>
-                  </div>
-                </div>
-                <!-- line -->
-                <div class="timeline-line">
-                  <img src="assets/img/circle-line.svg" alt="line" />
-                </div>
-                <!-- timeline card end-->
-
-                <!-- timeline card start-->
-                <div class="timeline-card">
-                  <img src="assets/img/manage.svg" alt="Register" />
-                  <div>
-                    <span>3 . Manage Requests</span>
-                    <p class="text-para">
-                      Accept, reject, or negotiate rentals and contracts.
-                    </p>
-                  </div>
-                </div>
-                <!-- line -->
-                <div class="timeline-line">
-                  <img src="assets/img/circle-line.svg" alt="line" />
-                </div>
-                <!-- timeline card end-->
-
-                <!-- timeline card start-->
-                <div class="timeline-card">
-                  <img src="assets/img/earn.svg" alt="Register" />
-                  <div>
-                    <span>4 . Earn Revenue</span>
-                    <p class="text-para">
-                      Get paid securely for every successful transaction.
-                    </p>
-                  </div>
-                </div>
-                <!-- timeline card end-->
-              </div>
-            </div>
-            <div class="for-equip-img">
-              <img
-                src="assets/img/b8db7165d2edea8a33ded6cae06c9adaa9b6b393.webp"
-                alt="Equipment img"
-              />
-            </div>
-          </div>
-
-          <!-- top box -->
-          <div class="workforce col-reverse">
-            <div class="for-equip-img">
-              <img
-                src="assets/img/266c9e79fed8c531bd0e4827a8ade06a9b9a2298.webp"
-                alt="Equipment img"
-              />
-            </div>
-            <div class="for-equip-info">
-              <h3 class="text-h3 text-gray-black">For Renters & Users:</h3>
-
-              <!-- timeline -->
-              <div class="timeline">
-                <!-- timeline card start-->
-                <div class="timeline-card">
-                  <img src="assets/img/browser.svg" alt="Register" />
-                  <div>
-                    <span>1 . Browse Listings</span>
-                    <p class="text-para">
-                      Search equipment or workforce services near you.
-                    </p>
-                  </div>
-                </div>
-                <!-- line -->
-                <div class="timeline-line">
-                  <img src="assets/img/circle-line.svg" alt="line" />
-                </div>
-                <!-- timeline card end-->
-
-                <!-- timeline card start-->
-                <div class="timeline-card">
-                  <img src="assets/img/rent-or.svg" alt="Register" />
-                  <div>
-                    <span>2 . Rent or Purchase</span>
-                    <p class="text-para">
-                      Book equipment or hire services with clear terms.
-                    </p>
-                  </div>
-                </div>
-                <!-- line -->
-                <div class="timeline-line">
-                  <img src="assets/img/circle-line.svg" alt="line" />
-                </div>
-                <!-- timeline card end-->
-
-                <!-- timeline card start-->
-                <div class="timeline-card">
-                  <img src="assets/img/track-use.svg" alt="Register" />
-                  <div>
-                    <span>3 . Track Usage</span>
-                    <p class="text-para">
-                      Monitor bookings, timelines, and costs in your dashboard.
-                    </p>
-                  </div>
-                </div>
+            <div class="hamburger hide-550px">
+              <input class="checkbox" type="checkbox" />
+              <svg fill="none" viewBox="0 0 50 50" height="50" width="50">
+                <path
+                  class="lineTop line"
+                  stroke-linecap="round"
+                  stroke-width="4"
+                  stroke="black"
+                  d="M6 11L44 11"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-width="4"
+                  stroke="black"
+                  d="M6 24H43"
+                  class="lineMid line"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-width="4"
+                  stroke="black"
+                  d="M6 37H43"
+                  class="lineBottom line"
+                ></path>
+              </svg>
+              <!-- hamburger options -->
+              <div class="hamburger-options">
+                <ul>
+                  <li>Grid View</li>
+                  <li>List View</li>
+                </ul>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Feature Highlights -->
-    <section class="feature">
-      <div class="container">
-        <div class="inner-feature">
-          <div class="feature-info">
-            <h2 class="text-h2">Feature Highlights</h2>
-            <div class="feature-info-list">
-              <!-- single list start -->
-              <div class="feature-single-list">
+          <!-- equipment grid main box -->
+          <div class="equipment-grid">
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/7b1c8f674b6231e6cb9cf09cb2be90f63d3f2983.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
                 <svg
-                  width="39"
-                  height="39"
-                  viewBox="0 0 39 39"
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <foreignObject x="-22" y="-22" width="83" height="83"
+                  <foreignObject x="-22" y="-22" width="84" height="84"
                     ><div
                       xmlns="http://www.w3.org/1999/xhtml"
                       style="
                         backdrop-filter: blur(11px);
-                        clip-path: url(#bgblur_0_2718_211_clip_path);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
                         height: 100%;
                         width: 100%;
                       "
                     ></div
                   ></foreignObject>
-                  <rect
+                  <circle
                     data-figma-bg-blur-radius="22"
-                    width="39"
-                    height="39"
-                    rx="8"
-                    fill="white"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
                   />
                   <path
-                    d="M28.7659 13L16.5518 26.3244L11 20.2679"
-                    stroke="#0F2F2C"
-                    stroke-width="2.96098"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
                   />
                   <defs>
                     <clipPath
-                      id="bgblur_0_2718_211_clip_path"
+                      id="bgblur_0_2718_1750_clip_path"
                       transform="translate(22 22)"
                     >
-                      <rect width="39" height="39" rx="8" />
+                      <circle cx="20" cy="20" r="20" />
                     </clipPath>
                   </defs>
                 </svg>
-                <div>
-                  <h4 class="text-h4-blog text-gray-black">Secure Payments</h4>
-                  <p class="text-para">
-                    Safe and reliable transactions every time.
-                  </p>
-                </div>
               </div>
-              <!-- single list end -->
-              <!-- single list start -->
-              <div class="feature-single-list">
-                <svg
-                  width="39"
-                  height="39"
-                  viewBox="0 0 39 39"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <foreignObject x="-22" y="-22" width="83" height="83"
-                    ><div
-                      xmlns="http://www.w3.org/1999/xhtml"
-                      style="
-                        backdrop-filter: blur(11px);
-                        clip-path: url(#bgblur_0_2718_211_clip_path);
-                        height: 100%;
-                        width: 100%;
-                      "
-                    ></div
-                  ></foreignObject>
-                  <rect
-                    data-figma-bg-blur-radius="22"
-                    width="39"
-                    height="39"
-                    rx="8"
-                    fill="white"
-                  />
-                  <path
-                    d="M28.7659 13L16.5518 26.3244L11 20.2679"
-                    stroke="#0F2F2C"
-                    stroke-width="2.96098"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <defs>
-                    <clipPath
-                      id="bgblur_0_2718_211_clip_path"
-                      transform="translate(22 22)"
-                    >
-                      <rect width="39" height="39" rx="8" />
-                    </clipPath>
-                  </defs>
-                </svg>
-                <div>
-                  <h4 class="text-h4-blog text-gray-black">
-                    Verified Profiles
-                  </h4>
-                  <p class="text-para">
-                    Owners and renters are authenticated for trust.
-                  </p>
-                </div>
-              </div>
-              <!-- single list end -->
-              <!-- single list start -->
-              <div class="feature-single-list">
-                <svg
-                  width="39"
-                  height="39"
-                  viewBox="0 0 39 39"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <foreignObject x="-22" y="-22" width="83" height="83"
-                    ><div
-                      xmlns="http://www.w3.org/1999/xhtml"
-                      style="
-                        backdrop-filter: blur(11px);
-                        clip-path: url(#bgblur_0_2718_211_clip_path);
-                        height: 100%;
-                        width: 100%;
-                      "
-                    ></div
-                  ></foreignObject>
-                  <rect
-                    data-figma-bg-blur-radius="22"
-                    width="39"
-                    height="39"
-                    rx="8"
-                    fill="white"
-                  />
-                  <path
-                    d="M28.7659 13L16.5518 26.3244L11 20.2679"
-                    stroke="#0F2F2C"
-                    stroke-width="2.96098"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <defs>
-                    <clipPath
-                      id="bgblur_0_2718_211_clip_path"
-                      transform="translate(22 22)"
-                    >
-                      <rect width="39" height="39" rx="8" />
-                    </clipPath>
-                  </defs>
-                </svg>
-                <div>
-                  <h4 class="text-h4-blog text-gray-black">
-                    Transparent Contracts
-                  </h4>
-                  <p class="text-para">Clear terms protect both parties.</p>
-                </div>
-              </div>
-              <!-- single list end -->
             </div>
-          </div>
-          <div class="feature-img">
-            <img
-              src="assets/img/b2a73ad1e2da5e77fa330832c94a7ec692d85882.webp"
-              alt="Laptop"
-            />
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/d9481a5f13f611abc880dabbcce0f5ed92e15492.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/76cfd93e57061657c7fccc47dd84431aa410c622.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/2ec4e13b3ea6d0bc854445327b832844c4ccfe6e.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/8c8c20f7d83b1ecfde906d4d3f766f1183b0e25d.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/986f86800fb5483ca346fa75dc060ac892472221.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/863fb9e8de7a90bcaa84c67b89a1f0eaac66f655.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/73a314a0c01dffe5e23ae191a26614912b4501a5.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/dc6c2e61dc56cdade8861670937b91448fadd2ed.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/6cc93dae7508c050f8e2bcfd702b4e4d718777e9.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/c6414dd725039b1023ac57fbc500444eeced98af.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <!-- single equipment grid -->
+            <div class="single-equipment-grid">
+              <div
+                class="bg-img"
+                style="
+                  background-image: url('<?= base_url() ?>assets/website/img/5b60f205a115242d5c56008643ec1022f80f1867.webp');
+                "
+              >
+                <div class="wish">
+                  <span>Electrician in Karachi</span>
+                  <label class="custom-heart-toggle">
+                    <input type="checkbox" class="heart-input" />
+                    <div class="heart-icon-wrapper">
+                      <svg viewBox="0 0 256 256" class="heart-svg">
+                        <rect fill="none" height="256" width="256"></rect>
+                        <path
+                          d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z"
+                          stroke-width="20px"
+                          stroke="#fff"
+                          fill="none"
+                        ></path>
+                      </svg>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <div class="heading-price">
+                <div>
+                  <span class="prod-name">Available Workforce</span>
+                  <div class="prod-price">
+                    <span>Price</span>
+                    <span>$200.00</span>
+                  </div>
+                </div>
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <foreignObject x="-22" y="-22" width="84" height="84"
+                    ><div
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      style="
+                        backdrop-filter: blur(11px);
+                        clip-path: url(#bgblur_0_2718_1750_clip_path);
+                        height: 100%;
+                        width: 100%;
+                      "
+                    ></div
+                  ></foreignObject>
+                  <circle
+                    data-figma-bg-blur-radius="22"
+                    cx="20"
+                    cy="20"
+                    r="20"
+                    fill="#34FF67"
+                  />
+                  <path
+                    d="M25.0361 16.1111C25.0354 15.8073 24.9144 15.5162 24.6997 15.3015C24.4849 15.0867 24.1938 14.9658 23.8901 14.9651L17.4083 14.9651C17.2578 14.9651 17.1088 14.9947 16.9697 15.0523C16.8307 15.1099 16.7044 15.1943 16.598 15.3007C16.383 15.5156 16.2623 15.8071 16.2623 16.1111C16.2623 16.415 16.383 16.7065 16.598 16.9214C16.8129 17.1363 17.1044 17.257 17.4083 17.257H21.1237L15.3017 23.079C15.0868 23.2939 14.9661 23.5853 14.9661 23.8892C14.9661 24.1931 15.0868 24.4846 15.3017 24.6995C15.5166 24.9143 15.808 25.0351 16.1119 25.0351C16.4158 25.0351 16.7073 24.9143 16.9222 24.6995L22.7441 18.8775L22.7441 22.5929C22.7441 22.7434 22.7738 22.8924 22.8314 23.0314C22.8889 23.1705 22.9734 23.2968 23.0798 23.4032C23.1862 23.5096 23.3125 23.594 23.4516 23.6516C23.5906 23.7092 23.7396 23.7389 23.8901 23.7389C24.0406 23.7389 24.1896 23.7092 24.3287 23.6516C24.4677 23.594 24.594 23.5096 24.7004 23.4032C24.8068 23.2968 24.8913 23.1705 24.9489 23.0314C25.0064 22.8924 25.0361 22.7434 25.0361 22.5929L25.0361 16.1111Z"
+                    fill="#0F2F2C"
+                  />
+                  <defs>
+                    <clipPath
+                      id="bgblur_0_2718_1750_clip_path"
+                      transform="translate(22 22)"
+                    >
+                      <circle cx="20" cy="20" r="20" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -591,7 +1564,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -711,7 +1684,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -831,7 +1804,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -951,7 +1924,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -1071,7 +2044,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -1191,7 +2164,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -1311,7 +2284,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -1431,7 +2404,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -1551,7 +2524,7 @@
                   </p>
                   <div class="client-info">
                     <img
-                      src="assets/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
+                      src="<?= base_url() ?>assets/website/img/67ffd9ab33f677397c671e58bef352ebc410bf03.png"
                       alt="client"
                     />
                     <div>
@@ -1603,15 +2576,13 @@
       <div class="container">
         <div class="inner-cta-section">
           <div class="cta-info">
-            <span class="cta-heading">Ready to get started?</span>
+            <span class="cta-heading">Got equipment to rent out?</span>
+            <p class="text-para">Turn your idle assets into income.</p>
             <div class="cta-btn">
-              <a href="#" class="btn-dark-green"> I want to list equipment</a>
-              <a href="#" class="btn-dark-green-trans">
-                I want to rent equipment</a
-              >
+              <a href="#" class="btn-dark-green"> List Your Equipment Now</a>
             </div>
           </div>
-          <img src="assets/img/grow-tex.svg" alt="Grow" />
+          <img src="<?= base_url() ?>assets/website/img/stocks.png" alt="Grow" class="img-ctrl" />
         </div>
       </div>
     </seation>
@@ -1893,5 +2864,7 @@
       </div>
     </section>
   </body>
-  <script src="assets/js/testimonial.js"></script>
+  <script type="module" src="<?= base_url() ?>assets/website/js/main.js"></script>
+  <script src="<?= base_url() ?>assets/website/js/testimonial.js"></script>
+  <script src="<?= base_url() ?>assets/website/js/market-place.js"></script>
 </html>
