@@ -11,6 +11,130 @@
   <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/footer.css" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/marketplace-product-detail.css" />
   <link rel="stylesheet" href="<?= base_url() ?>assets/website/css/resopnsive.css" />
+  <style>
+    .spec-tag {
+      background-color: #0f2f2c;
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 0.875rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Condition Info Tooltip Styles */
+    .condition-info-container {
+      position: relative;
+      display: inline-block;
+      cursor: help;
+    }
+
+    #condInfo {
+      cursor: help;
+      transition: opacity 0.3s ease;
+    }
+
+    #condInfo:hover {
+      opacity: 0.8;
+    }
+
+    .condition-tooltip {
+      visibility: hidden;
+      background-color: #0f2f2c;
+      color: #ffffff;
+      text-align: left;
+      border-radius: 8px;
+      padding: 16px;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      border: 1px solid #1a4d49;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .condition-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -8px;
+      border-width: 8px 8px 0 8px;
+      border-style: solid;
+      border-color: #0f2f2c transparent transparent transparent;
+    }
+
+    .condition-info-container:hover .condition-tooltip {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .condition-levels {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .condition-level-item {
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-left: 3px solid #34FF67;
+      border-radius: 4px;
+    }
+
+    .condition-level-item strong {
+      display: block;
+      color: #34FF67;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .condition-level-item span {
+      color: #d0d0d0;
+      font-size: 0.8rem;
+    }
+
+    .condition-level-item:nth-child(1) {
+      border-left-color: #ff6b6b;
+    }
+
+    .condition-level-item:nth-child(1) strong {
+      color: #ff6b6b;
+    }
+
+    .condition-level-item:nth-child(2) {
+      border-left-color: #ffa724;
+    }
+
+    .condition-level-item:nth-child(2) strong {
+      color: #ffa724;
+    }
+
+    .condition-level-item:nth-child(3) {
+      border-left-color: #74c0fc;
+    }
+
+    .condition-level-item:nth-child(3) strong {
+      color: #74c0fc;
+    }
+
+    .condition-level-item:nth-child(4) {
+      border-left-color: #34FF67;
+    }
+
+    .condition-level-item:nth-child(4) strong {
+      color: #34FF67;
+    }
+  </style>
 </head>
 
 <body class="off_white">
@@ -96,24 +220,24 @@
             </h2>
             <p class="text-para text-dark-green">
               Price:
-              <span>$<?= $equipment[0]['eqpPrice'] ?> 
-                        <?php 
-                        if($equipment[0]['saleType']==1){
-                          echo ' /';
-                          if($equipment[0]['eqpRentalType']==1){
-                            echo 'Per Day';
-                          }else if($equipment[0]['eqpRentalType']==2){
-                            echo 'Per Week';
-                          }else if($equipment[0]['eqpRentalType']==3){
-                            echo 'Per Month';
-                          }else{
-                            echo 'Per Year';
-                          }
-                        }else{
-                          echo '(For Sale)';
-                        }
-                        ?>
-                      </span>
+              <span>$<?= $equipment[0]['eqpPrice'] ?>
+                <?php
+                if ($equipment[0]['saleType'] == 1) {
+                  echo ' /';
+                  if ($equipment[0]['eqpRentalType'] == 1) {
+                    echo 'Per Day';
+                  } else if ($equipment[0]['eqpRentalType'] == 2) {
+                    echo 'Per Week';
+                  } else if ($equipment[0]['eqpRentalType'] == 3) {
+                    echo 'Per Month';
+                  } else {
+                    echo 'Per Year';
+                  }
+                } else {
+                  echo '(For Sale)';
+                }
+                ?>
+              </span>
             </p>
             <!-- owner info -->
             <div class="owner-info-main">
@@ -210,7 +334,15 @@
                   </defs>
                 </svg>
               </div>
-              <span class="text-para"><strong>Spesification :</strong> <?= $equipment[0]['eqpSpecs'] ?></span>
+              <span class="text-para"><strong>Spesification :</strong>
+                <?php
+                $specs = $equipment[0]['eqpSpecs'];
+                if (!empty($specs)) {
+                  $specArray = array_filter(array_map('trim', explode('|', $specs)));
+                  echo htmlspecialchars(implode(', ', $specArray));
+                }
+                ?>
+              </span>
             </div>
             <!-- single feature -->
             <div class="single-feature">
@@ -251,20 +383,49 @@
                     fill="white" />
                 </svg>
               </div>
-              <span class="text-para"><strong>Condition : </strong> <?php 
-              
-              if($equipment[0]['eqpCondition']==1){
-                echo '<span style="color:red">Major defects affecting performance, nearing end-of-life, requires significant attention or
+              <span class="text-para"><strong>Condition : </strong> <?php
+
+                                                                    if ($equipment[0]['eqpCondition'] == 1) {
+                                                                      echo '<span >Major defects affecting performance, nearing end-of-life, requires significant attention or
 replacement.</span>';
-              }else if($equipment[0]['eqpCondition']==2){
-echo '<span style="color:#FFBF00">Noticeable wear, functional but approaching mid-lifecycle, maintenance recommended.</span>';
-              } else if($equipment[0]['eqpCondition']==3){
-                echo '<span style="color:#9ACD32">Minor wear, fully functional, standard maintenance needed.</span>';
-              }else{
-                echo '<span style="color:#008000">Like new, no defects, optimal performance.</span>';
-              }
-              
-              ?></span>
+                                                                    } else if ($equipment[0]['eqpCondition'] == 2) {
+                                                                      echo '<span >Noticeable wear, functional but approaching mid-lifecycle, maintenance recommended.</span>';
+                                                                    } else if ($equipment[0]['eqpCondition'] == 3) {
+                                                                      echo '<span >Minor wear, fully functional, standard maintenance needed.</span>';
+                                                                    } else {
+                                                                      echo '<span >Like new, no defects, optimal performance.</span>';
+                                                                    }
+
+                                                                    ?>
+                <span class="condition-info-container">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="condInfo" class="bi bi-info-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                  </svg>
+                  <div class="condition-tooltip">
+                    <strong style="display: block; margin-bottom: 12px; color: white;">Equipment Condition Levels:</strong>
+                    <div class="condition-levels">
+                      <div class="condition-level-item">
+                        <strong>Level 1 - Poor Condition</strong>
+                        <span>Major defects affecting performance, nearing end-of-life, requires significant attention or replacement.</span>
+                      </div>
+                      <div class="condition-level-item">
+                        <strong>Level 2 - Fair Condition</strong>
+                        <span>Noticeable wear, functional but approaching mid-lifecycle, maintenance recommended.</span>
+                      </div>
+                      <div class="condition-level-item">
+                        <strong>Level 3 - Good Condition</strong>
+                        <span>Minor wear, fully functional, standard maintenance needed.</span>
+                      </div>
+                      <div class="condition-level-item">
+                        <strong>Level 4 - Excellent Condition</strong>
+                        <span>Like new, no defects, optimal performance.</span>
+                      </div>
+                    </div>
+                  </div>
+                </span>
+              </span>
+
             </div>
             <!-- single feature -->
             <div class="single-feature">

@@ -167,6 +167,58 @@
       /* bi-star-fill */
       color: #ffc107;
     }
+
+    /* Tag input styles */
+    .tag-input-container {
+      border: 1px solid #dee2e6;
+      border-radius: 0.375rem;
+      padding: 0.5rem;
+      min-height: 100px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 0.5rem;
+      background-color: #fff;
+    }
+
+    .tag {
+      background-color: #0f2f2c;
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .tag-remove {
+      cursor: pointer;
+      font-weight: bold;
+      padding: 0;
+      margin: 0;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .tag-remove:hover {
+      opacity: 0.8;
+    }
+
+    .tag-input-field {
+      flex: 1;
+      min-width: 100px;
+      border: none;
+      outline: none;
+      font-size: 0.875rem;
+    }
+
+    .tag-input-field:focus {
+      outline: none;
+    }
   </style>
 </head>
 
@@ -420,8 +472,17 @@ replacement."><i class="bi bi-star star-icon"></i></label>
                             <label for="star4" data-bs-toggle="tooltip" title="Like new, no defects, optimal performance."><i class="bi bi-star star-icon"></i></label>
                           </div>
                           <label class="form-label">Specs</label>
+                          <div class="tag-input-container" id="tagInputContainer">
+                            <input
+                              type="text"
+                              class="tag-input-field"
+                              id="tagInput"
+                              placeholder="Type spec and press Enter..."
+                              autocomplete="off">
+                          </div>
                           <textarea
                             class="form-control"
+                            style="display: none;"
                             rows="4"
                             name="eqpSpec"
                             required
@@ -1201,6 +1262,90 @@ replacement."><i class="bi bi-star star-icon"></i></label>
           return false;
         }
       });
+
+      // Tag input functionality
+      var tags = [];
+      var tagInput = $('#tagInput');
+      var tagContainer = $('#tagInputContainer');
+      var eqpSpecField = $('#eqpSpec');
+
+      // Load existing tags from textarea
+      function loadExistingTags() {
+        var existingSpecs = eqpSpecField.val().trim();
+        if (existingSpecs) {
+          tags = existingSpecs.split('|').map(function(tag) {
+            return tag.trim();
+          }).filter(function(tag) {
+            return tag.length > 0;
+          });
+          renderTags();
+        }
+      }
+
+      // Render tags
+      function renderTags() {
+        // Remove existing tag elements
+        tagContainer.find('.tag').remove();
+
+        // Add tag elements
+        tags.forEach(function(tag, index) {
+          var tagElement = $('<div class="tag">' + 
+            '<span>' + escapeHtml(tag) + '</span>' +
+            '<button type="button" class="tag-remove" data-index="' + index + '">×</button>' +
+            '</div>');
+          tagContainer.append(tagElement);
+        });
+
+        // Update textarea
+        updateTextarea();
+      }
+
+      // Update textarea with tags
+      function updateTextarea() {
+        eqpSpecField.val(tags.join(' | '));
+      }
+
+      // Escape HTML
+      function escapeHtml(text) {
+        var map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+      }
+
+      // Add tag on Enter
+      tagInput.on('keypress', function(e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          var tagText = tagInput.val().trim();
+          if (tagText.length > 0) {
+            if (!tags.includes(tagText)) {
+              tags.push(tagText);
+              renderTags();
+              tagInput.val('').focus();
+            } else {
+              alert('This tag already exists');
+              tagInput.val('');
+            }
+          }
+        }
+      });
+
+      // Remove tag
+      $(document).on('click', '.tag-remove', function(e) {
+        e.preventDefault();
+        var index = $(this).data('index');
+        tags.splice(index, 1);
+        renderTags();
+        tagInput.focus();
+      });
+
+      // Load existing tags on page load
+      loadExistingTags();
     });
   </script>
 </body>

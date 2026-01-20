@@ -41,6 +41,19 @@
 
   <title>All Listing</title>
   <style>
+    /* Tag styles */
+    .spec-tag {
+      background-color: #0f2f2c;
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 0.875rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+  <style>
     .checkbox-apple {
       position: relative;
       width: 50px;
@@ -425,7 +438,17 @@
                                                 </tr>
                                                 <tr>
                                                   <th>Specification</th>
-                                                  <td><?= $row['eqpSpecs'] ?></td>
+                                                  <td>
+                                                    <?php 
+                                                      $specs = $row['eqpSpecs'];
+                                                      if (!empty($specs)) {
+                                                        $specArray = array_filter(array_map('trim', explode('|', $specs)));
+                                                        foreach ($specArray as $spec) {
+                                                          echo '<span class="spec-tag">' . htmlspecialchars($spec) . '</span>';
+                                                        }
+                                                      }
+                                                    ?>
+                                                  </td>
                                                 </tr>
                                                 <tr>
                                                   <th>Condition</th>
