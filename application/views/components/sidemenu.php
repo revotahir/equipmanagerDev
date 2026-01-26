@@ -26,6 +26,28 @@
                       <div class="menu-title font-clash">Dashboard</div>
                   </a>
               </li>
+               <!-- manage Blog -->
+              <li>
+                  <a class="has-arrow" href="javascript:;">
+                      <div class="parent-icon">
+                          <i class="bi bi-card-heading"></i>
+                      </div>
+                      <div class="menu-title font-clash">Manage Blog</div>
+                  </a>
+                  <ul>
+
+                      <li>
+                          <a href="<?= base_url('manage-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>Add Blog</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('manage-blog-category') ?>"><i class="bi bi-arrow-right-short"></i>Manage Blog Category</a>
+                      </li>
+                      <li>
+                          <a href="<?= base_url('show-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>Manage Blog</a>
+                      </li>
+                  </ul>
+              </li>
+              <!-- mannage  Blog end here-->
               <li>
                   <a href="javascript:;" class="has-arrow">
                       <div class="parent-icon"><i class="bi bi-bookmark"></i></div>
@@ -58,62 +80,26 @@
                   </ul> -->
               </li>
 
-              <!-- manage Testimonial -->
-              <li>
-                  <a href="<?= base_url('manage-super-testimonial') ?>">
-                      <div class="parent-icon">
-                          <i class="bi bi-chat-left-quote"></i>
-                      </div>
-                      <div class="menu-title font-clash">Manage Testimonial</div>
-                  </a>
-                  <!-- <ul>
-
-                      <li>
-                          <a href="<?= base_url('manage-super-testimonial') ?>"><i class="bi bi-arrow-right-short"></i>Add Testimonial</a>
-                      </li>
-                  </ul> -->
-              </li>
-              <!-- mannage  Testimonial end here-->
-              <!-- manage Blog -->
+         
               <li>
                   <a class="has-arrow" href="javascript:;">
                       <div class="parent-icon">
-                          <i class="bi bi-card-heading"></i>
+                          <i class="bi bi-globe2"></i>
                       </div>
-                      <div class="menu-title font-clash">Manage Blog</div>
+                      <div class="menu-title font-clash">Manage Website</div>
                   </a>
                   <ul>
 
                       <li>
-                          <a href="<?= base_url('manage-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>Add Blog</a>
+                          <a href="<?= base_url('manage-super-testimonial') ?>"><i class="bi bi-arrow-right-short"></i>Manage Testimonial</a>
                       </li>
                       <li>
-                          <a href="<?= base_url('manage-blog-category') ?>"><i class="bi bi-arrow-right-short"></i>Manage Blog Category</a>
+                          <a href="<?= base_url('manage-success') ?>"><i class="bi bi-arrow-right-short"></i>Manage Metrics </a>
                       </li>
                       <li>
-                          <a href="<?= base_url('show-super-blog') ?>"><i class="bi bi-arrow-right-short"></i>Manage Blog</a>
+                          <a href="<?= base_url('manage-company') ?>"><i class="bi bi-arrow-right-short"></i>Manage Company Partners </a>
                       </li>
                   </ul>
-              </li>
-              <!-- mannage  Blog end here-->
-              <!-- manage Success Metrics -->
-              <li>
-                  <a href="<?= base_url('manage-success') ?>">
-                      <div class="parent-icon">
-                          <i class="bi bi-graph-up"></i>
-                      </div>
-                      <div class="menu-title font-clash">Manage Metrics</div>
-                  </a>
-              </li>
-              <!-- mannage  Success Metrics end here-->
-              <!-- manage Company Partners -->
-              <li>
-                  <a href="<?= base_url('manage-company') ?>">
-                      <div class="parent-icon">
-                          <i class="bi bi-people"></i>
-                      </div>
-                      <div class="menu-title font-clash">Manage Company Partners</div>
-                  </a>
               </li>
               <li>
                   <a class="has-arrow" href="javascript:;">

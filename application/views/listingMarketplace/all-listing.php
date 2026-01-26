@@ -337,7 +337,7 @@
                         <div
                           class="table-actions d-flex align-items-center gap-3 fs-6">
                           <a
-                            href="<?= base_url('add-listing/?itemID='.$row['itemID']) ?>"
+                            href="<?= base_url('add-listing/?itemID='.$row['itemID']) ?>&edit=1"
                             class="text-warning"
                             data-bs-toggle="tooltip"
                             data-bs-placement="bottom"

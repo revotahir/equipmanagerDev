@@ -100,7 +100,21 @@
                 width-ctrl">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn">
+                   <?php
+                  if (isset($_GET['edit'])) {
+                  ?>
+                    <a href="<?= base_url('add-listing?itemID='.$_GET['listingID'].'&edit=1') ?>">
+                    <?php
+                  }
+                    ?>
                   <span class="_circle">Step 1</span>
+                  <?php
+                    if (isset($_GET['edit'])) {
+                    ?>
+                    </a>
+                  <?php
+                    }
+                  ?>
                 </button>
               </div>
               <!-- Btn -->
@@ -109,7 +123,21 @@
                 width-ctrl">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn">
+                  <?php
+                  if (isset($_GET['edit'])) {
+                  ?>
+                    <a href="<?= base_url('add-listing?itemID='.$_GET['listingID'].'&skill='.$listing[0]['itemType'].'&rentalType='.$listing[0]['saleType'].'&edit=1') ?>">
+                    <?php
+                  }
+                    ?>
                   <span class="_circle">Step 2</span>
+                    <?php
+                    if (isset($_GET['edit'])) {
+                    ?>
+                    </a>
+                  <?php
+                    }
+                  ?>
                 </button>
               </div>
               <!-- Btn -->
@@ -161,8 +189,14 @@
                             <option
                               <?php
                               if (isset($_GET['edit'])) {
+                                if($listing[0]['itemType']==1){
                                 if ($listingOptions[0]['eqpDeliveryOpt'] == 1) {
                                   echo 'selected';
+                                }
+                                }else{
+                                  if ($listingOptions[0]['workforceDeliveryOpt'] == 1) {
+                                  echo 'selected';
+                                }
                                 }
                               }
                               ?>
@@ -170,8 +204,14 @@
                             <option
                               <?php
                               if (isset($_GET['edit'])) {
+                                if($listing[0]['itemType']==1){
                                 if ($listingOptions[0]['eqpDeliveryOpt'] == 2) {
                                   echo 'selected';
+                                }
+                                }else{
+                                  if ($listingOptions[0]['workforceDeliveryOpt'] == 2) {
+                                  echo 'selected';
+                                }
                                 }
                               }
                               ?>
@@ -181,7 +221,11 @@
 
                         <div class="col-12">
                           <label class="form-label">Set rules
-                            <span class="text-muted">(damage, return, etc.)</span></label>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="setRules" class="bi bi-info-circle" viewBox="0 0 16 16" style="cursor: pointer;" data-bs-toggle="popover" data-bs-placement="right" data-bs-html="true" title="(damage, return, etc.)" data-bs-content="Define the key rules renters must follow when using this equipment. This can include responsibility for damage, return condition, cleaning requirements, late returns, or misuse. Clear rules help avoid misunderstandings and disputes.">
+                              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                              <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                            </svg>
+                          </label>
                           <textarea
                             class="form-control"
                             rows="4"
@@ -189,14 +233,23 @@
                             id="rules"
                             name="rules"
                             placeholder="Write Here"> <?php if (isset($_GET['edit'])) {
+                              if($listing[0]['itemType']==1){
                                                         echo $listingOptions[0]['eqpRules'];
+                              }else{
+                                 echo $listingOptions[0]['workforceRules'];
+                              }
                                                       } ?></textarea>
                         </div>
                         <?php
                         if ($listing[0]['saleType'] == 0) {
                         ?>
                           <div class="col-12">
-                            <label class="form-label">Write notes for renter</label>
+                            <label class="form-label">Write notes for renter
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="rentalNotesInfo" class="bi bi-info-circle" viewBox="0 0 16 16" style="cursor: pointer;" data-bs-toggle="popover" data-bs-placement="right" data-bs-html="true" data-bs-content="Add practical or helpful information for the renter. For example: usage tips, known quirks, setup instructions, safety notes, or recommendations for proper handling. These notes are intended to help the renter get the best possible experience with the equipment.">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                              </svg>
+                            </label>
                             <textarea
                               class="form-control"
                               rows="4"
@@ -204,13 +257,22 @@
                               id="rentalNotes"
                               name="rentalNotes"
                               placeholder="Write Here"><?php if (isset($_GET['edit'])) {
+                                if($listing[0]['itemType']==1){
                                                           echo $listingOptions[0]['noteForRenter'];
+                                }else{
+                                  echo $listingOptions[0]['workforcenoteForRenter'];
+                                }
                                                         } ?></textarea>
                           </div>
 
                           <div class="col-12">
                             <label class="form-label">Add requirements for renters
-                              <span class="text-muted">(if any)</span></label>
+                              <span class="text-muted">(if any)</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="rentalReqInfo" class="bi bi-info-circle" viewBox="0 0 16 16" style="cursor: pointer;" data-bs-toggle="popover" data-bs-placement="right" data-bs-html="true" data-bs-content="Specify any requirements the renter must meet in order to rent this equipment. This could include certifications, licenses, experience level, insurance, or company approval. Leave this field empty if there are no special requirements.">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                              </svg>
+                            </label>
                             <textarea
                               class="form-control"
                               rows="4"
@@ -218,7 +280,11 @@
                               id="rentalReq"
                               name="rentalReq"
                               placeholder="Write Here"><?php if (isset($_GET['edit'])) {
+                                if($listing[0]['itemType']==1){
                                                           echo $listingOptions[0]['addRequirments'];
+                                }else{
+                                  echo $listingOptions[0]['workforceaddRequirments'];
+                                }
                                                         } ?></textarea>
                           </div>
                         <?php
@@ -282,6 +348,25 @@
   <script src="<?= base_url() ?>assets/js/app.js"></script>
   <script src="<?= base_url() ?>assets/js/step.js"></script>
   <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+  <script>
+    // Initialize popover for setRules - trigger on hover
+    const setRulesElement = document.getElementById('setRules');
+    const setRulesPopover = new bootstrap.Popover(setRulesElement, {
+      trigger: 'hover'
+    });
+    
+    // Initialize popover for rentalNotesInfo - trigger on hover
+    const rentalNotesElement = document.getElementById('rentalNotesInfo');
+    const rentalNotesPopover = new bootstrap.Popover(rentalNotesElement, {
+      trigger: 'hover'
+    });
+    
+    // Initialize popover for rentalReqInfo - trigger on hover
+    const rentalReqElement = document.getElementById('rentalReqInfo');
+    const rentalReqPopover = new bootstrap.Popover(rentalReqElement, {
+      trigger: 'hover'
+    });
+  </script>
   <?php
   if ($this->session->flashdata('drafted') != '') {
   ?>

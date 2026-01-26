@@ -69,6 +69,8 @@ $route['work-force-marketplace']='welcome/workforceMarketPlace';
 $route['equipment-marketplace']='welcome/equipmentMarketPlace';
 $route['equipment-detail']='welcome/equipmentDetailMarketPlace';
 $route['workforce-detail']='welcome/WorkforceDetailMarketPlace';
+//--website utality pages
+$route['contact-form-data']='welcome/ContactFormData';
 
 //dashboards
 $route['company-dashboard'] = 'welcome/companyDashboard';

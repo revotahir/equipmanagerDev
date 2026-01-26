@@ -298,39 +298,26 @@
           </div>
           <div class="cnt-form">
             <h3 class="text-h3 text-dark-green">Booking Form</h3>
-            <form action="" method="post" class="cnt-full-form">
+            <form action="<?= base_url('contact-form-data') ?>" method="post" class="cnt-full-form">
               <div class="col-row">
                 <div class="form-group">
                   <label for="name">Name</label>
                   <input
                     type="text"
                     id="name"
+                    required
                     placeholder="Enter your name..."
                   />
                 </div>
                 <div class="form-group">
                   <label for="email">Email</label>
-                  <input type="email" id="email" placeholder="Enter email..." />
+                  <input type="email" required id="email" placeholder="Enter email..." />
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="inquiryType">Inquiry Type</label>
-                <select id="inquiryType" name="inquiryType" required>
-                  <option value="">-- Please select an option --</option>
-                  <option value="product-info">
-                    Product Information Request
-                  </option>
-                  <option value="technical-support">Technical Support</option>
-                  <option value="billing-question">Billing Question</option>
-                  <option value="partnership">Partnership Inquiry</option>
-                  <option value="feedback">General Feedback</option>
-                  <option value="complaint">Complaint</option>
-                  <option value="feature-request">Feature Request</option>
-                  <option value="press-inquiry">Press Inquiry</option>
-                  <option value="career-opportunity">Career Opportunity</option>
-                  <option value="other">Other</option>
-                </select>
+                <label for="inquiryType">Subject</label>
+                <input type="text" name="subject" required id="subject" placeholder="Enter Subject">
               </div>
 
               <div class="form-group">
@@ -338,6 +325,7 @@
                 <textarea
                   name="msg"
                   id="msg"
+                  required
                   placeholder="Requirements..."
                 ></textarea>
               </div>

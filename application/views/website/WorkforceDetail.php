@@ -277,7 +277,13 @@
                   </defs>
                 </svg>
               </div>
+              <?php 
+              if($workforce[0]['WorkforceAdd'] !=''){
+              ?>
               <span class="text-para"><strong>Address : </strong> <?= $workforce[0]['WorkforceAdd'] ?> </span><br><br>
+              <?php 
+              }
+              ?>
               <span class="text-para"><strong>City : </strong><?= $workforce[0]['workforceCity'] ?></span>
             </div>
           </div>

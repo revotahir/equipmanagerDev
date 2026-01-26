@@ -105,17 +105,50 @@
               </div>
               <!-- Btn -->
               <div class="multi_tabs-btn 
-                width-ctrl">
+                width-ctrl ">
                 <div class="tab-progress-bar "></div>
-                <button class="tab-btn">
-                  <span class="_circle">Step 2</span>
+                <button class="tab-btn" <?php if (!isset($_GET['edit'])) {
+                                          echo 'disabled';
+                                        } ?>>
+                  <?php
+                  if (isset($_GET['edit'])) {
+                  ?>
+                    <a href="<?= base_url('add-listing/?itemID='.$_GET['itemID'].'&skill='.$itemData[0]['itemType'].'&rentalType='.$itemData[0]['saleType'].'&edit=1') ?>">
+                    <?php
+                  }
+                    ?>
+
+                    <span class="_circle">Step 2</span>
+                    <?php
+                    if (isset($_GET['edit'])) {
+                    ?>
+                    </a>
+                  <?php
+                    }
+                  ?>
                 </button>
               </div>
               <!-- Btn -->
               <div class="multi_tabs-btn" style="--width: 50%">
                 <div class="tab-progress-bar"></div>
-                <button class="tab-btn">
+                <button class="tab-btn" <?php if (!isset($_GET['edit'])) {
+                                          echo 'disabled';
+                                        } ?>>
+                                         <?php
+                  if (isset($_GET['edit'])) {
+                  ?>
+                    <a href="<?= base_url('add-listing?listingID='.$_GET['itemID'].'&edit=1') ?>">
+                    <?php
+                  }
+                    ?>
                   <span class="_circle">Step 3</span>
+                  <?php
+                    if (isset($_GET['edit'])) {
+                    ?>
+                    </a>
+                  <?php
+                    }
+                  ?>
                 </button>
               </div>
             </div>
@@ -152,45 +185,44 @@
                             ?>
                             value="1">Equipment</option>
                           <option value="2"
-                          <?php
+                            <?php
                             if (isset($itemData)) {
                               if ($itemData[0]['itemType'] == 2) {
                                 echo 'selected';
                               }
                             }
-                            ?>
-                          >Workforce</option>
+                            ?>>Workforce</option>
                         </select>
                       </div>
                       <div class="col-12" id="rentalTypeMain"
-                      <?php
-                            if (!isset($itemData)) {
-                             echo 'style="display: none;"'; 
-                            }
-                      ?>>
+                        <?php
+                        if (!isset($itemData)) {
+                          echo 'style="display: none;"';
+                        }
+                        ?>>
                         <label class="form-label">Choose rental type</label>
                         <div class="d-flex">
                           <div class="form-check me-3"
-                           <?php
+                            <?php
                             if (isset($itemData)) {
                               if ($itemData[0]['itemType'] != 1) {
                                 echo 'style="display: none;"';
                               }
                             }
                             ?>
-                           id="saleDiv">
+                            id="saleDiv">
                             <input
                               type="radio"
                               class="form-check-input"
                               id="radioBtnBuy"
                               name="rentalType"
                               <?php
-                            if (isset($itemData)) {
-                              if ($itemData[0]['saleType'] == 1) {
-                                echo 'checked';
+                              if (isset($itemData)) {
+                                if ($itemData[0]['saleType'] == 1) {
+                                  echo 'checked';
+                                }
                               }
-                            }
-                            ?>
+                              ?>
                               value="1"
                               required />
                             <label class="form-check-label" for="radioBtnBuy">Sale</label>
@@ -201,18 +233,25 @@
                               class="form-check-input"
                               id="radioBtnRental"
                               name="rentalType"
-                               <?php
-                            if (isset($itemData)) {
-                              if ($itemData[0]['saleType'] == 0) {
-                                echo 'checked';
+                              <?php
+                              if (isset($itemData)) {
+                                if ($itemData[0]['saleType'] == 0) {
+                                  echo 'checked';
+                                }
                               }
-                            }
-                            ?>
+                              ?>
                               value="0"
                               required />
                             <label
                               class="form-check-label"
                               for="radioBtnRental">Rental</label>
+                            <?php
+                            if (isset($_GET['edit'])) {
+                            ?>
+                      <input type="hidden" name="edit" id="edit" value="1">
+                            <?php
+                            }
+                            ?>
                           </div>
                         </div>
                       </div>
@@ -264,10 +303,8 @@
   <script src="<?= base_url() ?>assets/js/step.js"></script>
   <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
   <script>
-     
-     
     function skillSelected() {
-     var skill = $('#skill').val();
+      var skill = $('#skill').val();
       if (skill == 1) {
         $('#saleDiv').css('display', 'block');
         $('#rentalTypeMain').fadeIn();
@@ -275,10 +312,8 @@
         $('#saleDiv').css('display', 'none');
         $('#rentalTypeMain').fadeIn();
       }
-      
+
     }
-    
-    
   </script>
   <?php
   if ($this->session->flashdata('listingAddedForApproval') != '') {

@@ -451,7 +451,13 @@ replacement.</span>';
                   </defs>
                 </svg>
               </div>
+              <?php 
+              if($equipment[0]['eqpAdd']!=''){
+              ?>
               <span class="text-para"><strong>Address : </strong> <?= $equipment[0]['eqpAdd'] ?> </span>
+              <?php 
+              }
+              ?>
               <span class="text-para"><strong>City :</strong> <?= $equipment[0]['eqpLocCity'] ?></span>
             </div>
           </div>

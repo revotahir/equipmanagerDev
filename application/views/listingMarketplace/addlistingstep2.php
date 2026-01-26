@@ -251,7 +251,15 @@
                 
                 width-ctrl">
                 <div class="tab-progress-bar"></div>
-                <a href="<?= base_url('add-listing') ?>" class="tab-btn">
+                <a href="
+                <?php
+                if (!isset($_GET['edit'])) {
+                  echo base_url('add-listing');
+                } else {
+                  echo base_url('add-listing/?itemID=' . $_GET['itemID'] . '&edit=1');
+                }
+                ?>
+                " class="tab-btn">
                   <span class="_circle">Step 1</span>
                 </a>
               </div>
@@ -267,8 +275,24 @@
               <!-- Btn -->
               <div class="multi_tabs-btn" style="--width: 50%">
                 <div class="tab-progress-bar"></div>
-                <button class="tab-btn">
-                  <span class="_circle">Step 3</span>
+                <button class="tab-btn" <?php if (!isset($_GET['edit'])) {
+                                          echo 'disabled';
+                                        } ?>>
+                  <?php
+                  if (isset($_GET['edit'])) {
+                  ?>
+                    <a href="<?= base_url('add-listing?listingID='.$_GET['itemID'].'&edit=1') ?>">
+                    <?php
+                  }
+                    ?>
+                    <span class="_circle">Step 3</span>
+                    <?php
+                    if (isset($_GET['edit'])) {
+                    ?>
+                    </a>
+                  <?php
+                    }
+                  ?>
                 </button>
               </div>
             </div>
@@ -458,9 +482,9 @@
                         </div>
 
                         <div class="col-12">
-                          
+
                           <div class="star-rating">
-                            <label class="form-label">Condition &nbsp;&nbsp;</label> 
+                            <label class="form-label">Condition &nbsp;&nbsp;</label>
                             <input type="radio" id="star1" name="eqpCond" value="1" required <?php if (isset($_GET['itemID']) && $_GET['itemID'] != '' && $shopItem[0]['eqpCondition'] == 1) echo 'checked'; ?>>
                             <label for="star1" data-bs-toggle="tooltip" title="Major defects affecting performance, nearing end-of-life, requires significant attention or
 replacement."><i class="bi bi-star star-icon"></i></label>
@@ -1254,14 +1278,14 @@ replacement."><i class="bi bi-star star-icon"></i></label>
       $('.star-rating input:checked').trigger('change');
 
       // Validate that condition is selected on form submission
-      $('form').on('submit', function(e) {
-        var eqpCondChecked = $('input[name="eqpCond"]:checked').length > 0;
-        if (!eqpCondChecked) {
-          e.preventDefault();
-          alert('Please select a condition rating');
-          return false;
-        }
-      });
+      // $('form').on('submit', function(e) {
+      //   var eqpCondChecked = $('input[name="eqpCond"]:checked').length > 0;
+      //   if (!eqpCondChecked) {
+      //     e.preventDefault();
+      //     alert('Please select a condition rating');
+      //     return false;
+      //   }
+      // });
 
       // Tag input functionality
       var tags = [];
@@ -1289,7 +1313,7 @@ replacement."><i class="bi bi-star star-icon"></i></label>
 
         // Add tag elements
         tags.forEach(function(tag, index) {
-          var tagElement = $('<div class="tag">' + 
+          var tagElement = $('<div class="tag">' +
             '<span>' + escapeHtml(tag) + '</span>' +
             '<button type="button" class="tag-remove" data-index="' + index + '">×</button>' +
             '</div>');
@@ -1314,7 +1338,9 @@ replacement."><i class="bi bi-star star-icon"></i></label>
           '"': '&quot;',
           "'": '&#039;'
         };
-        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        return text.replace(/[&<>"']/g, function(m) {
+          return map[m];
+        });
       }
 
       // Add tag on Enter
