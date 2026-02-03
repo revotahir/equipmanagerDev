@@ -116,6 +116,9 @@
                       <li>
                           <a href="<?= base_url('all-tickets') ?>"><i class="bi bi-arrow-right-short"></i>All Tickets </a>
                       </li>
+                      <li>
+                          <a href="<?= base_url('contact-form') ?>"><i class="bi bi-arrow-right-short"></i>Contact Form </a>
+                      </li>
                   </ul>
               </li>
               <!-- mannage  Company Partners end here-->

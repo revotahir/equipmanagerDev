@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2025 at 02:00 PM
+-- Generation Time: Feb 03, 2026 at 04:09 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -91,11 +91,11 @@ CREATE TABLE `equipment` (
 
 INSERT INTO `equipment` (`equipmentID`, `companyID`, `equipName`, `equipCatID`, `equipImg`, `equipTotalQuantity`, `equipInUseQuantity`, `equipDesc`, `equipStatus`) VALUES
 (4, 1, 'equip q', 12, 'bfe3d3b08e1ba3b51e1151299ccfb512.png', 13, 0, 'dd', 2),
-(5, 1, 'equip q', 11, '3696c2e21a947e5fddd118cfc6b2bcd5.png', 12, 0, 'asda', 2),
+(5, 1, 'equip q', 11, '3696c2e21a947e5fddd118cfc6b2bcd5.png', 12, 3, 'asda', 2),
 (6, 1, 'Test Equipmr', 13, 'be70a14ffb476ada12462f6313759584.png', 12, 2, 'asfsdf', 2),
-(7, 1, 'test qq', 12, 'f770faf201ed5e660ffc9245cef81022.png', 12, 2, 'ass', 2),
-(8, 1, 'Fainal TEst eqiputment', 14, '06fbe67318b5019e1821348167a4fdb7.png', 23, 8, 'asadasdas', 2),
-(9, 1, 'tes ff', 13, 'e5eb7a815f812b07c5af10a7b9100f32.png', 123, 12, 'asf', 2);
+(7, 1, 'test qq', 12, 'f770faf201ed5e660ffc9245cef81022.png', 12, 0, 'ass', 2),
+(8, 1, 'Fainal TEst eqiputment', 14, '06fbe67318b5019e1821348167a4fdb7.png', 23, 0, 'asadasdas', 2),
+(9, 1, 'tes ff', 13, 'e5eb7a815f812b07c5af10a7b9100f32.png', 123, 0, 'asf', 2);
 
 -- --------------------------------------------------------
 
@@ -132,16 +132,6 @@ CREATE TABLE `projectequipmentassign` (
   `assignedQty` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `projectequipmentassign`
---
-
-INSERT INTO `projectequipmentassign` (`assignID`, `ProjectID`, `workforceID`, `equipmentID`, `assignedQty`) VALUES
-(13, 1, 5, 9, 10),
-(14, 1, 5, 8, 8),
-(15, 5, 4, 9, 3),
-(16, 5, 3, 9, 6);
-
 -- --------------------------------------------------------
 
 --
@@ -161,11 +151,8 @@ CREATE TABLE `projectequipmentlink` (
 --
 
 INSERT INTO `projectequipmentlink` (`projectequipmentLinkID`, `equipmentID`, `ProjectID`, `equipmentQTY`, `TotalAssignQTY`) VALUES
-(3, 8, 1, 8, 8),
-(4, 7, 1, 2, 0),
-(6, 9, 1, 3, 0),
-(7, 9, 5, 9, 9),
-(8, 6, 5, 2, 0);
+(5, 6, 2, 2, 0),
+(6, 5, 3, 3, 0);
 
 -- --------------------------------------------------------
 
@@ -176,7 +163,8 @@ INSERT INTO `projectequipmentlink` (`projectequipmentLinkID`, `equipmentID`, `Pr
 CREATE TABLE `projects` (
   `ProjectID` int(11) NOT NULL,
   `companyID` int(11) NOT NULL,
-  `pCatID` int(11) NOT NULL,
+  `pCatID` int(11) NOT NULL COMMENT '0=marketplace listing',
+  `itemID` int(11) DEFAULT NULL COMMENT 'shop listing ID',
   `pName` varchar(200) NOT NULL,
   `pLocation` varchar(500) NOT NULL,
   `pStartDate` date DEFAULT NULL,
@@ -201,11 +189,11 @@ CREATE TABLE `projects` (
 -- Dumping data for table `projects`
 --
 
-INSERT INTO `projects` (`ProjectID`, `companyID`, `pCatID`, `pName`, `pLocation`, `pStartDate`, `pEndDate`, `pDesc`, `pImg1`, `pImg2`, `pImg3`, `pImg4`, `pImg5`, `pImg6`, `pImg7`, `pImg8`, `pImg9`, `pImg10`, `pStatus`, `pDraftStatus`, `createdAt`) VALUES
-(1, 1, 4, 'Plubbing is sahiwal', 'sahiwa;', '2025-09-27', '2025-09-30', 'fix tap', '68d66cd2cd7ef_1758883026.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 3, '2025-09-26 10:37:06'),
-(2, 1, 4, 'Plubing in CCW', 'CCW', '2025-10-02', '2025-10-16', 'aaaa', '68d66d739c3ef_1758883187.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 2, '2025-09-26 10:39:47'),
-(4, 1, 4, 'lahore plubbing', 'lh', '2025-10-30', '2025-11-07', 'fgh', '68d6b20ce38fc_1758900748.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 2, '2025-09-26 15:32:28'),
-(5, 1, 3, 'Wood work', 'asfasf', '2025-09-30', '2025-10-01', 'aaa', '68ecad48f3f33_1760341320.png', '68ecad48f3f33_1760341320.jpg', '68ecad48f3f33_17603413201.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 3, '2025-10-13 07:42:02');
+INSERT INTO `projects` (`ProjectID`, `companyID`, `pCatID`, `itemID`, `pName`, `pLocation`, `pStartDate`, `pEndDate`, `pDesc`, `pImg1`, `pImg2`, `pImg3`, `pImg4`, `pImg5`, `pImg6`, `pImg7`, `pImg8`, `pImg9`, `pImg10`, `pStatus`, `pDraftStatus`, `createdAt`) VALUES
+(1, 1, 0, 1, 'Website Marketplace Listing', 'asdasd', '2026-01-01', '2026-01-07', 'Workforce Listing on website Marketplace', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 1, '2025-12-29 18:01:06'),
+(2, 1, 0, 2, 'Website Marketplace Listing', 'fasf', '2026-01-02', '2026-01-07', 'Equipment Listing on website Marketplace', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 1, '2025-12-29 18:02:21'),
+(3, 1, 0, 4, 'Website Marketplace Listing', 'test address', '2026-01-08', '2026-01-15', 'Equipment Listing on website Marketplace', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 1, '2026-01-08 18:28:33'),
+(4, 1, 4, NULL, 'lahore plubbing', 'lahore', '2026-01-09', '2026-01-13', 'asfas', '695ff92ce3f32_1767897388.jpeg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 2, '2026-01-08 18:36:30');
 
 -- --------------------------------------------------------
 
@@ -224,10 +212,117 @@ CREATE TABLE `projectworkforcelink` (
 --
 
 INSERT INTO `projectworkforcelink` (`projectWorkforceLinkID`, `ProjectID`, `workforceID`) VALUES
-(1, 1, 5),
-(2, 5, 4),
-(3, 5, 3),
-(4, 5, 2);
+(1, 1, 1),
+(2, 0, 5),
+(3, 0, 4),
+(4, 0, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopequipments`
+--
+
+CREATE TABLE `shopequipments` (
+  `shopEqpID` int(11) NOT NULL,
+  `itemID` int(11) NOT NULL,
+  `equipmentID` int(11) NOT NULL,
+  `web_catID` int(11) NOT NULL,
+  `equipQty` int(11) NOT NULL,
+  `eqpBrandModel` varchar(500) NOT NULL,
+  `eqpSpecs` varchar(1500) NOT NULL,
+  `eqpCondition` varchar(1500) NOT NULL,
+  `eqpLocCity` varchar(100) NOT NULL,
+  `eqpAdd` varchar(1500) DEFAULT NULL,
+  `eqpRentalType` tinyint(1) DEFAULT NULL COMMENT '1=perday 2=per week 3=permonth 4=yearly',
+  `eqpPrice` varchar(100) NOT NULL,
+  `eqpAvailableStart` date NOT NULL,
+  `eqpAvailableEnd` date NOT NULL,
+  `eqpimg1` varchar(300) DEFAULT NULL,
+  `eqpimg2` varchar(300) DEFAULT NULL,
+  `eqpimg3` varchar(300) DEFAULT NULL,
+  `eqpimg4` varchar(300) DEFAULT NULL,
+  `eqpimg5` varchar(300) DEFAULT NULL,
+  `eqpimg6` varchar(300) DEFAULT NULL,
+  `eqpimg7` varchar(300) DEFAULT NULL,
+  `eqpimg8` varchar(300) DEFAULT NULL,
+  `eqpimg9` varchar(300) DEFAULT NULL,
+  `eqpimg10` varchar(300) DEFAULT NULL,
+  `eqpDeliveryOpt` tinyint(1) NOT NULL COMMENT '1=can be dilvered 2= pickup only ',
+  `eqpRules` varchar(2000) DEFAULT NULL COMMENT '(damage, return, etc.)',
+  `noteForRenter` varchar(2000) DEFAULT NULL,
+  `addRequirments` varchar(2000) DEFAULT NULL COMMENT 'for renter'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopequipments`
+--
+
+INSERT INTO `shopequipments` (`shopEqpID`, `itemID`, `equipmentID`, `web_catID`, `equipQty`, `eqpBrandModel`, `eqpSpecs`, `eqpCondition`, `eqpLocCity`, `eqpAdd`, `eqpRentalType`, `eqpPrice`, `eqpAvailableStart`, `eqpAvailableEnd`, `eqpimg1`, `eqpimg2`, `eqpimg3`, `eqpimg4`, `eqpimg5`, `eqpimg6`, `eqpimg7`, `eqpimg8`, `eqpimg9`, `eqpimg10`, `eqpDeliveryOpt`, `eqpRules`, `noteForRenter`, `addRequirments`) VALUES
+(1, 2, 6, 6, 2, 'dfh', 'hdfgh', '2', 'As', 'fasf', 1, '4', '2026-01-02', '2026-01-07', '2_1_1767031337.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, ' gsdg', 'sdgs', 'dgsd'),
+(2, 3, 4, 9, 3, 'gsdg', 'sdgsdg | asfasf', '3', 'Dusseldorf', 'sdgsd', NULL, '34', '2026-01-19', '2026-01-22', '3_1_1767031373.webp', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'ddddd', NULL, NULL),
+(3, 4, 5, 9, 3, 'awf', 'ffff', '1', 'Lahore', 'test address', 1, '20', '2026-01-08', '2026-01-15', '4_1_1767896876.jpeg', '4_2_1767896876.jpg', '4_3_1767896876.png', '4_4_1767896876.png', NULL, NULL, NULL, NULL, NULL, NULL, 1, ' asfas', 'asfas', 'afsfas');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopitem`
+--
+
+CREATE TABLE `shopitem` (
+  `itemID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `companyID` int(11) DEFAULT NULL,
+  `pageID` int(11) DEFAULT NULL,
+  `itemType` tinyint(1) NOT NULL COMMENT '1=equipment 2=workforce',
+  `saleType` tinyint(1) NOT NULL COMMENT '1=sale 0=rental',
+  `itemStatus` tinyint(1) NOT NULL COMMENT '1=approved, 2=pending approval 3=rejected 0=drafted',
+  `liveStatus` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1=live 0=not live'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopitem`
+--
+
+INSERT INTO `shopitem` (`itemID`, `userID`, `companyID`, `pageID`, `itemType`, `saleType`, `itemStatus`, `liveStatus`) VALUES
+(1, 1, 1, NULL, 2, 0, 1, 1),
+(2, 1, 1, NULL, 1, 0, 0, 0),
+(3, 1, 1, NULL, 1, 1, 2, 1),
+(4, 1, 1, NULL, 1, 0, 1, 1),
+(5, 1, 1, NULL, 2, 0, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopworkforce`
+--
+
+CREATE TABLE `shopworkforce` (
+  `shopWorkforceID` int(11) NOT NULL,
+  `itemID` int(11) NOT NULL,
+  `workforceID` int(11) NOT NULL,
+  `web_catID` int(11) NOT NULL,
+  `workforceCV` varchar(100) NOT NULL,
+  `workforceCertif` varchar(100) DEFAULT NULL,
+  `workforceCity` varchar(500) NOT NULL,
+  `WorkforceAdd` varchar(1200) DEFAULT NULL,
+  `workforceRentalType` tinyint(1) NOT NULL COMMENT '1=perday 2=per week 3=permonth 4=yearly	',
+  `workforcePrice` int(11) NOT NULL,
+  `workforceAvailableStart` date NOT NULL,
+  `workforceAvailableEnd` date NOT NULL,
+  `workforceDeliveryOpt` tinyint(1) NOT NULL COMMENT '1=can be dilvered 2= pickup only',
+  `workforceRules` varchar(2000) DEFAULT NULL COMMENT '(damage, return, etc.)',
+  `workforcenoteForRenter` varchar(2000) DEFAULT NULL,
+  `workforceaddRequirments` varchar(2000) DEFAULT NULL COMMENT 'for renter'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `shopworkforce`
+--
+
+INSERT INTO `shopworkforce` (`shopWorkforceID`, `itemID`, `workforceID`, `web_catID`, `workforceCV`, `workforceCertif`, `workforceCity`, `WorkforceAdd`, `workforceRentalType`, `workforcePrice`, `workforceAvailableStart`, `workforceAvailableEnd`, `workforceDeliveryOpt`, `workforceRules`, `workforcenoteForRenter`, `workforceaddRequirments`) VALUES
+(1, 1, 1, 7, '1_cv_1767031261.pdf', '1_cert_1767031261.png', 'As', 'asdasd', 1, 324, '2026-01-01', '2026-01-07', 1, ' afsf', 'fasf', 'asfas'),
+(2, 5, 1, 7, '5_cv_1769432470.png', NULL, 'Lahore', '', 2, 5, '2026-02-24', '2026-02-28', 2, 'fsdf', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -254,6 +349,107 @@ INSERT INTO `skills` (`skillID`, `companyID`, `skillName`, `skillDesc`, `skillSt
 (17, 1, 'Genral Worker', 'asdasd', 1),
 (18, 1, 'testtttttttttt', 'asdfas', 1),
 (19, 1, 'Genral Workerrrrrrrrrrrr', 'asfdad', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `supportticketchat`
+--
+
+CREATE TABLE `supportticketchat` (
+  `chatID` int(11) NOT NULL,
+  `supportTicketID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `chatText` varchar(2500) NOT NULL,
+  `chatTimeStamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `supportticketchat`
+--
+
+INSERT INTO `supportticketchat` (`chatID`, `supportTicketID`, `userID`, `chatText`, `chatTimeStamp`) VALUES
+(1, 1, 1, 'tesdt ticket', '2025-12-01 13:56:40'),
+(2, 2, 1, 'hiasdfasf', '2025-12-01 13:59:44'),
+(3, 3, 1, 'website not working', '2025-12-01 14:00:52'),
+(4, 1, 1, 'update?', '2025-12-02 18:08:08'),
+(5, 1, 1, 'hii', '2025-12-02 18:19:43'),
+(6, 1, 1, 'yo?', '2025-12-02 18:23:29'),
+(7, 1, 1, 'o paiii', '2025-12-02 18:26:37'),
+(8, 2, 1, 'hello', '2025-12-02 18:26:45'),
+(9, 1, 1, 'hellosss', '2025-12-02 18:55:15'),
+(10, 2, 1, 'o paii kidan ', '2025-12-02 18:55:26'),
+(11, 1, 10, 'Yo', '2025-12-04 12:37:17'),
+(12, 1, 10, 'GG', '2025-12-04 12:37:54'),
+(13, 1, 10, 'im on it', '2025-12-04 12:46:42'),
+(14, 1, 1, 'OPk waiting', '2025-12-04 12:50:06'),
+(15, 1, 10, 'ok it is done', '2025-12-04 13:05:26'),
+(16, 1, 1, 'ok thanks', '2025-12-04 13:05:35'),
+(17, 2, 10, 'Hi Let me check ', '2025-12-05 09:58:35'),
+(18, 2, 1, 'ok fast', '2025-12-05 09:59:27'),
+(19, 1, 1, 'hi', '2025-12-07 11:48:39'),
+(20, 1, 10, 'Yooo', '2025-12-07 11:48:56'),
+(21, 1, 10, 'ad', '2025-12-15 10:25:23'),
+(22, 1, 10, 'Hi I done tha', '2025-12-15 10:40:10'),
+(23, 1, 1, 'a', '2025-12-15 10:40:18'),
+(24, 1, 10, 'dasd', '2025-12-15 10:44:36'),
+(25, 1, 1, 'asdas', '2025-12-15 10:48:19'),
+(26, 4, 1, 'asdasd', '2025-12-15 17:11:31'),
+(27, 2, 10, 'Hi', '2025-12-18 15:57:15'),
+(28, 2, 1, 'Hi', '2025-12-18 15:57:30'),
+(29, 4, 1, 'heelo', '2025-12-27 21:49:52'),
+(30, 5, 1, 'check please', '2026-01-20 17:25:37'),
+(31, 5, 10, 'Checking', '2026-01-20 17:27:47'),
+(32, 5, 10, 'it done', '2026-01-20 17:36:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `supporttickets`
+--
+
+CREATE TABLE `supporttickets` (
+  `supportTicketID` int(11) NOT NULL,
+  `supportTicketsCatID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `supportSubject` varchar(500) NOT NULL,
+  `supportMessage` varchar(2500) NOT NULL,
+  `supportTicketTimeStamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `supportTicketStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=response needed from admin 2= responses waiting from company 3=completed'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `supporttickets`
+--
+
+INSERT INTO `supporttickets` (`supportTicketID`, `supportTicketsCatID`, `userID`, `supportSubject`, `supportMessage`, `supportTicketTimeStamp`, `supportTicketStatus`) VALUES
+(1, 1, 1, 'Em is not working', 'tesdt ticket', '2025-12-01 13:56:40', 3),
+(2, 2, 1, 'paymetn wont get through', 'hiasdfasf', '2025-12-01 13:59:44', 3),
+(3, 3, 1, 'websiute down', 'website not working', '2025-12-01 14:00:52', 3),
+(4, 1, 1, 'Em is not working', 'asdasd', '2025-12-15 17:11:31', 1),
+(5, 3, 1, 'Order not placing', 'check please', '2026-01-20 17:25:37', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `supportticketscat`
+--
+
+CREATE TABLE `supportticketscat` (
+  `supportTicketsCatID` int(11) NOT NULL,
+  `supportCat` varchar(500) NOT NULL,
+  `supportCatStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=active 0=non active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `supportticketscat`
+--
+
+INSERT INTO `supportticketscat` (`supportTicketsCatID`, `supportCat`, `supportCatStatus`) VALUES
+(1, 'EM Tracking', 1),
+(2, 'Payments', 1),
+(3, 'Websites', 1),
+(4, 'Others', 1);
 
 -- --------------------------------------------------------
 
@@ -337,7 +533,7 @@ INSERT INTO `users` (`userID`, `userName`, `userPhone`, `userEmail`, `userPass`,
 (7, 'person 994', '3443', 'creative.sol8264@gmail.c', NULL, 4, 2),
 (8, 'per 5', '32323', 'per@gmail.com', NULL, 4, 2),
 (9, 'tahir', '0300222112', 'fastimigration01@gmail.com', '86e916352d024f292f6ff0ae210acdfe', 2, 1),
-(10, 'test', '03000000000', 'test@gmail.com', 'c93ccd78b2076528346216b3b2f701e6', 1, 1);
+(10, 'test', '03000000000', 'lumixedgeseo@gmail.com', 'c93ccd78b2076528346216b3b2f701e6', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -394,15 +590,20 @@ CREATE TABLE `web_cat` (
   `pageID` int(11) NOT NULL,
   `web_catIcon` varchar(300) NOT NULL,
   `web_catName` varchar(30) NOT NULL,
-  `web_catDesp` varchar(2000) NOT NULL
+  `web_catDesp` varchar(2000) NOT NULL,
+  `web_cat_type` tinyint(1) NOT NULL COMMENT '1=equipment 2=workforce'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `web_cat`
 --
 
-INSERT INTO `web_cat` (`web_catID`, `pageID`, `web_catIcon`, `web_catName`, `web_catDesp`) VALUES
-(4, 5, '6a1ca398e597a1f7d1c862ea27b561c6.svg', 'Adam Kirby', 'Aliquam enim laborum');
+INSERT INTO `web_cat` (`web_catID`, `pageID`, `web_catIcon`, `web_catName`, `web_catDesp`, `web_cat_type`) VALUES
+(5, 10, '4c73c3db9d7cf2def6a9ccb016448623.svg', 'Skilled Technicians', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ', 2),
+(6, 11, '6738c55b20339448317ae52272836e40.svg', 'Construction Equipment', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ', 1),
+(7, 12, '42e12c7b2a66a5ed293f173de9a7e6bd.svg', 'Electrical Installers', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ', 2),
+(8, 13, 'de0544ccbc4a8be3835c5ea351b7dacb.svg', 'Skilled Technicians', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ', 2),
+(9, 14, '3a745a47fe1543fecde65d9a9f2b4295.svg', 'Plumbing Equipment', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ', 1);
 
 -- --------------------------------------------------------
 
@@ -415,6 +616,43 @@ CREATE TABLE `web_company` (
   `web_companyIcon` varchar(300) NOT NULL,
   `web_companyStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT ' 1=Active and 0=Deactive '
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_company`
+--
+
+INSERT INTO `web_company` (`web_companyID`, `web_companyIcon`, `web_companyStatus`) VALUES
+(2, '03eb1f186896c190736ab06dfbf582df.svg', 1),
+(3, 'ad9358d1abcc07bb9603eaf3849cd088.svg', 1),
+(4, '45b1d18d044bba9163625fb0077c6d46.svg', 1),
+(5, '08ac83eb73a3c43f9a27d37b79c463f4.svg', 1),
+(6, '8eefe305b601673edf4b9860d5da423a.svg', 1),
+(7, 'b73c7825e2f30a2c1b4e33996519486f.svg', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_contact_form`
+--
+
+CREATE TABLE `web_contact_form` (
+  `contactID` int(11) NOT NULL,
+  `contactName` varchar(200) NOT NULL,
+  `contactEmail` varchar(200) NOT NULL,
+  `contactSubject` varchar(500) NOT NULL,
+  `contactMsg` varchar(1200) NOT NULL,
+  `contactDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `contactStatus` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=new 2=reponded'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `web_contact_form`
+--
+
+INSERT INTO `web_contact_form` (`contactID`, `contactName`, `contactEmail`, `contactSubject`, `contactMsg`, `contactDate`, `contactStatus`) VALUES
+(1, 'Tahir Iqbal', 'revotahir@gmail.com', 'asdf', 'asdfas', '2026-01-27 19:20:38', 2),
+(2, 'Kip and Tricks', 'revotahir@gmail.com', 'asdas', 'aaaa', '2026-01-27 22:54:32', 1),
+(3, 'Tobias', 'test@tobias.com', 'EM Tracking', 'I want to buy.....', '2026-02-02 20:41:22', 2);
 
 -- --------------------------------------------------------
 
@@ -436,9 +674,19 @@ CREATE TABLE `web_pages` (
 INSERT INTO `web_pages` (`pageID`, `slug`, `pageType`, `pageStatus`) VALUES
 (3, 'plubmber', 2, 1),
 (4, 'plumbin-hack', 4, 1),
-(5, 'adam-kirby', 2, 1),
 (7, 'willa-flowers', 4, 1),
-(9, 'asdfas', 5, 1);
+(9, 'asdfas', 5, 1),
+(10, 'skilled-technicians', 2, 1),
+(11, 'construction-equipment', 2, 1),
+(12, 'electrical-installers', 2, 1),
+(13, 'skilled-technicians', 2, 0),
+(14, 'construction-equipment', 2, 1),
+(15, '', 1, 1),
+(16, 'about-us', 1, 1),
+(17, 'contact-us', 1, 1),
+(18, 'how-it-works', 1, 1),
+(19, 'features', 1, 1),
+(20, 'marketplace', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -465,9 +713,37 @@ CREATE TABLE `web_page_meta` (
 INSERT INTO `web_page_meta` (`metaID`, `pageID`, `metaTittle`, `metaKeywords`, `metaDesc`, `h1`, `h2`, `p1`, `p2`) VALUES
 (2, 3, 'Plubmber | equipmanager.dk ', 'a,b,c,d,ff', 'aaa', 'h111 ', 'h222 ', 'hd111 ', 'hd222 '),
 (3, 4, 'Plumbin Hack | equipmanager.dk', 'asdfas,asda,as', 'test descritpion', 'he', 'hr', 'pe', 'ps'),
-(4, 5, 'Fugiat necessitatib', 'Dolor omnis placeat', 'Consequatur Laborum', 'Ad eos non pariatur', 'Omnis labore est mod', 'Quia dolores adipisi', 'Perspiciatis volupt'),
 (6, 7, 'Quia modi eos possim', 'Quidem dolore eu ill', 'Duis ea obcaecati quuuuuuu', 'Accusantium consequa', 'Ad voluptatem Molli', 'Irure iusto nemo rep', 'Excepteur excepturi '),
-(8, 9, 'asdfas | equipmanager.dk', 'asfa,rdgdf,dfgdf', 'asfasaaaaaa', NULL, NULL, NULL, NULL);
+(8, 9, 'asdfas | equipmanager.dk', 'asfa,rdgdf,dfgdf', 'asfasaaaaaa', NULL, NULL, NULL, NULL),
+(9, 10, 'Skilled Technicians | equipmanager.dk', 'test,sdfas,asdas', 'test', '', '', '', ''),
+(10, 11, 'Construction Equipment | equipmanager.dk', '', '', '', '', '', ''),
+(11, 12, 'Electrical Installers | equipmanager.dk', '', '', '', '', '', ''),
+(12, 13, 'Skilled Technicians | equipmanager.dk', '', '', '', '', '', ''),
+(13, 14, 'Construction Equipment | equipmanager.dk', '', '', '', '', '', ''),
+(14, 15, 'Home | equipmanager.dk', 'test', 'test dewsc', NULL, NULL, NULL, NULL),
+(15, 16, 'About Us | equipmanager.dk', 'test', 'test dewsc', NULL, NULL, NULL, NULL),
+(16, 17, 'Contact Us | equipmanager.dk', 'test', 'test dewsc', NULL, NULL, NULL, NULL),
+(17, 18, 'How it Works | equipmanager.dk', 'test', 'test dewsc', NULL, NULL, NULL, NULL),
+(18, 19, 'Features | equipmanager.dk', 'test', 'test dewsc', NULL, NULL, NULL, NULL),
+(19, 20, 'Marketplace | equipmanager.dk', 'test', 'test dewsc', NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `web_setting`
+--
+
+CREATE TABLE `web_setting` (
+  `settingID` tinyint(1) NOT NULL,
+  `websiteStatus` tinyint(1) DEFAULT 1 COMMENT '1= live 2 = coming soon'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_setting`
+--
+
+INSERT INTO `web_setting` (`settingID`, `websiteStatus`) VALUES
+(1, 1);
 
 -- --------------------------------------------------------
 
@@ -482,6 +758,16 @@ CREATE TABLE `web_success` (
   `web_successDes` varchar(2000) NOT NULL,
   `web_successStatus` tinyint(1) NOT NULL COMMENT '1=Active and 0=Deactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `web_success`
+--
+
+INSERT INTO `web_success` (`web_successID`, `web_successIcon`, `web_successName`, `web_successDes`, `web_successStatus`) VALUES
+(2, 'dce9cb23e16eb506b6d8b6822a7b699b.svg', 'Listed Tools', '200+', 1),
+(3, 'cacc5055d99e0ee14f4dd3595feafaa4.svg', 'Active Companies', '10+', 1),
+(4, '62f8e33eb5c5987fa0246445ea267c22.svg', 'Workforce Members', '500+', 1),
+(5, 'b9e0a6c02889efbbf8a08d62b278092d.svg', 'Average Rating', '4.9', 1);
 
 -- --------------------------------------------------------
 
@@ -504,7 +790,11 @@ CREATE TABLE `web_testimonial` (
 --
 
 INSERT INTO `web_testimonial` (`web_testimonialID`, `web_testimonialRating`, `web_testimonialDesp`, `web_testimonialImg`, `web_testimonialName`, `web_testimonialLocation`, `web_testimonialStatus`) VALUES
-(1, '5', 'Verry good', '5b51e337d9b4612ccfb40a1257fc850a.png', 'Tahir Iqbal', 'California', 1);
+(2, '5', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type.', 'c34f957ab271b9013f68715da336ad18.png', 'Alex', 'USA', 1),
+(3, '5', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type.', 'ecab3c296b41f1c7b62637131cc6a00a.png', 'Sam', 'California', 1),
+(4, '5', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type.', 'ecab3c296b41f1c7b62637131cc6a00a.png', 'Anthony', 'Germany', 1),
+(5, '5', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type.', 'ecab3c296b41f1c7b62637131cc6a00a.png', 'Parteek', 'UAE', 1),
+(6, '5', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type.', 'ecab3c296b41f1c7b62637131cc6a00a.png', 'Alex', 'Dubai', 0);
 
 -- --------------------------------------------------------
 
@@ -528,8 +818,8 @@ CREATE TABLE `workforce` (
 --
 
 INSERT INTO `workforce` (`workforceID`, `companyID`, `personName`, `personPhone`, `personEmail`, `personImg`, `personAddInfo`, `personStatus`) VALUES
-(1, 1, 'Asad', '1232', 'creative.sol8264@gmail.com', '2774e66d6df7a50c7d8f40938c6d8ae7.png', 'sdfsdfsd', 1),
-(2, 1, 'Atif', '3423', 'revotahir@gmail.com', 'images.png', 'sdfsd', 2),
+(1, 1, 'Asad', '1232', 'creative.sol8264@gmail.com', '2774e66d6df7a50c7d8f40938c6d8ae7.png', 'sdfsdfsd', 2),
+(2, 1, 'Atif', '3423', 'revotahir@gmail.com', 'images.png', 'sdfsd', 1),
 (3, 1, 'Tayyab', '2342', 'revotahir@gmail.c', 'images.png', 'sfdh', 2),
 (4, 1, 'JB', '3443', 'creative.sol8264@gmail.c', '3625e21ed7b48855b4c5a9d4b1768401.png', 'gjg', 2),
 (5, 1, 'Faisal', '32323', 'per@gmail.com', 'images.png', 'sdfsd', 2);
@@ -615,10 +905,46 @@ ALTER TABLE `projectworkforcelink`
   ADD PRIMARY KEY (`projectWorkforceLinkID`);
 
 --
+-- Indexes for table `shopequipments`
+--
+ALTER TABLE `shopequipments`
+  ADD PRIMARY KEY (`shopEqpID`);
+
+--
+-- Indexes for table `shopitem`
+--
+ALTER TABLE `shopitem`
+  ADD PRIMARY KEY (`itemID`);
+
+--
+-- Indexes for table `shopworkforce`
+--
+ALTER TABLE `shopworkforce`
+  ADD PRIMARY KEY (`shopWorkforceID`);
+
+--
 -- Indexes for table `skills`
 --
 ALTER TABLE `skills`
   ADD PRIMARY KEY (`skillID`);
+
+--
+-- Indexes for table `supportticketchat`
+--
+ALTER TABLE `supportticketchat`
+  ADD PRIMARY KEY (`chatID`);
+
+--
+-- Indexes for table `supporttickets`
+--
+ALTER TABLE `supporttickets`
+  ADD PRIMARY KEY (`supportTicketID`);
+
+--
+-- Indexes for table `supportticketscat`
+--
+ALTER TABLE `supportticketscat`
+  ADD PRIMARY KEY (`supportTicketsCatID`);
 
 --
 -- Indexes for table `userauth`
@@ -663,6 +989,12 @@ ALTER TABLE `web_company`
   ADD PRIMARY KEY (`web_companyID`);
 
 --
+-- Indexes for table `web_contact_form`
+--
+ALTER TABLE `web_contact_form`
+  ADD PRIMARY KEY (`contactID`);
+
+--
 -- Indexes for table `web_pages`
 --
 ALTER TABLE `web_pages`
@@ -673,6 +1005,12 @@ ALTER TABLE `web_pages`
 --
 ALTER TABLE `web_page_meta`
   ADD PRIMARY KEY (`metaID`);
+
+--
+-- Indexes for table `web_setting`
+--
+ALTER TABLE `web_setting`
+  ADD PRIMARY KEY (`settingID`);
 
 --
 -- Indexes for table `web_success`
@@ -730,31 +1068,67 @@ ALTER TABLE `projectcategory`
 -- AUTO_INCREMENT for table `projectequipmentassign`
 --
 ALTER TABLE `projectequipmentassign`
-  MODIFY `assignID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `assignID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `projectequipmentlink`
 --
 ALTER TABLE `projectequipmentlink`
-  MODIFY `projectequipmentLinkID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `projectequipmentLinkID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `ProjectID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ProjectID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `projectworkforcelink`
 --
 ALTER TABLE `projectworkforcelink`
-  MODIFY `projectWorkforceLinkID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `projectWorkforceLinkID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `shopequipments`
+--
+ALTER TABLE `shopequipments`
+  MODIFY `shopEqpID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `shopitem`
+--
+ALTER TABLE `shopitem`
+  MODIFY `itemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `shopworkforce`
+--
+ALTER TABLE `shopworkforce`
+  MODIFY `shopWorkforceID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `skills`
 --
 ALTER TABLE `skills`
   MODIFY `skillID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `supportticketchat`
+--
+ALTER TABLE `supportticketchat`
+  MODIFY `chatID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
+-- AUTO_INCREMENT for table `supporttickets`
+--
+ALTER TABLE `supporttickets`
+  MODIFY `supportTicketID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `supportticketscat`
+--
+ALTER TABLE `supportticketscat`
+  MODIFY `supportTicketsCatID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `userauth`
@@ -790,37 +1164,49 @@ ALTER TABLE `web_blog_cat`
 -- AUTO_INCREMENT for table `web_cat`
 --
 ALTER TABLE `web_cat`
-  MODIFY `web_catID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `web_catID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `web_company`
 --
 ALTER TABLE `web_company`
-  MODIFY `web_companyID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `web_companyID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `web_contact_form`
+--
+ALTER TABLE `web_contact_form`
+  MODIFY `contactID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `web_pages`
 --
 ALTER TABLE `web_pages`
-  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `pageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `web_page_meta`
 --
 ALTER TABLE `web_page_meta`
-  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `metaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `web_setting`
+--
+ALTER TABLE `web_setting`
+  MODIFY `settingID` tinyint(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `web_success`
 --
 ALTER TABLE `web_success`
-  MODIFY `web_successID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `web_successID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `web_testimonial`
 --
 ALTER TABLE `web_testimonial`
-  MODIFY `web_testimonialID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `web_testimonialID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `workforce`

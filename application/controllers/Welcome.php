@@ -111,6 +111,20 @@ class Welcome extends MY_Controller
 		$this->data['workforce'] = $this->generic->GetMarketPlaceWorkforceData(array('si.itemStatus' => 1, 'si.liveStatus' => 1,'si.itemID'=>$itemid));
 		$this->load->view('website/WorkforceDetail',$this->data);
 	}
+		// <!-- ============================================================== -->
+	// <!-- Utality pages -->
+	// <!-- ============================================================== -->
+public function ContactFormData(){
+	$contactData=array(
+		'contactName'=>$this->input->post('name'),
+		'contactEmail'=>$this->input->post('email'),
+		'contactSubject'=>$this->input->post('subject'),
+		'contactMsg'=>$this->input->post('msg'),
+	);
+	$this->generic->InsertData('web_contact_form',$contactData);
+	$this->session->set_flashdata('messageSent', 1);
+	redirect(base_url('contact-us'));
+}
 	
 	// <!-- ============================================================== -->
 	// <!-- Login function -->

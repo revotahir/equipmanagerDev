@@ -141,6 +141,8 @@ $route['change-ticket-cat-status/:any/:any']='support/ticketCategoryStatus';
 $route['delet-ticket-cat/:any']='support/ticketCategoryDlt';
 $route['update-ticket-cat-data/:any']='support/ticketCategoryUpdate';
 $route['marked-ticket-complete/:any']='support/ticketMarketCompleted';
+$route['contact-form']='support/contactForm'; //--website contact form
+$route['contact-form-responded']='support/contactFormStatusUpdate'; 
 
 
 //manage company admin listing
@@ -214,6 +216,7 @@ $route['admin-marketplace-listing']='superadmin/MarketplaceListing';
 $route['mark-listing-approved']='superadmin/MarketplaceListingMarkedApproved';
 $route['mark-listing-rejected']='superadmin/MarketplaceListingMarkedRejected';
 $route['change-website-listing-status/:any/:any']='superadmin/ChangeMarketplacelistingWebsiteStatus';
+
 
 $route['login-data'] = 'welcome/LoginData';
 

@@ -189,4 +189,19 @@ class support extends MY_Controller
 		$this->session->set_flashdata('newTicketCatupdated', 'Person deleted successfully!');
 		redirect(base_url('ticket-category'));
 	}
+	//website contact form 
+	public function contactForm(){
+		if(isset($_GET['status'])){
+$this->data['contactEntries']=$this->generic->GetData('web_contact_form',array('contactStatus'=>$_GET['status']));
+		}else{
+$this->data['contactEntries']=$this->generic->GetData('web_contact_form');
+		}
+		
+		$this->load->view('support/contactForm',$this->data);
+	}
+	public function contactFormStatusUpdate(){
+		$this->generic->Update('web_contact_form',array('contactID'=>$_GET['contactID']),array('contactStatus'=>2));
+		$this->session->set_flashdata('statusUpdated', 'Person deleted successfully!');
+		redirect(base_url('contact-form'));
+	}
 }
