@@ -11,25 +11,27 @@ if (!function_exists('lock_chat_for_order')) {
     /**
      * Lock chat when order is completed/cancelled
      * 
-     * @param int $equipmentPaymentID
+     * @param int $orderID Unified order ID
      * @return bool
      */
-    function lock_chat_for_order($equipmentPaymentID)
+    function lock_chat_for_order($orderID)
     {
         $CI = &get_instance();
         $CI->load->model('Chat_model');
 
         // Get chat for this order
-        $chat = $CI->Chat_model->get_chat_by_order($equipmentPaymentID);
+        $chat = $CI->Chat_model->get_chat_by_order((int)$orderID);
 
         if ($chat && $chat->chatStatus === 'open') {
             // Lock the chat
             $CI->Chat_model->lock_chat($chat->chatID);
 
             // Notify Node.js server
-            notify_node_chat_locked($chat->chatID);
+            if (($chat->chatType ?? 'standard') !== 'standard') {
+                notify_node_chat_locked($chat->chatID);
+            }
 
-            log_message('info', "Chat {$chat->chatID} locked for order {$equipmentPaymentID}");
+            log_message('info', "Chat {$chat->chatID} updated for order {$orderID}");
             return true;
         }
 
@@ -61,7 +63,7 @@ if (!function_exists('notify_node_chat_locked')) {
         if ($http_code === 200) {
             log_message('info', "Node.js notified of chat {$chatID} lock");
         } else {
-            log_message('warning', "Failed to notify Node.js of chat {$chatID} lock (HTTP {$http_code})");
+            log_message('error', "Failed to notify Node.js of chat {$chatID} lock (HTTP {$http_code})");
         }
     }
 }

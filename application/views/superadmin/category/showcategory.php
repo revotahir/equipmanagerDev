@@ -252,7 +252,7 @@
                                                 </a>
                                                 <a href="<?= base_url('delet-cat/' . $superCat['web_catID']) ?>"
                                                     class="text-danger ms-2"
-                                                    onclick="return confirm('Are you sure you want to delete this category?');"
+                                                    onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this category?');"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom"
                                                     title="Delete">

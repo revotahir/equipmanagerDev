@@ -9,6 +9,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
  */
 class Chat extends MY_Controller
 {
+    private function employeeAccount($userID)
+    {
+        $this->load->model('Employee_model', 'employee_model');
+        return $this->employee_model->resolve_employee((int)$userID);
+    }
 
     public function __construct()
     {
@@ -19,13 +24,15 @@ class Chat extends MY_Controller
 
     /**
      * Display chat view for an order
-     * GET /chat/view/{equipmentPaymentID}
+     * GET /chat/{orderID}
      * 
-     * @param int $equipmentPaymentID
+     * Uses unified orderID from orders table
+     * 
+     * @param int $orderID unified order ID
      */
-    public function view($equipmentPaymentID)
+    public function view($orderID)
     {
-        log_message('info', "[Chat::view] User accessing chat for equipmentPaymentID: {$equipmentPaymentID}");
+        log_message('info', "[Chat::view] User accessing chat for orderID: {$orderID}");
         
         $loginData = $this->session->userdata('loginData');
         
@@ -39,11 +46,11 @@ class Chat extends MY_Controller
         $userID = $loginData['userID'];
         log_message('info', "[Chat::view] ✓ Session valid. User ID: {$userID}, Type: {$loginData['userType']}");
 
-        // Get or create chat for this order
-        $chat = $this->Chat_model->get_chat_by_order($equipmentPaymentID);
+        // Resolve chat for this order; backfills legacy rows into persistent chats if needed.
+        $chat = $this->Chat_model->ensure_chat_for_order($orderID);
 
         if (!$chat) {
-            log_message('error', "[Chat::view] ✗ Chat not found for equipmentPaymentID {$equipmentPaymentID}");
+            log_message('error', "[Chat::view] ✗ Chat not found for orderID {$orderID}");
             show_error('Chat not found for this order', 404);
             return;
         }
@@ -64,8 +71,12 @@ class Chat extends MY_Controller
         // Get chat details and messages
         $data['chat'] = $this->Chat_model->get_chat_details($chat->chatID);
         $data['messages'] = $this->Chat_model->get_messages($chat->chatID);
+        $data['chat_orders'] = $this->Chat_model->get_chat_orders($chat->chatID, 20);
         $data['current_user_id'] = $userID;
         $data['user_role'] = $access['role'];
+        $data['counterparty_profile_url'] = ($access['role'] === 'buyer')
+            ? base_url('company-profile/' . (int)$data['chat']->sellerCompanyID . '#reviews')
+            : base_url('user-profile/' . (int)$data['chat']->buyerUserID . '#reviews');
 
         log_message('info', '[Chat::view] Loading chat view with SMS messages');
 
@@ -76,23 +87,34 @@ class Chat extends MY_Controller
             $access['role']
         );
 
+        $employee = ((int)$loginData['userType'] === 4) ? $this->employeeAccount($userID) : null;
+        $data['employee_nav'] = !empty($employee);
+        $data['employee'] = $employee;
+        $data['active_page'] = 'chats';
+
         // Load view
+        if ($loginData['userType'] == 2 || $loginData['userType'] == 3 || !empty($employee)) {
+            $this->load->view('chats/view_admin_layout', $data);
+            return;
+        }
         $this->load->view('chats/view_layout', $data);
     }
 
     /**
      * Display chat view for company admin within admin layout
-     * GET /company-chats/view/{equipmentPaymentID}
+     * GET /company-chats/view/{orderID}
      * 
-     * @param int $equipmentPaymentID
+     * Uses unified orderID from orders table
+     * 
+     * @param int $orderID unified order ID
      */
-    public function company_view($equipmentPaymentID)
+    public function company_view($orderID)
     {
         $loginData = $this->session->userdata('loginData');
         
         // Verify session exists
         if (!$loginData || !isset($loginData['userID'])) {
-            log_message('warning', 'Chat access attempt without valid session');
+            log_message('error', 'Chat access attempt without valid session');
             show_error('Session expired. Please log in again.', 401);
             return;
         }
@@ -105,8 +127,8 @@ class Chat extends MY_Controller
 
         $userID = $loginData['userID'];
 
-        // Get or create chat for this order
-        $chat = $this->Chat_model->get_chat_by_order($equipmentPaymentID);
+        // Resolve chat for this order; backfills legacy rows into persistent chats if needed.
+        $chat = $this->Chat_model->ensure_chat_for_order($orderID);
 
         if (!$chat) {
             show_error('Chat not found for this order', 404);
@@ -124,9 +146,13 @@ class Chat extends MY_Controller
         // Get chat details and messages
         $data['chat'] = $this->Chat_model->get_chat_details($chat->chatID);
         $data['messages'] = $this->Chat_model->get_messages($chat->chatID);
+        $data['chat_orders'] = $this->Chat_model->get_chat_orders($chat->chatID, 20);
         $data['current_user_id'] = $userID;
         $data['user_role'] = $access['role'];
         $data['user_type'] = $loginData['userType'];
+        $data['counterparty_profile_url'] = ($access['role'] === 'buyer')
+            ? base_url('company-profile/' . (int)$data['chat']->sellerCompanyID . '#reviews')
+            : base_url('user-profile/' . (int)$data['chat']->buyerUserID . '#reviews');
 
         // Generate JWT for Socket.io authentication
         $data['jwt_token'] = $this->jwt_service->generate_token(
@@ -137,6 +163,127 @@ class Chat extends MY_Controller
 
         // Load view with admin layout
         $this->load->view('chats/view_admin_layout', $data);
+    }
+
+    /**
+     * Start (or open) a direct chat with a company from marketplace pages.
+     * GET /chat/start-company/{companyID}
+     *
+     * @param int $companyID
+     */
+    public function start_company_chat($companyID)
+    {
+        $loginData = $this->session->userdata('loginData');
+
+        if (!$loginData || !isset($loginData['userID'])) {
+            $this->session->set_flashdata('error', 'Please log in to start chat.');
+            redirect(base_url('login'));
+            return;
+        }
+
+        $userID = (int)$loginData['userID'];
+        $companyID = (int)$companyID;
+
+        if ($companyID <= 0) {
+            show_error('Invalid company selected', 400);
+            return;
+        }
+
+        $company = $this->db->select('companyID, userID')
+            ->from('companydetail')
+            ->where('companyID', $companyID)
+            ->get()
+            ->row();
+
+        if (!$company) {
+            show_error('Company not found', 404);
+            return;
+        }
+
+        // Prevent starting a buyer-side direct chat with own company account.
+        if ((int)$company->userID === $userID) {
+            show_error('You cannot start a direct chat with your own company listing.', 400);
+            return;
+        }
+
+        $chatID = $this->Chat_model->get_or_create_direct_chat($userID, $companyID);
+
+        if (!$chatID) {
+            show_error('Unable to start chat right now. Please try again.', 500);
+            return;
+        }
+
+        redirect(base_url('chat/thread/' . $chatID));
+    }
+
+    /**
+     * Open chat by chatID (supports both order chats and direct chats).
+     * GET /chat/thread/{chatID}
+     *
+     * @param int $chatID
+     */
+    public function thread($chatID)
+    {
+        $loginData = $this->session->userdata('loginData');
+
+        if (!$loginData || !isset($loginData['userID'])) {
+            show_error('Session expired. Please log in again.', 401);
+            return;
+        }
+
+        $userID = (int)$loginData['userID'];
+        $chatID = (int)$chatID;
+
+        $chat = $this->Chat_model->get_chat_by_id($chatID);
+        if (!$chat) {
+            show_error('Chat not found', 404);
+            return;
+        }
+
+        // Canonicalize standard chat threads to one persistent chat per buyer/company pair.
+        if (($chat->chatType ?? 'standard') === 'standard') {
+            $canonical_chat_id = $this->Chat_model->get_or_create_company_chat(
+                (int)$chat->buyerUserID,
+                (int)$chat->sellerCompanyID
+            );
+            if (!empty($canonical_chat_id) && (int)$canonical_chat_id !== $chatID) {
+                redirect(base_url('chat/thread/' . (int)$canonical_chat_id));
+                return;
+            }
+        }
+
+        $access = $this->Chat_model->validate_user_access($chatID, $userID);
+        if (!$access['has_access']) {
+            show_error('You do not have permission to access this chat', 403);
+            return;
+        }
+
+        $data['chat'] = $this->Chat_model->get_chat_details($chatID);
+        $data['messages'] = $this->Chat_model->get_messages($chatID);
+        $data['chat_orders'] = $this->Chat_model->get_chat_orders($chatID, 20);
+        $data['current_user_id'] = $userID;
+        $data['user_role'] = $access['role'];
+        $data['user_type'] = $loginData['userType'];
+        $data['counterparty_profile_url'] = ($access['role'] === 'buyer')
+            ? base_url('company-profile/' . (int)$data['chat']->sellerCompanyID . '#reviews')
+            : base_url('user-profile/' . (int)$data['chat']->buyerUserID . '#reviews');
+        $data['jwt_token'] = $this->jwt_service->generate_token(
+            $userID,
+            $chatID,
+            $access['role']
+        );
+
+        $employee = ((int)$loginData['userType'] === 4) ? $this->employeeAccount($userID) : null;
+        $data['employee_nav'] = !empty($employee);
+        $data['employee'] = $employee;
+        $data['active_page'] = 'chats';
+
+        if ($loginData['userType'] == 2 || $loginData['userType'] == 3 || !empty($employee)) {
+            $this->load->view('chats/view_admin_layout', $data);
+            return;
+        }
+
+        $this->load->view('chats/view_layout', $data);
     }
 
     /**
@@ -274,18 +421,22 @@ class Chat extends MY_Controller
         // Get JSON input
         $input = json_decode(file_get_contents('php://input'), true);
 
-        if (!isset($input['equipment_payment_id'])) {
+        $order_id = isset($input['order_id']) ? (int)$input['order_id'] : 0;
+        if ($order_id <= 0 && isset($input['equipment_payment_id'])) {
+            // Backward compatibility with older payload shape.
+            $order_id = (int)$input['equipment_payment_id'];
+        }
+
+        if ($order_id <= 0) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Missing equipment_payment_id'
+                'message' => 'Missing order_id'
             ]);
             return;
         }
 
-        $equipmentPaymentID = (int)$input['equipment_payment_id'];
-
         // Get chat
-        $chat = $this->Chat_model->get_chat_by_order($equipmentPaymentID);
+        $chat = $this->Chat_model->get_chat_by_order($order_id);
 
         if (!$chat) {
             echo json_encode([
@@ -295,7 +446,7 @@ class Chat extends MY_Controller
             return;
         }
 
-        // Lock chat
+        // Lock chat (standard chats remain open by model policy)
         $success = $this->Chat_model->lock_chat($chat->chatID);
 
         if ($success) {
@@ -340,14 +491,16 @@ class Chat extends MY_Controller
      * Helper: Create chat when payment is successful
      * This should be called from your payment processing code
      * 
-     * @param int $equipmentPaymentID
+     * Uses unified orderID from orders table
+     * 
+     * @param int $orderID unified order ID from orders table
      * @param int $buyerUserID
      * @param int $sellerCompanyID
      * @return int|false chatID on success
      */
-    public function create_chat_on_payment($equipmentPaymentID, $buyerUserID, $sellerCompanyID)
+    public function create_chat_on_payment($orderID, $buyerUserID, $sellerCompanyID)
     {
-        return $this->Chat_model->create_chat($equipmentPaymentID, $buyerUserID, $sellerCompanyID);
+        return $this->Chat_model->create_chat($orderID, $buyerUserID, $sellerCompanyID);
     }
 
     /**
@@ -374,8 +527,9 @@ class Chat extends MY_Controller
      * Debug method to test chat access
      * GET /chat/debug/(:num)
      * Shows detailed info about chat and user access
+     * Uses unified orderID
      */
-    public function debug($equipmentPaymentID)
+    public function debug($orderID)
     {
         header('Content-Type: application/json');
 
@@ -383,7 +537,7 @@ class Chat extends MY_Controller
         
         $response = [
             'timestamp' => date('Y-m-d H:i:s'),
-            'equipment_payment_id' => $equipmentPaymentID,
+            'order_id' => $orderID,
             'session' => [
                 'has_session' => !empty($loginData),
                 'user_id' => isset($loginData['userID']) ? $loginData['userID'] : null,
@@ -394,11 +548,11 @@ class Chat extends MY_Controller
         ];
 
         // Get chat by order
-        $chat = $this->Chat_model->get_chat_by_order($equipmentPaymentID);
+        $chat = $this->Chat_model->get_chat_by_order($orderID);
         
         if (!$chat) {
             $response['chat']['found'] = false;
-            $response['chat']['error'] = 'Chat not found for this equipment payment';
+            $response['chat']['error'] = 'Chat not found for this order';
         } else {
             $response['chat']['found'] = true;
             $response['chat']['id'] = $chat->chatID;

@@ -36,6 +36,7 @@
         html, body {
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         body {
@@ -49,6 +50,7 @@
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .dashboard-container {
@@ -64,6 +66,8 @@
             padding: 40px;
             display: flex;
             flex-direction: column;
+            min-width: 0;
+            box-sizing: border-box;
         }
 
         .chat-interface-container {
@@ -73,8 +77,12 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 600px;
-            max-height: 70vh;
+            width: 100%;
+            max-width: 1120px;
+            margin: 0 auto;
+            height: min(72vh, 700px);
+            max-height: min(72vh, 700px);
+            min-height: 460px;
         }
 
         @media (max-width: 1024px) {
@@ -91,8 +99,10 @@
             }
 
             .chat-interface-container {
-                height: 500px;
-                max-height: 65vh;
+                max-width: 100%;
+                height: min(70vh, 640px);
+                max-height: min(70vh, 640px);
+                min-height: 430px;
             }
         }
 
@@ -106,8 +116,10 @@
             }
 
             .chat-interface-container {
-                height: 450px;
-                max-height: 60vh;
+                max-width: 100%;
+                height: calc(100vh - 230px);
+                max-height: calc(100vh - 230px);
+                min-height: 400px;
             }
         }
 
@@ -121,9 +133,54 @@
             }
 
             .chat-interface-container {
-                height: 400px;
-                max-height: 55vh;
+                max-width: 100%;
+                height: calc(100vh - 200px);
+                max-height: calc(100vh - 200px);
+                min-height: 360px;
             }
+        }
+
+        /* Stability overrides: keep composer visible and avoid overflow clipping */
+        .chat-interface-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .chat-interface-container .chat-view-root {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+            height: 100%;
+        }
+
+        .chat-interface-container .chat-orders-strip {
+            max-height: 104px;
+            overflow-y: auto;
+            flex: 0 0 auto;
+        }
+
+        .chat-interface-container .messages-area {
+            flex: 1 1 auto;
+            min-height: 0 !important;
+            height: 0 !important;
+            overflow-y: auto;
+        }
+
+        .chat-interface-container .chat-input-area,
+        .chat-interface-container .order-completed-banner {
+            flex: 0 0 auto;
+            z-index: 2;
+        }
+
+        .chat-interface-container .chat-input-area {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-height: 72px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
         }
     </style>
 </head>
@@ -135,7 +192,10 @@
         <!-- Main Dashboard Container -->
         <div class="dashboard-container">
             <!-- Dashboard Sidebar Component -->
-            <?php $this->load->view('components/dashboardSidebar', ['active_page' => 'chats']); ?>
+            <?php $this->load->view('components/dashboardSidebar', [
+                'active_page' => 'chats',
+                'employee_nav' => !empty($employee_nav)
+            ]); ?>
 
             <!-- Main Content -->
             <main class="dashboard-content">
@@ -145,6 +205,7 @@
                     $view_data = array(
                         'chat' => isset($chat) ? $chat : null,
                         'messages' => isset($messages) ? $messages : array(),
+                        'chat_orders' => isset($chat_orders) ? $chat_orders : array(),
                         'current_user_id' => isset($current_user_id) ? $current_user_id : null,
                         'user_role' => isset($user_role) ? $user_role : null,
                         'jwt_token' => isset($jwt_token) ? $jwt_token : null,

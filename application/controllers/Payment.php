@@ -152,6 +152,16 @@ class Payment extends MY_Controller
                 'rental_end_date' => $rental_end_date,
                 'rental_type' => isset($rental_type) ? $this->mapRentalType($rental_type) : null,
             ]);
+
+            // ===== INSERT INTO UNIFIED ORDERS TABLE =====
+            if ($payment_id) {
+                $this->db->insert('orders', [
+                    'equipmentPaymentID' => $payment_id,
+                    'workforcePaymentID' => NULL,
+                    'createdAt' => date('Y-m-d H:i:s')
+                ]);
+                log_message('info', "Created unified order entry for equipment payment ID: {$payment_id}");
+            }
         } else {
             // Workforce payment
             $payment_id = $this->payment->createWorkforcePayment([
@@ -164,6 +174,16 @@ class Payment extends MY_Controller
                 'rental_end_date' => $rental_end_date,
                 'rental_type' => $this->mapRentalType($rental_type),
             ]);
+
+            // ===== INSERT INTO UNIFIED ORDERS TABLE =====
+            if ($payment_id) {
+                $this->db->insert('orders', [
+                    'equipmentPaymentID' => NULL,
+                    'workforcePaymentID' => $payment_id,
+                    'createdAt' => date('Y-m-d H:i:s')
+                ]);
+                log_message('info', "Created unified order entry for workforce payment ID: {$payment_id}");
+            }
         }
 
         // Create Stripe Checkout Session

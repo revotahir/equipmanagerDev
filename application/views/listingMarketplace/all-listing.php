@@ -237,6 +237,7 @@
                   <th>Item Type</th>
                   <th>Item Name</th>
                   <th>Listing Type</th>
+                  <th>Creator</th>
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Status</th>
@@ -276,7 +277,16 @@
                         if ($row['saleType'] == 1) {
                           echo 'For Sale';
                         } else {
-                          echo 'For Rental';
+                          echo 'For Marketplace';
+                        }
+                        ?>
+                      </td>
+                      <td>
+                        <?php
+                        if (!empty($row['employeeID'])) {
+                          echo !empty($row['employeeCreatorEmail']) ? htmlspecialchars($row['employeeCreatorEmail']) : 'Employee';
+                        } else {
+                          echo 'You';
                         }
                         ?>
                       </td>
@@ -344,7 +354,7 @@
                             title="Edit"><i class="bi bi-pencil-fill"></i></a>
                           <a
                             href="<?= base_url('delete-listing?itemID='.$row['itemID']) ?>"
-                            onclick="return confirm('Are you sure you want to Delete the Listing?')";
+                            onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this listing?');"
                             class="text-danger"
                             data-bs-toggle="tooltip"
                             data-bs-placement="bottom"

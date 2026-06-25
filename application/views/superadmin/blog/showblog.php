@@ -254,7 +254,7 @@
                                                 </a>
                                                 <a href="<?= base_url('dlet-blog/' . $superBlog['web_blogID']) ?>"
                                                     class="text-danger ms-2"
-                                                    onclick="return confirm('Are you sure you want to delete this blog?');"
+                                                    onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this blog?');"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom"
                                                     title="Delete">

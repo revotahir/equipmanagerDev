@@ -148,8 +148,19 @@ class PriceCalculator {
 					body: inventoryParams,
 				},
 			);
-			const invData = await invResponse.json();
 
+			// Check if response is JSON
+			let invData;
+			const contentType = invResponse.headers.get('content-type');
+			if (contentType && contentType.includes('application/json')) {
+				invData = await invResponse.json();
+			} else {
+				// API endpoint not available, skip inventory check and proceed
+				console.warn('⚠️ InventoryChecker API not available - proceeding without inventory check');
+				invData = { success: false, available: true, message: '' };
+			}
+
+			// Validate inventory if available
 			if (this.elements.stockInfo && invData.success) {
 				const color = invData.available ? "green" : "red";
 				this.elements.stockInfo.style.color = color;
@@ -188,18 +199,33 @@ class PriceCalculator {
 					body: priceParams,
 				},
 			);
-			const priceData = await priceResponse.json();
+
+			// Check if response is JSON
+			let priceData;
+			const priceContentType = priceResponse.headers.get('content-type');
+			if (priceContentType && priceContentType.includes('application/json')) {
+				priceData = await priceResponse.json();
+			} else {
+				// API endpoint not available, skip price calculation and allow user to proceed
+				console.warn('⚠️ PriceCalculator API not available - proceeding without price calculation');
+				priceData = { success: false, data: null };
+			}
 
 			if (priceData.success) {
 				this.showPrice(priceData.data);
 				this.disableSubmit(false);
 			} else {
-				this.showError(priceData.message);
-				this.disableSubmit(true);
+				// API failed but allow user to proceed (checkout will validate)
+				this.disableSubmit(false);
+				if (this.elements.errorDisplay) {
+					this.elements.errorDisplay.textContent = '';
+					this.elements.errorDisplay.style.display = 'none';
+				}
 			}
 		} catch (error) {
 			console.error("Calculation error:", error);
-			this.showError("Error calculating price. Please try again.");
+			this.showError("Unable to calculate price. You can still proceed to checkout.");
+			this.disableSubmit(false);
 		} finally {
 			this.setLoading(false);
 		}

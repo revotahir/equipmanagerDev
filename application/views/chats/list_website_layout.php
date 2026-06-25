@@ -85,7 +85,10 @@
         <!-- Main Dashboard Container -->
         <div class="dashboard-container">
             <!-- Dashboard Sidebar Component -->
-            <?php $this->load->view('components/dashboardSidebar', ['active_page' => 'chats']); ?>
+            <?php $this->load->view('components/dashboardSidebar', [
+                'active_page' => 'chats',
+                'employee_nav' => !empty($employee_nav)
+            ]); ?>
 
             <!-- Main Content -->
             <main class="dashboard-content">

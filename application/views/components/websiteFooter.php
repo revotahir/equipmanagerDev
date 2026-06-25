@@ -1,4 +1,4 @@
-<!-- footer section -->
+﻿<!-- footer section -->
     <footer class="footer">
       <div class="container">
         <div class="inner-footer-main">
@@ -276,3 +276,16 @@
         </div>
       </div>
     </section>
+    <script src="<?= base_url() ?>assets/js/theme-toastr.js"></script>
+    <script src="<?= base_url() ?>assets/js/theme-dialog.js"></script>
+    <!-- Pseudo-Cron Trigger (EquipManager) -->
+    <script>
+    (function() {
+        // Asynchronously call the pseudo-cron endpoint to run scheduled tasks in the background
+        // without blocking the user's page load.
+        setTimeout(function() {
+            var url = '<?php echo base_url("cron/pseudo_run?secret=eqm_auto_cron_7791"); ?>';
+            fetch(url, { method: 'GET', keepalive: true }).catch(function(e){});
+        }, 2000); // 2 second delay so it doesn't compete with initial page rendering
+    })();
+    </script>

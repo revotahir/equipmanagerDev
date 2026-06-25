@@ -209,7 +209,7 @@
                                                 </a>
                                                 <a href="<?= base_url('delet-partner/' . $compData['web_companyID']) ?>"
                                                     class="text-danger ms-2"
-                                                    onclick="return confirm('Are you sure you want to delete this Metrics?');"
+                                                    onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this partner?');"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom"
                                                     title="Delete">

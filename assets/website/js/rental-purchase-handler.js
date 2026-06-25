@@ -19,6 +19,9 @@
 		BASE_URL += "/";
 	}
 
+	// Global variable to store pending rental request
+	window.pendingRentalRequest = null;
+
 	function parseJsonResponse(response) {
 		return response.text().then((text) => {
 			try {
@@ -159,18 +162,80 @@
 			});
 	}
 
+		function parseDateOnly(dateStr) {
+			if (!dateStr || typeof dateStr !== "string") return null;
+			const parts = dateStr.split("-").map((v) => parseInt(v, 10));
+			if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+			const dt = new Date(parts[0], parts[1] - 1, parts[2]);
+			dt.setHours(0, 0, 0, 0);
+			return dt;
+		}
+
+		function getCalendarAvailability() {
+			return window.equipmentAvailability || window.workforceAvailability || {};
+		}
+
+		function getEffectiveToday() {
+			const availability = getCalendarAvailability();
+			const serverToday = parseDateOnly(availability.todayDate || "");
+			if (serverToday) {
+				return serverToday;
+			}
+			const localToday = new Date();
+			localToday.setHours(0, 0, 0, 0);
+			return localToday;
+		}
+
+		function sanitizeInitialDateInputs(startDateInput, endDateInput) {
+			if (!startDateInput || !endDateInput) return;
+
+			const today = getEffectiveToday();
+			const start = parseDateOnly(startDateInput.value);
+			const end = parseDateOnly(endDateInput.value);
+
+			let changed = false;
+			if (start && start < today) {
+				startDateInput.value = "";
+				changed = true;
+			}
+			if (end && end < today) {
+				endDateInput.value = "";
+				changed = true;
+			}
+
+			if (changed && window.AppToast && typeof window.AppToast.warning === "function") {
+				window.AppToast.warning("Past dates were cleared from the rental form.", "Date Updated");
+			}
+		}
+
 	// Validate rental duration
 	function validateRentalDates(startDate, endDate) {
 		if (!startDate || !endDate) {
 			return { valid: false, message: "Please select both start and end dates" };
 		}
 
-		const start = new Date(startDate);
-		const end = new Date(endDate);
+			const start = parseDateOnly(startDate);
+			const end = parseDateOnly(endDate);
+			const today = getEffectiveToday();
+			const availability = getCalendarAvailability();
+			const availableStart = parseDateOnly(availability.startDate || "");
+			const availableEnd = parseDateOnly(availability.endDate || "");
+
+			if (!start || !end) {
+				return { valid: false, message: "Invalid date format" };
+			}
 
 		if (end < start) {
 			return { valid: false, message: "End date must be after start date" };
 		}
+
+			if (start < today || end < today) {
+				return { valid: false, message: "Past dates cannot be selected" };
+			}
+
+			if ((availableStart && start < availableStart) || (availableEnd && end > availableEnd)) {
+				return { valid: false, message: "Selected dates are outside the listing availability window" };
+			}
 
 		// Calculate days (inclusive)
 		const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
@@ -297,7 +362,6 @@
 	// Initialize Equipment Rental Form
 	function initEquipmentRental(form, itemDetails) {
 		// Get input elements
-		const companyInput = form.querySelector("#company_text") || form.querySelector('[name="company"]');
 		const quantityInput = form.querySelector("#rental_quantity");
 		const startDateInput = form.querySelector("#rental_start");
 		const endDateInput = form.querySelector("#rental_end");
@@ -312,6 +376,7 @@
 		const baseUnit = form.dataset.baseUnit || "";
 
 		let currentPriceData = null;
+		sanitizeInitialDateInputs(startDateInput, endDateInput);
 
 		// Real-time calculation on input change (debounced)
 		const updateTotal = debounce(function () {
@@ -541,7 +606,6 @@
 			const maxQuantity = parseInt(quantityInput.max) || 0;
 			const startDate = startDateInput.value;
 			const endDate = endDateInput.value;
-			const company = companyInput.value.trim();
 			const notes = notesInput ? notesInput.value.trim() : "";
 
 			// Validate quantity against available stock
@@ -556,13 +620,6 @@
 				return;
 			}
 
-			// Validate
-			if (!company) {
-				showToast("Company name is required", "error");
-				companyInput.classList.add("form-error");
-				return;
-			}
-
 			const dateValidation = validateRentalDates(startDate, endDate);
 			if (!dateValidation.valid) {
 				showToast(dateValidation.message, "error");
@@ -574,66 +631,49 @@
 				return;
 			}
 
-			// Disable submit button
-			const submitBtn = form.querySelector('button[type="submit"]');
-			const originalText = submitBtn.textContent;
-			submitBtn.disabled = true;
-			submitBtn.textContent = "Processing...";
-
-			// Submit via AJAX
-			const formData = new FormData();
-			formData.append("itemType", itemDetails.itemType);
-			formData.append("itemID", itemDetails.itemID);
-			formData.append("quantity", quantity);
-			formData.append("startDate", startDate);
-			formData.append("endDate", endDate);
-			formData.append("company", company);
-			formData.append("notes", notes);
-			formData.append("totalAmount", currentPriceData.total_amount);
+			// ===== GET LOGGED-IN USER INFO FROM PAGE =====
+			const userEmailInput = document.querySelector('[name="email"]') || document.querySelector('[data-user-email]');
+			const userPhoneInput = document.querySelector('[name="phone"]') || document.querySelector('[data-user-phone]');
 			
-			// SECURITY FIX: Add CSRF token to prevent CSRF attacks
-			if (window.CSRF_TOKEN_NAME && window.CSRF_TOKEN_VALUE) {
-				formData.append(window.CSRF_TOKEN_NAME, window.CSRF_TOKEN_VALUE);
-			}
+			const customer_email = userEmailInput?.value || userEmailInput?.dataset?.userEmail || '';
+			const customer_phone = userPhoneInput?.value || userPhoneInput?.dataset?.userPhone || '';
 
-			fetch(BASE_URL + "listing/processRentRequest", {
-				method: "POST",
-				body: formData,
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					if (data.success) {
-						console.log('✅ Rental request successful!', {
-							message: data.message,
-							totalCost: data.totalCost,
-							days: data.days,
-							quantityRented: quantity,
-							itemID: itemDetails.itemID
-						});
-						console.log('📉 Equipment inventory decreased by: ' + quantity + ' units');
-						showToast(data.message || "Rental request submitted successfully!", "success");
-						form.reset();
-						totalDisplay.style.display = "none";
-					} else {
-						showToast(data.message || "Request failed", "error");
-						console.error('❌ Rental request failed:', data.message);
-					}
-				})
-				.catch((error) => {
-					showToast("Network error. Please try again.", "error");
-					console.error("Submit error:", error);
-				})
-				.finally(() => {
-					submitBtn.disabled = false;
-					submitBtn.textContent = originalText;
-				});
+			// Prepare payload for create_purchase_request endpoint
+			const requestPayload = {
+				item_id: parseInt(itemDetails.itemID),
+				quantity: parseInt(quantity),
+				start_date: startDate,
+				end_date: endDate,
+				customer_email: customer_email,
+				customer_phone: customer_phone,
+				delivery_method: 1, // Default: pickup for rentals
+				delivery_name: '', // Company name removed from form
+				delivery_street: '',
+				delivery_city: '',
+				delivery_postal: '',
+				delivery_country: '',
+				delivery_notes: notes || ''
+			};
+
+			console.log('📤 Showing rental confirmation for item:', itemDetails.itemID);
+
+			// Store the payload for confirmation
+			window.pendingRentalRequest = {
+				payload: requestPayload,
+				itemName: document.querySelector('.product-name-head') ? document.querySelector('.product-name-head').textContent : 'Equipment',
+				quantity: quantity,
+				startDate: startDate,
+				endDate: endDate
+			};
+
+			// Show confirmation modal
+			showRentalConfirmation();
 		});
 	}
 
 	// Initialize Workforce Rental Form
 	function initWorkforceRental(form, itemDetails) {
 		// Get input elements
-		const companyInput = form.querySelector("#company_text") || form.querySelector('[name="company"]');
 		const quantityInput = form.querySelector("#quantity");
 		const startDateInput = form.querySelector("#startDate");
 		const endDateInput = form.querySelector("#endDate");
@@ -648,6 +688,7 @@
 		const baseUnit = form.dataset.baseUnit || "";
 
 		let currentPriceData = null;
+		sanitizeInitialDateInputs(startDateInput, endDateInput);
 
 		// Real-time calculation on input change (debounced)
 		const updateTotal = debounce(function () {
@@ -819,15 +860,7 @@
 
 			const startDate = startDateInput.value;
 			const endDate = endDateInput.value;
-			const company = companyInput.value.trim();
 			const notes = notesInput ? notesInput.value.trim() : "";
-
-			// Validate
-			if (!company) {
-				showToast("Company name is required", "error");
-				companyInput.classList.add("form-error");
-				return;
-			}
 
 			const dateValidation = validateRentalDates(startDate, endDate);
 			if (!dateValidation.valid) {
@@ -840,50 +873,43 @@
 				return;
 			}
 
-			// Disable submit button
-			const submitBtn = form.querySelector('button[type="submit"]');
-			const originalText = submitBtn.textContent;
-			submitBtn.disabled = true;
-			submitBtn.textContent = "Processing...";
-
-			// Submit via AJAX
-			const formData = new FormData();
-			formData.append("itemType", itemDetails.itemType);
-			formData.append("itemID", itemDetails.itemID);
-			formData.append("quantity", 1); // Workforce is always 1 unit
-			formData.append("startDate", startDate);
-			formData.append("endDate", endDate);
-			formData.append("company", company);
-			formData.append("notes", notes);
-			formData.append("totalAmount", currentPriceData.total_amount);
+			// ===== GET LOGGED-IN USER INFO FROM PAGE =====
+			const userEmailInput = document.querySelector('[name="email"]') || document.querySelector('[data-user-email]');
+			const userPhoneInput = document.querySelector('[name="phone"]') || document.querySelector('[data-user-phone]');
 			
-			// SECURITY FIX: Add CSRF token to prevent CSRF attacks
-			if (window.CSRF_TOKEN_NAME && window.CSRF_TOKEN_VALUE) {
-				formData.append(window.CSRF_TOKEN_NAME, window.CSRF_TOKEN_VALUE);
-			}
+			const customer_email = userEmailInput?.value || userEmailInput?.dataset?.userEmail || '';
+			const customer_phone = userPhoneInput?.value || userPhoneInput?.dataset?.userPhone || '';
 
-			fetch(BASE_URL + "listing/processRentRequest", {
-				method: "POST",
-				body: formData,
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					if (data.success) {
-						showToast(data.message || "Rental request submitted successfully!", "success");
-						form.reset();
-						totalDisplay.style.display = "none";
-					} else {
-						showToast(data.message || "Request failed", "error");
-					}
-				})
-				.catch((error) => {
-					showToast("Network error. Please try again.", "error");
-					console.error("Submit error:", error);
-				})
-				.finally(() => {
-					submitBtn.disabled = false;
-					submitBtn.textContent = originalText;
-				});
+			// Prepare payload for create_purchase_request endpoint
+			const requestPayload = {
+				item_id: parseInt(itemDetails.itemID),
+				quantity: 1, // Workforce is always 1 unit
+				start_date: startDate,
+				end_date: endDate,
+				customer_email: customer_email,
+				customer_phone: customer_phone,
+				delivery_method: 1, // Default: pickup for rentals
+				delivery_name: '', // Company name removed from form
+				delivery_street: '',
+				delivery_city: '',
+				delivery_postal: '',
+				delivery_country: '',
+				delivery_notes: notes || ''
+			};
+
+			console.log('📤 Showing workforce rental confirmation for item:', itemDetails.itemID);
+
+			// Store the payload for confirmation
+			window.pendingRentalRequest = {
+				payload: requestPayload,
+				itemName: document.querySelector('.text-h2') ? document.querySelector('.text-h2').textContent : 'Workforce',
+				quantity: 1,
+				startDate: startDate,
+				endDate: endDate
+			};
+
+			// Show confirmation modal
+			showRentalConfirmation();
 		});
 	}
 
@@ -1134,3 +1160,222 @@
 		initBuyForm();
 	}
 })();
+
+// ===== GLOBAL RENTAL CONFIRMATION FUNCTIONS =====
+// These are called from the confirmation modal HTML buttons
+
+function showRentalConfirmation() {
+	const modal = document.getElementById('purchase-confirmation-overlay');
+	const itemNameEl = document.getElementById('confirmation-item-name');
+	const quantityEl = document.getElementById('confirmation-quantity');
+	const typeEl = document.getElementById('confirmation-type');
+	const datesEl = document.getElementById('confirmation-dates');
+	const datesSectionEl = document.getElementById('confirmation-dates-section');
+	
+	if (!window.pendingRentalRequest) {
+		console.error('❌ No pending rental request');
+		return;
+	}
+
+	const request = window.pendingRentalRequest;
+
+	// Populate modal fields
+	if (itemNameEl) itemNameEl.textContent = request.itemName || '—';
+	if (quantityEl) quantityEl.textContent = (request.quantity || 1) + ' unit' + ((request.quantity || 1) > 1 ? 's' : '');
+	if (typeEl) typeEl.textContent = 'Rental';
+	
+	// Show dates section
+	if (request.startDate && request.endDate) {
+		const startDate = new Date(request.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+		const endDate = new Date(request.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+		if (datesEl) datesEl.textContent = startDate + ' to ' + endDate;
+		if (datesSectionEl) datesSectionEl.style.display = 'flex';
+	} else {
+		if (datesSectionEl) datesSectionEl.style.display = 'none';
+	}
+	
+	// Show modal
+	if (modal) {
+		modal.classList.add('active');
+		console.log('✅ Rental confirmation modal shown');
+	}
+}
+
+function confirmRentalRequest() {
+	if (!window.pendingRentalRequest) {
+		console.error('❌ No pending rental request to confirm');
+		AppToast.error('No pending rental request. Please try again.');
+		return;
+	}
+
+	const request = window.pendingRentalRequest;
+	const payload = request.payload;
+	const BASE_URL = window.APP_BASE_URL || (window.location.pathname.split("/").slice(0, -1).join("/") + "/");
+
+	console.log('📤 Confirming rental request and sending to server:', payload);
+
+	// Hide modal
+	cancelRentalConfirmation();
+
+	// Helper function for notifications (with fallback to alert)
+	const notify = {
+		info: function(msg) {
+			try {
+				if (window.toastr && typeof window.toastr.info === 'function') {
+					window.toastr.info(msg, 'Please wait');
+				} else {
+					console.log('ℹ️ ' + msg);
+				}
+			} catch (e) {
+				console.log('ℹ️ ' + msg);
+			}
+		},
+		success: function(msg) {
+			try {
+				if (window.toastr && typeof window.toastr.success === 'function') {
+					window.toastr.success(msg, 'Success');
+				} else {
+					AppToast.success(msg);
+				}
+			} catch (e) {
+				AppToast.success(msg);
+			}
+		},
+		error: function(msg) {
+			try {
+				if (window.toastr && typeof window.toastr.error === 'function') {
+					window.toastr.error(msg, 'Error');
+				} else {
+					AppToast.error(msg);
+				}
+			} catch (e) {
+				AppToast.error(msg);
+			}
+		}
+	};
+
+	// Show loading state
+	notify.info('Processing your rental request...');
+
+	// Submit the rental request
+	fetch(BASE_URL + "checkout/create_purchase_request", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"X-Requested-With": "XMLHttpRequest"
+		},
+		body: JSON.stringify(payload)
+	})
+		.then((response) => {
+			console.log('📨 Server response status:', response.status);
+			console.log('📨 Server response headers:', response.headers);
+			
+			// Get text first to debug what we're actually receiving
+			return response.text().then(text => {
+				console.log('📨 Raw server response (first 500 chars):', text.substring(0, 500));
+				
+				// Try to parse as JSON
+				try {
+					const jsonData = JSON.parse(text);
+					return jsonData;
+				} catch (e) {
+					console.error('❌ Failed to parse JSON. Raw response:', text);
+					throw new Error('Server returned invalid JSON: ' + e.message + '\nResponse: ' + text.substring(0, 200));
+				}
+			});
+		})
+		.then((data) => {
+			if (data.success) {
+				console.log('✅ Rental request submitted successfully!', data);
+				
+				// Use the global function to show success modal (handles all setup & logging consistently)
+				window.showSuccessModal(data);
+			} else {
+				console.error('❌ Rental request failed:', data);
+				notify.error(data.message || 'Failed to submit rental request');
+			}
+		})
+		.catch((error) => {
+			console.error('❌ Network error:', error);
+			notify.error('Network error. Please check your connection and try again.');
+		});
+}
+
+function cancelRentalConfirmation() {
+	const modal = document.getElementById('purchase-confirmation-overlay');
+	if (modal) {
+		modal.classList.remove('active');
+	}
+	window.pendingRentalRequest = null;
+	console.log('🚫 Rental confirmation cancelled');
+}
+
+// ===== GLOBAL SUCCESS MODAL FUNCTIONS =====
+
+window.showSuccessModal = function(data) {
+	console.log('✅ Displaying success modal with data:', data);
+	
+	const successOverlay = document.getElementById('success-overlay');
+	const successRequestId = document.getElementById('success-request-id');
+	const successOrderIdInput = document.getElementById('success-order-id');
+	
+	if (!successOverlay) {
+		console.error('❌ Success overlay modal not found in DOM');
+		return;
+	}
+	
+	// Update modal with order ID when available
+	if (successRequestId) {
+		const displayId = data.order_id || data.request_id || data.id || 'N/A';
+		successRequestId.textContent = '#' + displayId;
+		console.log('📋 Set success modal display ID to:', displayId);
+	}
+	
+	// Store ORDER ID for chat navigation (chat route uses order_id, not chat_id)
+	if (successOrderIdInput) {
+		const orderIdValue = data.order_id || '';
+		successOrderIdInput.value = orderIdValue;
+		console.log('✅ SUCCESS: Set success-order-id input value to:', orderIdValue, '|This is the ORDER ID to navigate with');
+	} else {
+		console.error('❌ CRITICAL: success-order-id element NOT FOUND in DOM');
+	}
+	
+	// Show the modal
+	successOverlay.classList.add('active');
+};
+
+window.goToChat = function() {
+	// Find the ORDER ID input (the chat route uses order_id, not chat_id)
+	const orderIdElement = document.getElementById('success-order-id');
+	const orderId = orderIdElement?.value || '';
+	
+	// Detailed logging for debugging
+	console.log('🔍 DEBUG goToChat():', {
+		element: orderIdElement ? 'found' : 'NOT FOUND',
+		elementType: orderIdElement ? orderIdElement.tagName : 'N/A',
+		value: orderId,
+		elementHTML: orderIdElement ? orderIdElement.outerHTML : 'N/A'
+	});
+	
+	if (!orderId) {
+		AppToast.error('Order ID not found. Please refresh the page.');
+		console.error('❌ Order ID missing from success-order-id input');
+		return;
+	}
+	
+	const finalUrl = (window.APP_BASE_URL || '/') + 'chat/' + orderId;
+	console.log('💬 Navigating to chat with ORDER ID:', orderId, '| URL:', finalUrl);
+	window.location.href = finalUrl;
+};
+
+window.backToShop = function() {
+	console.log('🏪 Navigating back to shop');
+	window.location.href = (window.APP_BASE_URL || '/') + 'marketplace';
+};
+
+window.closeSuccessModal = function() {
+	const successOverlay = document.getElementById('success-overlay');
+	if (successOverlay) {
+		successOverlay.classList.remove('active');
+	}
+};

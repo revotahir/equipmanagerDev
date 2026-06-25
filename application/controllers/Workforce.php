@@ -10,6 +10,31 @@ class workforce extends MY_Controller
 		$this->load->model('Generic_model', 'generic');
 	}
 
+	private function generateAuthToken()
+	{
+		do {
+			$token = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 16);
+			$exists = $this->generic->GetData('userauth', array('authTocken' => $token, 'authStatus' => 0));
+		} while ($exists);
+
+		return $token;
+	}
+
+	private function sendEmployeeInvite($userID, $email, $authCode, $authToken, $hasPassword)
+	{
+		$verifyUrl = base_url('verify-account?auth=' . $authToken . '&userID=' . $userID);
+		$subject = 'Equip Manager - Employee Account';
+		if ($hasPassword) {
+			$message = 'Your employee account has been created successfully. You can log in here: ' . base_url('login');
+		} else {
+			$message = 'Your employee account has been created successfully. Your verification code is: ' . $authCode . '. Please verify your account and create your login password here: ' . $verifyUrl;
+			$this->session->set_flashdata('employeeInviteLink', $verifyUrl);
+			$this->session->set_flashdata('employeeInviteCode', $authCode);
+		}
+
+		return $this->send_email($email, $subject, $message);
+	}
+
 	/**
 	 * Index Page for this controller.
 	 *
@@ -115,6 +140,17 @@ class workforce extends MY_Controller
 		$personPhone = $this->input->post('personPhone');
 		$personAddress = $this->input->post('personAddress');
 		$personSkill = $this->input->post('personSkill');
+		$accountPassword = trim((string)$this->input->post('accountPassword'));
+		$accountPasswordConfirm = trim((string)$this->input->post('accountPasswordConfirm'));
+		if (empty($personEmail) || !filter_var($personEmail, FILTER_VALIDATE_EMAIL)) {
+			$this->session->set_flashdata('error', 'A valid email address is required to invite workforce.');
+			if (isset($_GET['worforcelist']) && $_GET['worforcelist'] == 1) {
+				redirect(base_url('all-workforce'));
+			} else {
+				redirect(base_url('add-workforce'));
+			}
+			return;
+		}
 		$checkEmail = $this->generic->GetData('users', array('userEmail' => $personEmail, 'userID !=' => $this->uri->segment(3)));
 		if ($checkEmail) {
 			$this->session->set_flashdata('emailExist', 'Email already exists!');
@@ -124,6 +160,16 @@ class workforce extends MY_Controller
 
 			redirect(base_url('add-workforce'));
 		}
+		return;
+		}
+		if (($accountPassword !== '' || $accountPasswordConfirm !== '') && (strlen($accountPassword) < 6 || $accountPassword !== $accountPasswordConfirm)) {
+			$this->session->set_flashdata('passwordError', 1);
+			if (isset($_GET['worforcelist']) && $_GET['worforcelist'] == 1) {
+				redirect(base_url('all-workforce'));
+			} else {
+				redirect(base_url('add-workforce'));
+			}
+			return;
 		}
 		//check if we have image posted
 		if (empty($_FILES['personImage']['name'])) {
@@ -169,47 +215,43 @@ class workforce extends MY_Controller
 			}
 		}
 		//add user
+		$hasPassword = $accountPassword !== '';
 		$userdata = array(
 			'userName' => $personName,
 			'userEmail' => $personEmail,
 			'userPhone' => $personPhone,
 			'userType' => 4,
-			'userStatus' => 2
+			'userStatus' => $hasPassword ? 1 : 2
 		);
+		if ($hasPassword) {
+			$userdata['userPass'] = md5($accountPassword);
+		}
 		$this->generic->InsertData('users', $userdata);
-		//add auth data
+		$userID = $this->db->insert_id();
 
 		//setup Authentaction
-		$maxUserId = $this->generic->GetMaxID('users', 'userID');
 		$authCode = rand(1000, 9999);
-		$authTocken = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8);
-		// check if token is generated already exists
-		$checkAuthTocken = $this->generic->GetData('userauth', array('authTocken' => $authTocken, 'authStatus' => 0));
-		if ($checkAuthTocken) {
-			// if exists then generate new token
-			$authTocken = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8);
-		}
+		$authTocken = $this->generateAuthToken();
 		$authData = array(
-			'userId' => $maxUserId[0]['result'],
+			'userId' => $userID,
 			'authCode' => $authCode,
 			'authTocken' => $authTocken,
-			'authStatus' => 0,
+			'authStatus' => $hasPassword ? 1 : 0,
 		);
 		$this->generic->InsertData('userauth', $authData);
 
 		//add company user link
 		$companyUserData = array(
 			'companyID' => $this->session->userdata('companyDetails')['companyID'],
-			'userID' => $maxUserId[0]['result'],
+			'userID' => $userID,
 			'workforceID' => $workforceID,
 		);
+		if ($this->db->field_exists('employeeStatus', 'usercompanyworkforcelink')) {
+			$companyUserData['employeeStatus'] = $hasPassword ? 'active' : 'pending';
+		}
 		$this->generic->InsertData('usercompanyworkforcelink', $companyUserData);
 
-		//send email to user with auth code and token url
-		//send email
-		$subject = 'Equip Manager - Account Verification';
-		$message = 'Your account has been created successfully. Your verification code is: ' . $authCode . ' . Please click on the link to verify your account: ' . base_url('verify-account/' . $authTocken);
-		$this->send_email($personEmail, $subject, $message);
+		$this->sendEmployeeInvite($userID, $personEmail, $authCode, $authTocken, $hasPassword);
 
 		$this->session->set_flashdata('success-added', 'Workforce added successfully!');
 		if (isset($_GET['worforcelist']) && $_GET['worforcelist'] == 1) {
@@ -252,6 +294,55 @@ class workforce extends MY_Controller
 		// Load view
 		$this->load->view('workforce/allWorkforce', $this->data);
 	}
+
+	public function resendEmployeeInvite()
+	{
+		$workforceID = (int)$this->uri->segment(2);
+		$companyID = $this->session->userdata('companyDetails')['companyID'];
+		$link = $this->generic->GetData('usercompanyworkforcelink', array('workforceID' => $workforceID, 'companyID' => $companyID));
+
+		if (!$link) {
+			$this->session->set_flashdata('error', 'Employee account link was not found.');
+			redirect(base_url('all-workforce'));
+			return;
+		}
+
+		$userID = (int)$link[0]['userID'];
+		$user = $this->generic->GetData('users', array('userID' => $userID));
+		if (!$user) {
+			$this->session->set_flashdata('error', 'Employee user account was not found.');
+			redirect(base_url('all-workforce'));
+			return;
+		}
+
+		$auth = $this->generic->GetData('userauth', array('userID' => $userID));
+		$authCode = rand(1000, 9999);
+		$authToken = $auth ? $auth[0]['authTocken'] : $this->generateAuthToken();
+
+		if ($auth) {
+			$this->generic->Update('userauth', array('userID' => $userID), array(
+				'authCode' => $authCode,
+				'authTocken' => $authToken,
+				'authStatus' => 0
+			));
+		} else {
+			$this->generic->InsertData('userauth', array(
+				'userID' => $userID,
+				'authCode' => $authCode,
+				'authTocken' => $authToken,
+				'authStatus' => 0
+			));
+		}
+
+		$this->generic->Update('users', array('userID' => $userID), array('userStatus' => 2, 'userPass' => null));
+		if ($this->db->field_exists('employeeStatus', 'usercompanyworkforcelink')) {
+			$this->generic->Update('usercompanyworkforcelink', ['userID' => $userID], ['employeeStatus' => 'pending']);
+		}
+
+		$this->sendEmployeeInvite($userID, $user[0]['userEmail'], $authCode, $authToken, false);
+		$this->session->set_flashdata('inviteResent', 1);
+		redirect(base_url('all-workforce'));
+	}
 	public function DeletePerson()
 	{
 		$this->generic->Delete('workforce', array('workforceID' => $this->uri->segment(2), 'companyID' => $this->session->userdata('companyDetails')['companyID']));
@@ -265,17 +356,34 @@ class workforce extends MY_Controller
 		$personPhone = $this->input->post('personPhone');
 		$personAddress = $this->input->post('personAddress');
 		$personSkill = $this->input->post('personSkill');
+		$accountPassword = trim((string)$this->input->post('accountPassword'));
+		$accountPasswordConfirm = trim((string)$this->input->post('accountPasswordConfirm'));
 		//check email exsist in user
 		//get user data from worforce id
 		$curentuser = $this->generic->GetData('workforce', array('workforceID' => $this->uri->segment(2)));
+		$employeeLink = $this->generic->GetData('usercompanyworkforcelink', array(
+			'workforceID' => $this->uri->segment(2),
+			'companyID' => $this->session->userdata('companyDetails')['companyID']
+		));
+		$linkedUserID = $employeeLink ? (int)$employeeLink[0]['userID'] : 0;
 
-		$checkEmail = $this->generic->GetData('users', array('userEmail' => $personEmail));
+		$checkEmailWhere = array('userEmail' => $personEmail);
+		if ($linkedUserID > 0) {
+			$checkEmailWhere['userID !='] = $linkedUserID;
+		}
+		$checkEmail = $this->generic->GetData('users', $checkEmailWhere);
 		if ($curentuser[0]['personEmail'] != $personEmail) {
 			
 			if ($checkEmail) {
 			$this->session->set_flashdata('emailExist', 'Email already exists!');
 			redirect(base_url('all-workforce'));
+			return;
 			}
+		}
+		if (($accountPassword !== '' || $accountPasswordConfirm !== '') && (strlen($accountPassword) < 6 || $accountPassword !== $accountPasswordConfirm)) {
+			$this->session->set_flashdata('passwordError', 1);
+			redirect(base_url('all-workforce'));
+			return;
 		}
 		//upload person image
 		$config['upload_path']          = './assets/uploads/workforce/';
@@ -294,6 +402,22 @@ class workforce extends MY_Controller
 					'personAddInfo' => $personAddress,
 				);
 				$this->generic->Update('workforce', array('workforceID' => $this->uri->segment(2)), $data);
+				if ($linkedUserID > 0) {
+					$userUpdate = array(
+						'userName' => $personName,
+						'userEmail' => $personEmail,
+						'userPhone' => $personPhone
+					);
+					if ($accountPassword !== '') {
+						$userUpdate['userPass'] = md5($accountPassword);
+						$userUpdate['userStatus'] = 1;
+						$this->generic->Update('userauth', array('userID' => $linkedUserID), array('authStatus' => 1));
+						if ($this->db->field_exists('employeeStatus', 'usercompanyworkforcelink')) {
+							$this->generic->Update('usercompanyworkforcelink', ['userID' => $linkedUserID], ['employeeStatus' => 'active']);
+						}
+					}
+					$this->generic->Update('users', array('userID' => $linkedUserID), $userUpdate);
+				}
 				//delet all skill 
 				$this->generic->Delete('workforceskilllink', array('workforceID' => $this->uri->segment(2)));
 				if ($personSkill) {
@@ -322,6 +446,22 @@ class workforce extends MY_Controller
 				'personImg' => $personImage
 			);
 			$this->generic->Update('workforce', array('workforceID' => $this->uri->segment(2)), $data);
+			if ($linkedUserID > 0) {
+				$userUpdate = array(
+					'userName' => $personName,
+					'userEmail' => $personEmail,
+					'userPhone' => $personPhone
+				);
+				if ($accountPassword !== '') {
+					$userUpdate['userPass'] = md5($accountPassword);
+					$userUpdate['userStatus'] = 1;
+					$this->generic->Update('userauth', array('userID' => $linkedUserID), array('authStatus' => 1));
+					if ($this->db->field_exists('employeeStatus', 'usercompanyworkforcelink')) {
+						$this->generic->Update('usercompanyworkforcelink', ['userID' => $linkedUserID], ['employeeStatus' => 'active']);
+					}
+				}
+				$this->generic->Update('users', array('userID' => $linkedUserID), $userUpdate);
+			}
 			//delet all skill 
 				$this->generic->Delete('workforceskilllink', array('workforceID' => $this->uri->segment(2)));
 				if ($personSkill) {

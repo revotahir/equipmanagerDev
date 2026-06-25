@@ -4,20 +4,22 @@
 .product-detail {
   display: flex;
   justify-content: center;
-  padding: 120px 0;
+  padding: clamp(44px, 6.2vw, 88px) 0;
 }
 .inner-product-detail {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: clamp(20px, 2.2vw, 30px);
 }
 .product-title {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 .share-save {
   display: flex;
-  gap: 20px;
+  gap: 14px;
   align-items: center;
 }
 .save-btn label {
@@ -43,7 +45,7 @@
 /* product-img-showcase */
 .product-img-showcase {
   display: flex;
-  gap: 20px;
+  gap: 14px;
 }
 .product-showcase-main-img {
   width: 65%;
@@ -51,27 +53,27 @@
 }
 .product-showcase-main-img img {
   width: 100%;
-  height: 500px;
+  height: clamp(320px, 34vw, 460px);
   object-fit: cover;
-  border-radius: 20px 0 0 20px;
+  border-radius: 16px 0 0 16px;
 }
 .product-showcase-sub-img {
   width: 35%;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 14px;
 }
 .product-showcase-sub-img img {
   cursor: pointer;
   width: 100%;
-  height: 240px;
+  height: clamp(150px, 15.5vw, 220px);
   object-fit: cover;
 }
 .product-showcase-sub-img img:nth-child(2) {
-  border-radius: 0 20px 0 0;
+  border-radius: 0 16px 0 0;
 }
 .product-showcase-sub-img img:nth-child(4) {
-  border-radius: 0 0 20px 0;
+  border-radius: 0 0 16px 0;
 }
 
 /* heart animation start */
@@ -144,30 +146,31 @@
 
 /* heavy-duty-main */
 .heavy-duty-main {
-  display: flex;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  gap: 16px;
 }
 .heavy-duty {
-  width: 65%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 14px;
 }
 .owner-info-main {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 16px;
   border: 1px solid #d2d2d2;
-  padding: 20px;
-  border-radius: 20px;
+  padding: 16px;
+  border-radius: 16px;
 }
 .owner-info {
   display: flex;
-  gap: 20px;
+  gap: 14px;
 }
 .single-owner-info {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   align-items: center;
   width: 33%;
   border-right: 1px solid #52646421;
@@ -176,8 +179,8 @@
   }
 }
 .single-owner-info svg {
-  width: 40px;
-  height: 44px;
+  width: 34px;
+  height: 38px;
 }
 .single-owner-info div {
   display: flex;
@@ -187,62 +190,62 @@
 .owner-para-fat {
   color: var(--text-gray);
   font-family: "Manrope", sans-serif;
-  font-size: 18px;
+  font-size: clamp(15px, 1.1vw, 17px);
   font-weight: 500;
-  line-height: 30px;
+  line-height: 1.5;
 }
 .owner-para-thin {
   color: var(--text-gray);
   font-family: "Manrope", sans-serif;
-  font-size: 16px;
+  font-size: clamp(13px, 0.95vw, 15px);
   font-weight: 400;
-  line-height: 30px;
+  line-height: 1.5;
 }
 .heavy-duty-feature {
-  width: 35%;
+  width: 100%;
   background-color: var(--white);
-  padding: 27px;
-  border-radius: 20px;
+  padding: 18px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 }
 .single-feature {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
 }
 .single-feature div {
   background-color: var(--primary-dark-green);
-  padding: 10px;
-  border-radius: 10px;
+  padding: 8px;
+  border-radius: 8px;
 }
 .single-feature div svg {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 
 /* booking form */
 
 .cnt-form {
   background-color: var(--white);
-  padding: 27px;
-  border-radius: 20px;
+  padding: 20px;
+  border-radius: 16px;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .cnt-full-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 }
 
 .col-row {
   display: flex;
-  gap: 20px;
+  gap: 14px;
 }
 
 .form-group {
@@ -297,22 +300,22 @@
 /* calender and book form */
 .calender-main {
   display: flex;
-  gap: 20px;
+  gap: 16px;
 }
 .calender {
   width: 65%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
   border: 1px solid #d2d2d2;
-  padding: 20px;
-  border-radius: 20px;
+  padding: 16px;
+  border-radius: 16px;
 }
 
 /* year */
 .year {
   display: grid;
-  gap: 24px;
+  gap: 18px;
   grid-template-columns: repeat(5, 1fr);
 }
 .year span:hover {
@@ -347,7 +350,7 @@
 /* month */
 .month {
   display: grid;
-  gap: 30px;
+  gap: 20px;
   grid-template-columns: repeat(4, 1fr);
 }
 .month span:hover {
@@ -363,7 +366,7 @@
   width: 100%;
   flex: 0 0 100%;
   max-width: none;
-  margin-left: -6%;
+  margin-left: 0;
 }
 
 /* cleander main full with month and date */
@@ -374,13 +377,13 @@
   display: flex;
   width: 50%;
   align-items: center;
-  gap: 100px;
+  gap: 70px;
 }
 .next-section {
   display: flex;
   width: 50%;
   align-items: center;
-  gap: 100px;
+  gap: 70px;
   justify-content: end;
 }
 .mon-year {
@@ -397,12 +400,12 @@
 .text-month-name {
   color: #1a1a1a;
   font-family: "Manrope", sans-serif;
-  font-size: 22px;
+  font-size: clamp(18px, 1.45vw, 21px);
   font-weight: 700;
 }
 .month-calender {
   font-family: "Manrope", sans-serif;
-  font-size: 18px;
+  font-size: clamp(14px, 1vw, 16px);
   font-weight: 600;
   color: #1a1a1a;
 }
@@ -417,10 +420,10 @@
 }
 .first-month {
   width: 50%;
-  padding: 20px 12px 0 12px;
+  padding: 12px 8px 0 8px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
   border-right: 1px solid #d2d2d2;
 }
 .days-name {
@@ -432,8 +435,8 @@
   grid-template-columns: repeat(7, 1fr);
 }
 .days-date span {
-  padding: 10px 6px;
-  border-radius: 10px;
+  padding: 8px 5px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -458,10 +461,10 @@
 
 .second-month {
   width: 50%;
-  padding: 20px 12px 0 12px;
+  padding: 12px 8px 0 8px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
 }
 .booking-calender {
   width: 100%;
@@ -502,4 +505,660 @@
 }
 .show-sm {
   display: none;
+}
+
+/* ===== Detail Redesign Overrides ===== */
+.product-detail {
+  padding: clamp(20px, 3.5vw, 44px) 0;
+}
+
+.product-detail .container {
+  width: min(100%, 80rem);
+  max-width: 84rem;
+  padding-inline: clamp(1rem, 5vw, 2rem);
+}
+
+.inner-product-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 7px;
+  row-gap: 1rem;
+  align-items: start;
+  grid-auto-flow: row dense;
+}
+
+.inner-product-detail > .product-title,
+.inner-product-detail > .product-img-showcase,
+.inner-product-detail > .heavy-duty-main,
+.inner-product-detail > .calender-main {
+  grid-column: 1 / -1;
+}
+
+.inner-product-detail > .heavy-duty-main,
+.inner-product-detail > .calender-main {
+  display: contents;
+}
+
+.detail-left-column {
+  grid-column: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-right-column {
+  grid-column: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-self: start;
+}
+
+.detail-left-column > .calender-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-left-column > .calender-main .booking-form,
+.detail-left-column > .calender-main .calender {
+  width: 100%;
+}
+
+.detail-left-column .cnt-form,
+.detail-right-column .heavy-duty-feature,
+.detail-right-column .owner-sidebar-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.product-title {
+  margin-bottom: 0;
+}
+
+.product-img-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.product-showcase-main-img {
+  position: relative;
+  width: 100%;
+  height: clamp(220px, 29vw, 390px);
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: #e5e7eb;
+}
+
+.product-showcase-main-img img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.7em;
+  height: 2.7em;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #111827;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.gallery-nav svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.gallery-nav-prev {
+  left: 1rem;
+}
+
+.gallery-nav-next {
+  right: 1rem;
+}
+
+.product-showcase-sub-img {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: flex-start;
+  margin-inline: auto;
+}
+
+.product-showcase-sub-img img {
+  width: clamp(4rem, 5.4vw, 5.1rem) !important;
+  flex: 0 0 auto;
+  max-width: none;
+  height: clamp(3.6rem, 4.9vw, 4.8rem) !important;
+  aspect-ratio: auto;
+  object-fit: cover;
+  border-radius: 0.5rem !important;
+  border: 2px solid transparent;
+}
+
+.product-showcase-sub-img img:hover {
+  border-color: #1b3a32;
+}
+
+.heavy-duty {
+  grid-column: 1;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.heavy-duty .text-h2,
+.heavy-duty .text-para,
+.heavy-duty .detail-subtitle {
+  margin: 0;
+}
+
+.heavy-duty .text-h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #111827;
+}
+
+.detail-subtitle {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.detail-price-line {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin-top: 0.15rem;
+  margin-bottom: 0.25rem;
+}
+
+.detail-price-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.detail-price-value {
+  font-size: clamp(1.9rem, 3.2vw, 2.65rem);
+  font-weight: 900;
+  line-height: 1.05;
+  color: #0b2f2a;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.owner-info-inline {
+  display: none !important;
+}
+
+.heavy-duty-feature,
+.owner-sidebar-card,
+.cnt-form,
+.calender {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.04);
+}
+
+.heavy-duty-feature {
+  grid-column: 2;
+  width: 100%;
+  padding: 1.15rem;
+  gap: 0.8rem;
+}
+
+.owner-sidebar-card {
+  grid-column: 2;
+  width: 100%;
+  padding: 1.15rem;
+}
+
+.owner-sidebar-title {
+  margin-bottom: 0.9rem;
+}
+
+.owner-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.owner-sidebar-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.owner-sidebar-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1.5px solid #d4af37;
+  color: #d4af37;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.owner-sidebar-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.owner-sidebar-copy span {
+  font-family: "Manrope", sans-serif;
+  color: #111827;
+  line-height: 1.35;
+}
+
+.owner-sidebar-copy .owner-para-fat {
+  font-weight: 600;
+}
+
+.owner-sidebar-copy .owner-para-thin {
+  color: #4b5563;
+}
+
+.single-feature {
+  align-items: center;
+}
+
+.single-feature > div:first-child {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background-color: #1b3a32;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.single-feature > div:first-child svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.single-feature > div:not(:first-child) {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  width: auto;
+  height: auto;
+}
+
+.shipping-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: #1b3a32;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.shipping-chip.muted {
+  background: #6b7280;
+}
+
+.booking-form {
+  grid-column: 1;
+  width: 100%;
+  order: 1;
+}
+
+.calender {
+  grid-column: 1;
+  width: 100%;
+  padding: 1rem;
+  gap: 0.8rem;
+  order: 2;
+}
+
+.cnt-form {
+  padding: 1rem;
+  gap: 0.85rem;
+}
+
+.cnt-form .text-h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.detail-request-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  flex: 1 1 auto;
+}
+
+.detail-left-column > .calender-main .booking-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-left-column > .calender-main .booking-form .cnt-form {
+  flex: 1 1 auto;
+}
+
+.heavy-duty-main.rental-quad-layout {
+  display: block !important;
+}
+
+.heavy-duty-main.rental-quad-layout .detail-left-column {
+  width: 100%;
+  gap: 0.65rem;
+}
+
+.rental-grid-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "specs owner"
+    "form calendar";
+  gap: 7px;
+  align-items: stretch;
+}
+
+.rental-grid-layout > * {
+  min-width: 0;
+  width: 100% !important;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.rental-form-slot {
+  grid-area: form;
+  display: flex;
+  flex-direction: column;
+}
+
+.rental-form-slot .cnt-form {
+  height: 100%;
+  padding: 0.9rem 0.95rem;
+  gap: 0.7rem;
+}
+
+.rental-form-slot .detail-request-form {
+  gap: 0.65rem;
+}
+
+.rental-form-slot .form-group {
+  gap: 0.35rem;
+}
+
+.rental-form-slot .form-group input,
+.rental-form-slot .form-group select,
+.rental-form-slot .form-group textarea {
+  height: 2.55rem;
+}
+
+.rental-form-slot .total-cost-display {
+  padding: 0.85rem !important;
+}
+
+.rental-form-slot .form-submit .btn-dark-green.w-full {
+  padding: 0.82rem;
+}
+
+.rental-specs-slot {
+  grid-area: specs;
+  padding: 1.3rem;
+}
+
+.rental-owner-slot {
+  grid-area: owner;
+  padding: 1.15rem;
+}
+
+.rental-calendar-slot {
+  grid-area: calendar;
+  padding: 1rem;
+}
+
+@media (max-width: 991px) {
+  .heavy-duty-main.rental-quad-layout {
+    display: block !important;
+  }
+
+  .rental-grid-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "specs"
+      "owner"
+      "form"
+      "calendar";
+    gap: 0.95rem;
+  }
+
+  .rental-form-slot .cnt-form,
+  .rental-specs-slot,
+  .rental-owner-slot,
+  .rental-calendar-slot {
+    height: auto;
+  }
+}
+
+.date-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group label {
+  color: #111827;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border-color: #d1d5db;
+  border-radius: 0.6rem;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.95rem;
+  height: 2.8rem;
+}
+
+.form-group textarea {
+  height: 6.5rem;
+}
+
+.total-cost-display {
+  width: 100%;
+  background: #f0f7f4 !important;
+  border-radius: 0.75rem !important;
+}
+
+.total-cost-display .label,
+.total-cost-display .details {
+  color: #6b7280 !important;
+}
+
+.total-cost-display .amount {
+  color: #1b3a32 !important;
+}
+
+.form-submit {
+  width: 100%;
+}
+
+.form-submit .btn-dark-green.w-full {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.6rem;
+  background: #1b3a32;
+  color: #ffffff;
+  font-size: 0.83rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.calender .text-h4-blog {
+  font-size: 1.25rem;
+  color: #111827;
+}
+
+.calender .text-para {
+  color: #6b7280;
+}
+
+.booking-calender {
+  width: 100%;
+}
+
+.arrow-section {
+  margin-bottom: 0.5rem;
+}
+
+.months-date {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.first-month,
+.second-month {
+  width: 100%;
+  border: 0;
+  padding: 0;
+  gap: 0.85rem;
+}
+
+.second-month {
+  display: flex !important;
+}
+
+.days-name,
+.days-date {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.2rem;
+}
+
+.days-date span {
+  min-width: 1.85rem;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+
+.calender-main.purchase-layout {
+  align-items: flex-start;
+}
+
+.equipment-detail-page.is-purchase .booking-form.purchase-form-expanded {
+  max-width: none;
+}
+
+.equipment-detail-page.is-purchase .cnt-form.product-form {
+  padding: 1rem 1.1rem;
+}
+
+.equipment-detail-page.is-purchase .heavy-duty-feature,
+.equipment-detail-page.is-purchase .owner-sidebar-card {
+  min-height: auto;
+  padding: 1.25rem;
+}
+
+.footer,
+.footer-bottom {
+  clear: both;
+  width: 100%;
+}
+
+.text-day-num.disabled {
+  opacity: 0.35;
+}
+
+.text-day-num.selected-start,
+.text-day-num.selected-end {
+  background: #4ade80 !important;
+  color: #111827 !important;
+  border-radius: 999px !important;
+}
+
+.text-day-num.in-range {
+  background: rgba(74, 222, 128, 0.2) !important;
+  color: #111827 !important;
+  border-radius: 999px !important;
+}
+
+.year-calender,
+.month-calender {
+  color: #111827;
+}
+
+@media (max-width: 991px) {
+  .inner-product-detail {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .heavy-duty,
+  .heavy-duty-feature,
+  .owner-sidebar-card,
+  .detail-left-column,
+  .detail-right-column,
+  .booking-form,
+  .calender {
+    grid-column: 1;
+  }
+
+  .date-grid,
+  .months-date {
+    grid-template-columns: 1fr;
+  }
+
+  .second-month {
+    display: none !important;
+  }
+
+  .gallery-nav {
+    width: 2.25em;
+    height: 2.25em;
+  }
+
+  .equipment-detail-page.is-purchase .booking-form.purchase-form-expanded {
+    max-width: none;
+  }
+
+  .equipment-detail-page.is-purchase .heavy-duty-feature,
+  .equipment-detail-page.is-purchase .owner-sidebar-card {
+    min-height: auto;
+    padding: 1.05rem;
+  }
 }

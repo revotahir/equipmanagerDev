@@ -414,7 +414,7 @@ inner-page-reg-code
   justify-content: center;
   height: 100vh;
   align-items: center;
-  padding: 200px 100px 0 100px;
+  padding: clamp(120px, 13.89vw, 200px) clamp(20px, 6.94vw, 100px) 0;
 }
 .form {
   position: relative;
@@ -443,9 +443,9 @@ inner-page-reg-code
 .main-box {
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: clamp(25px, 3.47vw, 50px);
   align-items: center;
-  padding: 80px 160px;
+  padding: clamp(40px, 5.56vw, 80px) clamp(20px, 11.11vw, 160px);
 }
 .img {
   position: absolute;
@@ -456,7 +456,7 @@ inner-page-reg-code
 .success {
   display: flex;
   justify-content: center;
-  padding: 120px 0;
+  padding: clamp(0px, 4vw, 0px) 0;
 }
 .inner-success {
   display: flex;
@@ -629,9 +629,9 @@ CTA Seation
 .inner-search-2 {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(12px, 1.39vw, 20px);
   background-color: var(--primary-parrot-green);
-  padding: 30px;
+  padding: clamp(16px, 2.08vw, 30px);
   border-radius: 20px;
   box-shadow: 0px 4px 60px 0px #0000000f;
   width: 100%;
@@ -640,12 +640,12 @@ CTA Seation
 .inner-search-2 span {
   color: var(--black);
   font-family: "Manrope", sans-serif;
-  font-size: 20px;
+  font-size: clamp(16px, 1.39vw, 20px);
   font-weight: 700;
 }
 .search-main {
   display: flex;
-  gap: 20px;
+  gap: clamp(10px, 1.39vw, 20px);
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -887,14 +887,14 @@ CTA Seation
   color: var(--primary-dark-green);
   font-family: "ClashGrotesk", sans-serif;
   font-weight: 600;
-  font-size: 60px;
+  font-size: clamp(32px, 4.17vw, 60px);
   text-transform: capitalize;
 }
 
 .text-h1-upp {
   color: var(--white);
   font-family: "ClashGrotesk", sans-serif;
-  font-size: 48px;
+  font-size: clamp(28px, 3.33vw, 48px);
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -902,7 +902,7 @@ CTA Seation
 .text-h2 {
   color: var(--title-black);
   font-family: "Manrope", sans-serif;
-  font-size: 36px;
+  font-size: clamp(24px, 2.5vw, 36px);
   font-weight: 800;
   text-transform: capitalize;
 }
@@ -910,9 +910,9 @@ CTA Seation
 .text-para {
   color: var(--text-gray);
   font-family: "Manrope", sans-serif;
-  font-size: 18px;
+  font-size: clamp(14px, 1.25vw, 18px);
   font-weight: 500;
-  line-height: 30px;
+  line-height: clamp(22px, 2.08vw, 30px);
 }
 
 .text-day {

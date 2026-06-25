@@ -311,9 +311,14 @@
     <script src="<?= base_url('assets/js/jquery.min.js') ?>"></script>
     <script>
         function logoutUser() {
-            if (confirm('Are you sure you want to logout?')) {
-                window.location.href = '<?= base_url('logout') ?>';
-            }
+            AppDialog.confirm('Are you sure you want to logout?', {
+                title: 'Logout',
+                okText: 'Logout'
+            }).then(function(confirmed) {
+                if (confirmed) {
+                    window.location.href = '<?= base_url('logout') ?>';
+                }
+            });
         }
 
         function navigateTo(page) {

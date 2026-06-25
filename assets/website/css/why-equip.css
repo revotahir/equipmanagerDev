@@ -26,26 +26,29 @@
 .company_story {
   display: flex;
   justify-content: center;
-  padding: 120px 0;
+  padding: clamp(44px, 6.4vw, 88px) 0;
   background-color: var(--off-white);
 }
 .inner-company {
   display: flex;
-  gap: 50px;
+  gap: 30px;
   align-items: center;
 }
 .company-info {
   width: 50%;
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  padding: 0 100px 0 0;
+  gap: 20px;
+  padding: 0 60px 0 0;
 }
 .company-img {
   width: 50%;
 }
 .company-img img {
   width: 100%;
+  height: clamp(320px, 34vw, 500px);
+  object-fit: cover;
+  border-radius: 18px;
 }
 
 /* mission */
@@ -58,12 +61,12 @@
 .inner-mission {
   position: relative;
   overflow: hidden;
-  border-radius: 22px;
-  padding: 120px 120px 240px 120px;
+  border-radius: 18px;
+  padding: clamp(64px, 8vw, 100px) clamp(40px, 6vw, 90px) clamp(120px, 14vw, 180px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   isolation: isolate; 
 }
 
@@ -96,7 +99,7 @@
 
 .sub-heading-h2 {
   font-family: "Manrope", sans-serif;
-  font-size: 32px;
+  font-size: clamp(24px, 2.1vw, 30px);
   font-weight: 500;
 }
 
@@ -107,28 +110,28 @@
   background-color: var(--off-white);
 }
 .benfi{
-  padding: 0 0 240px 0;
-  margin-top: -110px;
+  padding: 0 0 160px 0;
+  margin-top: -80px;
 }
 .inner-customer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 0 80px;
+  gap: 16px;
+  padding: 0 30px;
 }
 .customer-boxs {
   display: flex;
-  gap: 20px;
+  gap: 14px;
   z-index: 2;
 }
 .single-customer-box {
   box-shadow: 0px 4px 60px 0px #0000000f;
-  border-radius: 20px;
+  border-radius: 16px;
   background-color: var(--white);
-  padding: 24px;
+  padding: 16px;
   width: 25%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }

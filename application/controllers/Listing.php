@@ -76,12 +76,27 @@ class listing extends MY_Controller
 	}
 	public function addEquipmentListingData()
 	{
+		$login = $this->session->userdata('loginData');
+		if ((int)$login['userType'] != 4 || (int)$login['userStatus'] != 1) {
+			show_error('Access denied', 403);
+			return;
+		}
+		$workforceLink = $this->db->where('userID', (int)$login['userID'])
+			->where('personStatus', 1)
+			->get('usercompanyworkforcelink')
+			->row();
+		if (!$workforceLink) {
+			show_error('No workforce link', 403);
+			return;
+		}
+		$employee_id = ((int)$login['userType'] === 4) ? (int)$login['userID'] : null;
 		$shopItem = array(
-			'userID' => $this->session->userdata('loginData')['userID'],
+			'userID' => $login['userID'],
 			'companyID' => $this->session->userdata('companyDetails')['companyID'],
 			'itemType' => 1,
 			'saleType' => $_GET['rentalType'],
-			'itemStatus' => 0
+			'itemStatus' => 0,
+			'employeeID' => $employee_id
 		);
 		if ($this->input->post('itemID') == '') {
 			$this->generic->InsertData('shopitem', $shopItem);
@@ -160,7 +175,37 @@ class listing extends MY_Controller
 
 		// Insert equipment data into database or update accordingly 
 		if ($this->input->post('itemID') != '') {
-			$this->generic->Update('shopequipments', array('itemID' => $this->input->post('itemID')), $equipmentData);
+			// When updating, handle quantity changes for rental listings
+			$itemID_val = $this->input->post('itemID');
+			$oldListing = $this->generic->GetData('shopequipments', array('itemID' => $itemID_val));
+			$shopItem = $this->generic->GetData('shopitem', array('itemID' => $itemID_val));
+			
+			if ($oldListing && $shopItem[0]['saleType'] == 0) { // If this is a rental listing
+				$oldQty = (int)$oldListing[0]['equipQty'];
+				$newQty = (int)$this->input->post('eqpQty');
+				$qtyDelta = $newQty - $oldQty;
+				
+				// If quantity changed, adjust equipment rental quantities
+				if ($qtyDelta != 0) {
+					$equipment = $this->generic->GetData('equipment', array('equipmentID' => $this->input->post('eqpID')));
+					
+					// Update equipInUseQuantity (for backward compatibility)
+					$newInUse = max(0, (int)$equipment[0]['equipInUseQuantity'] + $qtyDelta);
+					
+					// Update equipRentalTotalQuantity
+					$newRentalTotal = max(0, (int)$equipment[0]['equipRentalTotalQuantity'] + $qtyDelta);
+					
+					$this->generic->Update('equipment', 
+						array('equipmentID' => $this->input->post('eqpID')), 
+						array(
+							'equipInUseQuantity' => $newInUse,
+							'equipRentalTotalQuantity' => $newRentalTotal
+						)
+					);
+				}
+			}
+			
+			$this->generic->Update('shopequipments', array('itemID' => $itemID_val), $equipmentData);
 			//update project dates
 			$newdates = array(
 				'pStartDate' => $this->input->post('avlStart'),
@@ -169,12 +214,11 @@ class listing extends MY_Controller
 			$this->generic->Update('projects', array('itemID' => $itemID[0]['result']), $newdates);
 
 			$this->session->set_flashdata('updated', 'Please fill all fields!');
-			redirect(base_url('add-listing?listingID=' . $this->input->post('itemID') . '&edit=1'));
+			redirect(base_url('add-listing?listingID=' . $itemID_val . '&edit=1'));
 		} else {
 			$this->generic->InsertData('shopequipments', $equipmentData);
 			$itemID = $this->generic->GetMaxID('shopitem', 'itemID');
-			$this->session->set_flashdata('drafted', 'Please fill all fields!');
-			redirect(base_url('add-listing?listingID=' . $itemID[0]['result']));
+			redirect(base_url('add-listing?listingID=' . $itemID[0]['result'] . '&edit=1'));
 		}
 	}
 
@@ -220,12 +264,27 @@ class listing extends MY_Controller
 
 	public function addWorkforceListingData()
 	{
+		$login = $this->session->userdata('loginData');
+		if ((int)$login['userType'] != 4 || (int)$login['userStatus'] != 1) {
+			show_error('Access denied', 403);
+			return;
+		}
+		$workforceLink = $this->db->where('userID', (int)$login['userID'])
+			->where('personStatus', 1)
+			->get('usercompanyworkforcelink')
+			->row();
+		if (!$workforceLink) {
+			show_error('No workforce link', 403);
+			return;
+		}
+		$employee_id = ((int)$login['userType'] === 4) ? (int)$login['userID'] : null;
 		$shopItem = array(
-			'userID' => $this->session->userdata('loginData')['userID'],
+			'userID' => $login['userID'],
 			'companyID' => $this->session->userdata('companyDetails')['companyID'],
 			'itemType' => 2,
 			'saleType' => $_GET['rentalType'],
-			'itemStatus' => 0
+			'itemStatus' => 0,
+			'employeeID' => $employee_id
 		);
 		if ($this->input->post('itemID') == '') {
 			$this->generic->InsertData('shopitem', $shopItem);
@@ -299,8 +358,7 @@ class listing extends MY_Controller
 		} else {
 			$this->generic->InsertData('shopworkforce', $workforceData);
 			$itemID = $this->generic->GetMaxID('shopitem', 'itemID');
-			$this->session->set_flashdata('drafted', 'Please fill all fields!');
-			redirect(base_url('add-listing?listingID=' . $itemID[0]['result']));
+			redirect(base_url('add-listing?listingID=' . $itemID[0]['result'] . '&edit=1'));
 		}
 	}
 
@@ -308,15 +366,44 @@ class listing extends MY_Controller
 	{
 
 		$listing = $this->generic->GetData('shopitem', array('itemID' => $_GET['listingID']));
+		
+		// Handle delivery charge fields
+		$deliveryOpt = $this->input->post('devliveryOpt');
+		$deliveryChargeBearer = $this->input->post('deliveryChargeBearer');
+		$deliveryCharge = $this->input->post('deliveryCharge');
+		
+		// If pickup only (option 2), set delivery fields to NULL
+		if ($deliveryOpt == 2) {
+			$deliveryChargeBearer = NULL;
+			$deliveryCharge = NULL;
+		} 
+		// If company pays (bearer 1), set charge to 0 or NULL
+		elseif ($deliveryOpt == 1 && $deliveryChargeBearer == 1) {
+			$deliveryCharge = NULL;
+		}
+		// If customer pays (bearer 2), ensure charge is numeric and set
+		elseif ($deliveryOpt == 1 && $deliveryChargeBearer == 2) {
+			$deliveryCharge = floatval($deliveryCharge);
+		}
+		// Default: if no bearer selected, set to NULL
+		else {
+			$deliveryChargeBearer = NULL;
+			$deliveryCharge = NULL;
+		}
+		
 		if ($listing[0]['itemType'] == 1) {
 			$deliveryData = array(
 				'eqpDeliveryOpt' => $this->input->post('devliveryOpt'),
 				'eqpRules' => $this->input->post('rules'),
+				'deliveryChargeBearer' => $deliveryChargeBearer,
+				'deliveryCharge' => $deliveryCharge,
 			);
 		}else{
 			$deliveryData = array(
 			'workforceDeliveryOpt' => $this->input->post('devliveryOpt'),
 			'workforceRules' => $this->input->post('rules'),
+			'deliveryChargeBearer' => $deliveryChargeBearer,
+			'deliveryCharge' => $deliveryCharge,
 		);
 		}
 		if ($listing[0]['saleType'] == 0) { //rental equipment
@@ -372,7 +459,14 @@ class listing extends MY_Controller
 					//--get equipment detail 
 					$equipment = $this->generic->GetData('equipment', array('equipmentID' => $addedequipment[0]['equipmentID']));
 					$updateInUseQuantity = $equipment[0]['equipInUseQuantity'] + $addedequipment[0]['equipQty'];
-					$this->generic->Update('equipment', array('equipmentID' => $addedequipment[0]['equipmentID']), array('equipInUseQuantity' => $updateInUseQuantity));
+					
+					// For rental listings, also update equipRentalTotalQuantity
+					$equipmentUpdateData = array('equipInUseQuantity' => $updateInUseQuantity);
+					if ($listing[0]['saleType'] == 0) { // If this is a rental listing
+						$updateRentalQuantity = $equipment[0]['equipRentalTotalQuantity'] + $addedequipment[0]['equipQty'];
+						$equipmentUpdateData['equipRentalTotalQuantity'] = $updateRentalQuantity;
+					}
+					$this->generic->Update('equipment', array('equipmentID' => $addedequipment[0]['equipmentID']), $equipmentUpdateData);
 					//update the equipment list in the equipment shop link 
 					$this->generic->Update('shopequipments', array('itemID' => $_GET['listingID']), $deliveryData);
 				} else {
@@ -425,7 +519,14 @@ class listing extends MY_Controller
 			//get equipment
 			$equipment=$this->generic->GetData('equipment',array('equipmentID'=>$eqpListing[0]['equipmentID']));
 			$newqty=$equipment[0]['equipInUseQuantity']-$eqpListing[0]['equipQty'];
-			$this->generic->Update('equipment',array('equipmentID'=>$eqpListing[0]['equipmentID']),array('equipInUseQuantity'=>$newqty));
+			
+			// For rental listings, also decrease equipRentalTotalQuantity
+			$equipmentUpdateData = array('equipInUseQuantity'=>$newqty);
+			if ($itemListing[0]['saleType'] == 0) { // If this is a rental listing
+				$newRentalQty = $equipment[0]['equipRentalTotalQuantity'] - $eqpListing[0]['equipQty'];
+				$equipmentUpdateData['equipRentalTotalQuantity'] = max(0, $newRentalQty); // Don't go below 0
+			}
+			$this->generic->Update('equipment',array('equipmentID'=>$eqpListing[0]['equipmentID']),$equipmentUpdateData);
 		}
 		$this->generic->Delete('shopitem', array('itemID' => $_GET['itemID']));
 		$this->generic->Delete('shopequipments', array('itemID' => $_GET['itemID']));
@@ -538,28 +639,34 @@ class listing extends MY_Controller
 
 		try {
 			if ($itemType === 'equipment') {
-				// Get current stock with row lock
-				$equipment = $this->generic->GetData('shopequipments', array('itemID' => $itemID));
+				// Get equipment data from shopequipments and equipment table
+				$equipment = $this->db->select('se.*, e.equipRentalTotalQuantity, e.equipRentalLockedQuantity')
+					->from('shopequipments se')
+					->join('equipment e', 'se.equipmentID = e.equipmentID')
+					->where('se.itemID', $itemID)
+					->get()
+					->row();
 				
 				if (!$equipment) {
 					throw new Exception('Equipment not found');
 				}
 
-				$availableQty = intval($equipment[0]['equipQty']);
-				$pricePerDay = floatval($equipment[0]['eqpPrice']);
+				// Check rental availability (NOT purchase stock)
+				$rentalTotalQty = intval($equipment->equipRentalTotalQuantity ?? 0);
+				$rentalLockedQty = intval($equipment->equipRentalLockedQuantity ?? 0);
+				$availableQty = max(0, $rentalTotalQty - $rentalLockedQty);
+				$pricePerDay = floatval($equipment->eqpPrice);
 
-				// Validate stock availability
+				// Validate rental availability
 				if ($quantity > $availableQty) {
-					throw new Exception('Insufficient stock. Only ' . $availableQty . ' units available');
+					throw new Exception('Insufficient rental inventory. Only ' . $availableQty . ' units available');
 				}
 
 				// Calculate total cost
 				$totalCost = $pricePerDay * $quantity * $days;
 
-				// Decrement stock (prevents double booking)
-				$this->db->where('itemID', $itemID);
-				$this->db->set('equipQty', 'equipQty - ' . $quantity, FALSE);
-				$this->db->update('shopequipments');
+				// NOTE: Do NOT decrement equipQty - that's for purchase stock
+				// equipRentalLockedQuantity will be updated when admin confirms the rental request
 
 				// Store rental record in projects table (reusing existing structure)
 				$projectData = array(

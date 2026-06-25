@@ -37,7 +37,11 @@ $(function () {
 		showTooltip: true,
 		onRegionClick: function (element, code, region) {
 			var message = 'You clicked "' + region + '" which has the code: ' + code.toUpperCase();
-			alert(message);
+			if (window.AppToast) {
+				AppToast.info(message, 'Map Region');
+			} else if (window.console) {
+				console.log(message);
+			}
 		}
 	});
 	$('#india').vectorMap({

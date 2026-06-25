@@ -26,7 +26,7 @@
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
                 <h3>No chats yet</h3>
-                <p>Your order conversations will appear here once you interact with an order.</p>
+                <p>Your conversations will appear here once you start chatting with a company.</p>
             </div>
         <?php else: ?>
             <table class="chats-table" id="chatsTable">
@@ -49,7 +49,10 @@
                         $date_display = date('m/d/Y', strtotime($last_activity));
                         
                         // Determine status class and text
-                        $status = strtolower($chat->paymentStatus);
+                        $status = strtolower((string)$chat->paymentStatus);
+                        if ($status === '') {
+                            $status = 'open';
+                        }
                         $status_class = 'status-' . $status;
                         $status_text = ucfirst($status);
                         
@@ -64,24 +67,32 @@
                             $partner_name = $chat->sellerUserName ?? $chat->sellerCompanyName ?? 'Seller';
                         }
                         ?>
-                        <tr class="chat-row" data-order-id="<?= $chat->equipmentPaymentID ?>" data-search-text="<?= htmlspecialchars(strtolower($partner_name . ' ' . $status_text . ' ' . $date_display)) ?>">
-                            <td><span class="order-id">#<?= htmlspecialchars($chat->equipmentPaymentID) ?></span></td>
-                            <td><?= htmlspecialchars($partner_name) ?></td>
-                            <td><?= htmlspecialchars($chat->category ?? 'Equipment') ?></td>
-                            <td><span class="price">$<?= number_format($chat->grossAmount, 2) ?></span></td>
-                            <td><?= $date_display ?></td>
-                            <td>
+                        <?php
+                        $order_id = $chat->orderID;
+                        $orders_count = isset($chat->linkedOrdersCount) ? (int)$chat->linkedOrdersCount : 0;
+                        if (!empty($order_id)) {
+                            $order_label = '#' . $order_id;
+                            if ($orders_count > 1) {
+                                $order_label .= ' (+' . ($orders_count - 1) . ' more)';
+                            }
+                        } else {
+                            $order_label = 'Direct #' . $chat->chatID;
+                        }
+                        $item_type = $chat->itemType ?? 'Equipment';
+                        ?>
+                        <tr class="chat-row" data-order-id="<?= htmlspecialchars((string)$order_id) ?>" data-search-text="<?= htmlspecialchars(strtolower($partner_name . ' ' . $status_text . ' ' . $date_display . ' ' . $item_type)) ?>">
+                            <td data-label="Order"><span class="order-id"><?= htmlspecialchars($order_label) ?></span></td>
+                            <td data-label="Name"><?= htmlspecialchars($partner_name) ?></td>
+                            <td data-label="Category"><?= htmlspecialchars($item_type) ?></td>
+                            <td data-label="Price"><span class="price">$<?= number_format($chat->grossAmount, 2) ?></span></td>
+                            <td data-label="Date"><?= $date_display ?></td>
+                            <td data-label="Status">
                                 <span class="status-chip <?= $status_class ?>">
                                     <?= $status_text ?>
                                 </span>
                             </td>
-                            <td>
-                                <?php 
-                                // Regular users (type 4) use /chat/{id}, company admins (type 2,3) use /company-chats/view/{id}
-                                $chat_url = ($user_type == 2 || $user_type == 3) 
-                                    ? base_url('company-chats/view/' . $chat->equipmentPaymentID)
-                                    : base_url('chat/' . $chat->equipmentPaymentID);
-                                ?>
+                            <td data-label="Action">
+                                <?php $chat_url = base_url('chat/thread/' . $chat->chatID); ?>
                                 <a href="<?= $chat_url ?>" class="chat-btn">
                                     Chat Now
                                 </a>
@@ -269,6 +280,11 @@
         color: #723B13;
     }
 
+    .status-chip.status-open {
+        background-color: #DEF7EC;
+        color: #03543F;
+    }
+
     /* Chat Button */
     .chat-btn {
         display: inline-block;
@@ -389,6 +405,10 @@
         .table-wrapper {
             overflow-x: auto;
         }
+
+        .chats-table {
+            min-width: 760px;
+        }
     }
 
     @media (max-width: 480px) {
@@ -396,18 +416,53 @@
             padding: 16px;
         }
 
-        .chats-table th,
-        .chats-table td {
-            padding: 12px 8px;
-            font-size: 12px;
+        .chats-table {
+            min-width: 100%;
+            display: block;
         }
 
-        .chat-btn {
-            padding: 6px 12px;
+        .chats-table thead {
+            display: none;
+        }
+
+        .chats-table tbody {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .chats-table tr.chat-row {
+            display: block;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: #fff;
+            padding: 12px;
+        }
+
+        .chats-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            border: none;
+        }
+
+        .chats-table td::before {
+            content: attr(data-label);
+            color: var(--text-secondary);
+            font-weight: 700;
+            min-width: 75px;
             font-size: 12px;
         }
 
         .order-id {
+            font-size: 12px;
+        }
+
+        .chat-btn {
+            padding: 6px 10px;
             font-size: 12px;
         }
     }

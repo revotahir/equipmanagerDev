@@ -7,7 +7,124 @@ class project extends MY_Controller
 	{
 		parent::__construct();
 		$this->load->helper('file');
+		$this->load->helper('notification');
 		$this->load->model('Generic_model', 'generic');
+		$this->load->model('Notification_model');
+	}
+
+	private function notifyProjectWorkforce($projectID, $title, $body, $actionPath = 'employee/projects')
+	{
+		$projectID = (int)$projectID;
+		if ($projectID <= 0) {
+			return;
+		}
+
+		$rows = $this->db->distinct()
+			->select('ucwl.userID')
+			->from('projectworkforcelink pwl')
+			->join('usercompanyworkforcelink ucwl', 'ucwl.workforceID = pwl.workforceID', 'inner')
+			->where('pwl.ProjectID', $projectID)
+			->get()
+			->result();
+
+		foreach ($rows as $row) {
+			$this->Notification_model->createNotification(
+				(int)$row->userID,
+				'rental_started',
+				$title,
+				$body,
+				null,
+				site_url($actionPath),
+				null
+			);
+		}
+	}
+
+	private function releaseProjectEquipmentFromEmployees($projectID)
+	{
+		$projectID = (int)$projectID;
+		if ($projectID <= 0) {
+			return;
+		}
+
+		$projectEquip = $this->generic->GetData('projectequipmentlink', array('ProjectID' => $projectID));
+		if ($projectEquip) {
+			foreach ($projectEquip as $link) {
+				$equipmentID = (int)$link['equipmentID'];
+				$allocatedQty = (int)$link['equipmentQTY'];
+				$equipment = $this->generic->GetData('equipment', array('equipmentID' => $equipmentID));
+				if ($equipment) {
+					$newInUseQty = max(0, (int)$equipment[0]['equipInUseQuantity'] - $allocatedQty);
+					$this->generic->Update(
+						'equipment',
+						array('equipmentID' => $equipmentID),
+						array('equipInUseQuantity' => $newInUseQty)
+					);
+				}
+				$this->generic->Update(
+					'projectequipmentlink',
+					array('ProjectID' => $projectID, 'equipmentID' => $equipmentID),
+					array('TotalAssignQTY' => 0)
+				);
+			}
+		}
+
+		// Remove employee-level equipment assignments after returning equipment.
+		$this->generic->Delete('projectequipmentassign', array('ProjectID' => $projectID));
+
+		// Mark workforce as available again.
+		$assignedWorkforce = $this->generic->GetWorkforceofPRoject(array('pwl.ProjectID' => $projectID));
+		if ($assignedWorkforce) {
+			foreach ($assignedWorkforce as $work) {
+				$this->generic->Update('workforce', array('workforceID' => $work['workforceID']), array('personStatus' => 1));
+			}
+		}
+	}
+
+	private function reserveProjectEquipmentFromDatabase($projectID, &$errorMessage = null)
+	{
+		$projectID = (int)$projectID;
+		if ($projectID <= 0) {
+			$errorMessage = 'Invalid project.';
+			return false;
+		}
+
+		$projectEquip = $this->generic->GetData('projectequipmentlink', array('ProjectID' => $projectID));
+		if (!$projectEquip) {
+			return true;
+		}
+
+		$plan = array();
+		foreach ($projectEquip as $link) {
+			$equipmentID = (int)$link['equipmentID'];
+			$requiredQty = (int)$link['equipmentQTY'];
+			$equipment = $this->generic->GetData('equipment', array('equipmentID' => $equipmentID));
+			if (!$equipment) {
+				$errorMessage = 'Linked equipment not found.';
+				return false;
+			}
+			$totalQty = (int)$equipment[0]['equipTotalQuantity'];
+			$inUseQty = (int)$equipment[0]['equipInUseQuantity'];
+			$availableQty = max(0, $totalQty - $inUseQty);
+			if ($availableQty < $requiredQty) {
+				$errorMessage = 'Insufficient quantity for "' . $equipment[0]['equipName'] . '". Please go to Step 2 and update project equipment quantities first.';
+				return false;
+			}
+			$plan[] = array(
+				'equipmentID' => $equipmentID,
+				'newInUseQty' => $inUseQty + $requiredQty
+			);
+		}
+
+		foreach ($plan as $row) {
+			$this->generic->Update(
+				'equipment',
+				array('equipmentID' => $row['equipmentID']),
+				array('equipInUseQuantity' => $row['newInUseQty'])
+			);
+		}
+
+		return true;
 	}
 
 	/**
@@ -197,14 +314,28 @@ class project extends MY_Controller
 		$data['pStartDate'] = $this->input->post('pStartDate');
 		$data['pEndDate'] = $this->input->post('pEndDate');
 		$data['pDesc'] = $this->input->post('pDesc');
-		$data['pStatus'] = 1;
+		$requestedStatus = (int)$this->input->post('pStatus');
+		$allowedStatuses = array(1, 2, 3, 4);
+		$data['pStatus'] = in_array($requestedStatus, $allowedStatuses, true) ? $requestedStatus : 1;
 		$data['pDraftStatus'] = 2;
 		if (isset($_GET['id'])) {
+			$oldProject = $this->generic->GetData('projects', array('ProjectID' => $_GET['id'], 'companyID' => $this->session->userdata('companyDetails')['companyID']));
+			$oldStatus = !empty($oldProject) ? (int)$oldProject[0]['pStatus'] : null;
+			$projectID = (int)$_GET['id'];
+
+			// Reopening completed project requires quantity re-reservation.
+			if ($oldStatus === 4 && $data['pStatus'] !== 4) {
+				$statusTransitionError = null;
+				if (!$this->reserveProjectEquipmentFromDatabase($projectID, $statusTransitionError)) {
+					echo "Projectstatuserror//" . $statusTransitionError;
+					return;
+				}
+			}
+
 			// Update the data in the database (example)
-			$this->generic->Update('projects', array('ProjectID' => $_GET['id']), $data);
-			$projectID = $_GET['id'];
+			$this->generic->Update('projects', array('ProjectID' => $projectID), $data);
 			//get project details
-			$projectData = $this->generic->GetData('projects', array('ProjectID' => $_GET['id'], 'companyID' => $this->session->userdata('companyDetails')['companyID']));
+			$projectData = $this->generic->GetData('projects', array('ProjectID' => $projectID, 'companyID' => $this->session->userdata('companyDetails')['companyID']));
 			//get available workforce
 			$workforce = $this->generic->GetDataWithDateRange(
 				'workforce',
@@ -231,6 +362,23 @@ class project extends MY_Controller
 			$subject = 'Equip Manager - Project Updated';
 			$message = 'Project('.$projectData[0]['pName'].') is updated, View Dashboard ';
 			$this->send_email($workforce['personEmail'], $subject, $message);
+			}
+
+			$this->notifyProjectWorkforce(
+				$projectID,
+				'Project Updated',
+				'Project "' . $projectData[0]['pName'] . '" details were updated by your company admin.',
+				'employee/projects'
+			);
+
+			if ($data['pStatus'] === 4 && $oldStatus !== 4) {
+				$this->releaseProjectEquipmentFromEmployees($projectID);
+				$this->notifyProjectWorkforce(
+					$projectID,
+					'Project Completed',
+					'Project "' . $projectData[0]['pName'] . '" is marked completed. Assigned equipment has been returned.',
+					'employee/projects'
+				);
 			}
 
 			echo "Projectupdated//" . $projectID . '//' . $options;
@@ -358,7 +506,7 @@ class project extends MY_Controller
                                     src="' . $personImg . '"
                                     class="card-img-top-main rounded-top"
                                     alt="' . $work['personName'] . '" />
-									<a href="javascript:removeworkforce(' . $work['workforceID'] . ')" onclick="return confirm(\'Are you sure you want to remove this workforce from project?\')" style="">
+									<a href="javascript:removeworkforce(' . $work['workforceID'] . ')" onclick="return AppDialog.confirmAction(event, this, \'Are you sure you want to remove this workforce from project?\');" style="">
                                   <svg
                                     width="29"
                                     height="29"
@@ -394,6 +542,20 @@ class project extends MY_Controller
 			$message = 'Project Assigned to you, View Dashboard!';
 			$this->send_email($workforceDetail[0]['personEmail'], $subject, $message);
 			}
+		$project = $this->generic->GetData('projects', array('ProjectID' => $projectID));
+		$projectName = !empty($project) ? $project[0]['pName'] : 'Project';
+		$userLink = $this->generic->GetData('usercompanyworkforcelink', array('workforceID' => $workforceIDs));
+		if (!empty($userLink) && !empty($userLink[0]['userID'])) {
+			$this->Notification_model->createNotification(
+				(int)$userLink[0]['userID'],
+				'rental_started',
+				'Project Assigned',
+				'You were assigned to project "' . $projectName . '".',
+				null,
+				site_url('employee/projects'),
+				null
+			);
+		}
 		echo "Workforceadded///" . $options . "///" . $cardsHtml;
 	}
 	public function removeWorkforceFromProject()
@@ -448,7 +610,7 @@ class project extends MY_Controller
                                     src="' . $personImg . '"
                                     class="card-img-top-main rounded-top"
                                     alt="' . $work['personName'] . '" />
-									<a href="javascript:removeworkforce(' . $work['workforceID'] . ')" onclick="return confirm(\'Are you sure you want to remove this workforce from project?\')" style="">
+									<a href="javascript:removeworkforce(' . $work['workforceID'] . ')" onclick="return AppDialog.confirmAction(event, this, \'Are you sure you want to remove this workforce from project?\');" style="">
                                   <svg
                                     width="29"
                                     height="29"
@@ -483,6 +645,19 @@ class project extends MY_Controller
 			$subject = 'Equip Manager - Project Removed';
 			$message = 'You have been removed from the project, View Dashboard!';
 			$this->send_email($workforceDetail[0]['personEmail'], $subject, $message);
+			}
+			$projectName = !empty($project) ? $project[0]['pName'] : 'Project';
+			$userLink = $this->generic->GetData('usercompanyworkforcelink', array('workforceID' => $workforceID));
+			if (!empty($userLink) && !empty($userLink[0]['userID'])) {
+				$this->Notification_model->createNotification(
+					(int)$userLink[0]['userID'],
+					'rental_started',
+					'Project Assignment Removed',
+					'You were removed from project "' . $projectName . '".',
+					null,
+					site_url('employee/projects'),
+					null
+				);
 			}
 			echo "Workforceremoved///" . $options . "///" . $cardsHtml;
 		} else {
@@ -582,7 +757,7 @@ class project extends MY_Controller
                                     src="' . base_url() . 'assets/uploads/equipment/' . $equip['equipImg'] . '"
                                     class="card-img-top-main rounded-top img-fix-cover"
                                     alt="Helen Heidenreich" />
-									<a href="javascript:removeequipment(' . $equip['equipmentID'] . ')" onclick="return confirm(\'Are you sure you want to remove this equipment from project?\')" style="">
+									<a href="javascript:removeequipment(' . $equip['equipmentID'] . ')" onclick="return AppDialog.confirmAction(event, this, \'Are you sure you want to remove this equipment from project?\');" style="">
                                   <svg
                                     width="29"
                                     height="29"
@@ -684,7 +859,7 @@ class project extends MY_Controller
 									src="' . base_url() . 'assets/uploads/equipment/' . $equip['equipImg'] . '"
 									class="card-img-top-main rounded-top img-fix-cover"
 									alt="Helen Heidenreich" />
-									 <a href="javascript:removeequipment(' . $equip['equipmentID'] . ')" onclick="return confirm(\'Are you sure you want to remove this equipment from project?\')" style="">
+									 <a href="javascript:removeequipment(' . $equip['equipmentID'] . ')" onclick="return AppDialog.confirmAction(event, this, \'Are you sure you want to remove this equipment from project?\');" style="">
 								  <svg
 									width="29"
 									height="29"
@@ -812,7 +987,7 @@ class project extends MY_Controller
                             <a
                               href="javascript:;"
                               class="text-danger"
-							  onclick="confirm(\'Are you sure you want to delete this assignment?\') ? deleteAssignedEquipment(' . $assign['assignID'] . ') : false"
+							  onclick="return AppDialog.runConfirmed(event, function(){ deleteAssignedEquipment(' . $assign['assignID'] . '); }, \'Are you sure you want to delete this assignment?\');"
                               data-bs-toggle="tooltip"
                               data-bs-placement="bottom"
                               title="Delete"><i class="bi bi-trash-fill"></i></a>
@@ -841,8 +1016,40 @@ class project extends MY_Controller
 
 
 			if ($updateCheck) {
+				$project = $this->generic->GetData('projects', array('ProjectID' => $projectID));
+				$projectName = !empty($project) ? $project[0]['pName'] : 'Project';
+				$equipRow = $this->generic->GetData('equipment', array('equipmentID' => $equipmentID));
+				$equipName = !empty($equipRow) ? $equipRow[0]['equipName'] : 'equipment';
+				$userLink = $this->generic->GetData('usercompanyworkforcelink', array('workforceID' => $workforceID));
+				if (!empty($userLink) && !empty($userLink[0]['userID'])) {
+					$this->Notification_model->createNotification(
+						(int)$userLink[0]['userID'],
+						'rental_started',
+						'Equipment Assignment Updated',
+						'Your equipment allocation was updated in project "' . $projectName . '" for ' . $equipName . '.',
+						null,
+						site_url('employee/equipment'),
+						null
+					);
+				}
 				echo "EquipmentAssignmentUpdated///" . $rowsHtml . "///" . $options;
 			} else {
+				$project = $this->generic->GetData('projects', array('ProjectID' => $projectID));
+				$projectName = !empty($project) ? $project[0]['pName'] : 'Project';
+				$equipRow = $this->generic->GetData('equipment', array('equipmentID' => $equipmentID));
+				$equipName = !empty($equipRow) ? $equipRow[0]['equipName'] : 'equipment';
+				$userLink = $this->generic->GetData('usercompanyworkforcelink', array('workforceID' => $workforceID));
+				if (!empty($userLink) && !empty($userLink[0]['userID'])) {
+					$this->Notification_model->createNotification(
+						(int)$userLink[0]['userID'],
+						'rental_started',
+						'Equipment Assigned',
+						'Equipment "' . $equipName . '" was assigned to you for project "' . $projectName . '".',
+						null,
+						site_url('employee/equipment'),
+						null
+					);
+				}
 				echo "EquipmentAssigned///" . $rowsHtml . "///" . $options;
 			}
 		} else {
@@ -937,23 +1144,73 @@ class project extends MY_Controller
 	}
 	public function MarkInProgressProject()
 	{
-		$projectID = $_GET['id'];
+		$projectID = isset($_GET['id']) ? (int)$_GET['id'] : (int)$this->input->post('projectID');
 		if ($projectID) {
-			//update project draft status to 4
-			$this->generic->Update('projects', array('ProjectID' => $projectID), array('pStatus' => 2));
+			$currentProject = $this->generic->GetData('projects', array('ProjectID' => $projectID));
+			$oldStatus = !empty($currentProject) ? (int)$currentProject[0]['pStatus'] : null;
+			$requestedStatus = $this->input->post('projectStatus');
+			if ($requestedStatus === null || $requestedStatus === '') {
+				$requestedStatus = isset($_GET['status']) ? $_GET['status'] : 2;
+			}
+			$requestedStatus = (int)$requestedStatus;
+			$allowedStatuses = array(1, 2, 3, 4);
+			if (!in_array($requestedStatus, $allowedStatuses, true)) {
+				$requestedStatus = 2;
+			}
+
+			if ($oldStatus === 4 && $requestedStatus !== 4) {
+				$transitionError = null;
+				if (!$this->reserveProjectEquipmentFromDatabase($projectID, $transitionError)) {
+					$this->session->set_flashdata('error', $transitionError);
+					redirect(base_url('add-project?id=' . $projectID . '&step=1'));
+					return;
+				}
+			}
+
+			$this->generic->Update(
+				'projects',
+				array('ProjectID' => $projectID),
+				array(
+					'pStatus' => $requestedStatus,
+					'pDraftStatus' => 3
+				)
+			);
 
 			//send email to all worker that you have been added to project
-			//get all workforce
-			$workforcetoProject=$this->generic->GetWorkforceofPRoject(array('pwl.ProjectID'=>$projectID));
-			foreach($workforcetoProject as $workforce){
-				//send email
-			$subject = 'Equip Manager - Project Assigned';
-			$message = 'New Project assigned to you, View Dashboard ';
-			$this->send_email($workforce['personEmail'], $subject, $message);
+			$workforcetoProject = $this->generic->GetWorkforceofPRoject(array('pwl.ProjectID' => $projectID));
+			if ($workforcetoProject) {
+				foreach ($workforcetoProject as $workforce) {
+					$subject = 'Equip Manager - Project Assigned';
+					$message = 'New Project assigned to you, View Dashboard ';
+					$this->send_email($workforce['personEmail'], $subject, $message);
+				}
 			}
-			//set session message
-			$this->session->set_flashdata('successaddedd', 'Project marked as In Progress successfully.');
-			redirect(base_url('add-project'));
+
+			$statusLabelMap = array(
+				1 => 'Draft',
+				2 => 'In Progress',
+				3 => 'Delayed',
+				4 => 'Completed'
+			);
+			$statusLabel = isset($statusLabelMap[$requestedStatus]) ? $statusLabelMap[$requestedStatus] : 'Updated';
+			$projectName = !empty($currentProject) ? $currentProject[0]['pName'] : 'Project';
+			$this->notifyProjectWorkforce(
+				$projectID,
+				'Project Status Updated',
+				'Project "' . $projectName . '" status changed to ' . $statusLabel . '.',
+				'employee/projects'
+			);
+			if ($requestedStatus === 4 && $oldStatus !== 4) {
+				$this->releaseProjectEquipmentFromEmployees($projectID);
+				$this->notifyProjectWorkforce(
+					$projectID,
+					'Project Completed',
+					'Project "' . $projectName . '" is marked completed. Assigned equipment has been returned.',
+					'employee/projects'
+				);
+			}
+			$this->session->set_flashdata('successaddedd', 'Project status updated to ' . $statusLabel . ' successfully.');
+			redirect(base_url('add-project?id=' . $projectID . '&step=3'));
 		} else {
 			echo "Invalid Request!";
 		}
@@ -1027,14 +1284,17 @@ class project extends MY_Controller
 			}
 			//delete project workforce link
 			$this->generic->Delete('projectworkforcelink', array('ProjectID' => $projectID));
-			//update equipment in use quantity
-			$assignedEquipment = $this->generic->GetData('projectequipmentlink', array('ProjectID' => $projectID));
-			if ($assignedEquipment) {
-				foreach ($assignedEquipment as $equipLink) {
-					$equipment = $this->generic->GetData('equipment', array('equipmentID' => $equipLink['equipmentID']));
-					if ($equipment) {
-						$newInUseQty = $equipment[0]['equipInUseQuantity'] - $equipLink['equipmentQTY'];
-						$this->generic->Update('equipment', array('equipmentID' => $equipLink['equipmentID']), array('equipInUseQuantity' => $newInUseQty));
+			//update equipment in use quantity only if not already released by completion
+			$projectStatus = isset($project['pStatus']) ? (int)$project['pStatus'] : null;
+			if ($projectStatus !== 4) {
+				$assignedEquipment = $this->generic->GetData('projectequipmentlink', array('ProjectID' => $projectID));
+				if ($assignedEquipment) {
+					foreach ($assignedEquipment as $equipLink) {
+						$equipment = $this->generic->GetData('equipment', array('equipmentID' => $equipLink['equipmentID']));
+						if ($equipment) {
+							$newInUseQty = max(0, (int)$equipment[0]['equipInUseQuantity'] - (int)$equipLink['equipmentQTY']);
+							$this->generic->Update('equipment', array('equipmentID' => $equipLink['equipmentID']), array('equipInUseQuantity' => $newInUseQty));
+						}
 					}
 				}
 			}

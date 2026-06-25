@@ -97,7 +97,7 @@
       <!--breadcrumb-->
       <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3" style="border: none">
-          Equipment Listings
+          Equipment Marketplace Listings
         </div>
       </div>
       <!--end breadcrumb-->
@@ -113,15 +113,15 @@
               <!-- Btn -->
               <div class="multi_tabs-btn 
                 active_tab
-                width-ctrl" data-bs-toggle="tooltip" data-bs-placement="top" title="Listing Type">
+                width-ctrl">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn">
-                  <span class="_circle">Step 1</span>
+                  <span class="_circle">Listing Type</span>
                 </button>
               </div>
               <!-- Btn -->
               <div class="multi_tabs-btn 
-                width-ctrl " data-bs-toggle="tooltip" data-bs-placement="top" title="Listing Details">
+                width-ctrl ">
                 <div class="tab-progress-bar "></div>
                 <button class="tab-btn" <?php if (!isset($_GET['edit'])) {
                                           echo 'disabled';
@@ -134,7 +134,7 @@
                   }
                     ?>
 
-                    <span class="_circle">Step 2</span>
+                    <span class="_circle">Listing Details</span>
                     <?php
                     if (isset($_GET['edit'])) {
                     ?>
@@ -145,7 +145,7 @@
                 </button>
               </div>
               <!-- Btn -->
-              <div class="multi_tabs-btn" style="--width: 50%" data-bs-toggle="tooltip" data-bs-placement="top" title="Terms & Conditions">
+              <div class="multi_tabs-btn" style="--width: 50%">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn" <?php if (!isset($_GET['edit'])) {
                                           echo 'disabled';
@@ -157,7 +157,7 @@
                     <?php
                   }
                     ?>
-                  <span class="_circle">Step 3</span>
+                  <span class="_circle">Terms & Conditions</span>
                   <?php
                     if (isset($_GET['edit'])) {
                     ?>
@@ -184,6 +184,10 @@
                     <hr />
                     <form class="row g-3" method="get">
                       <input type="hidden" name="itemID" value="<?php echo isset($_GET['itemID']) ? $_GET['itemID'] : ''; ?>">
+                      <?php $login = $this->session->userdata('loginData'); ?>
+                      <?php if (isset($login['userType']) && (int)$login['userType'] === 4): ?>
+                        <input type="hidden" name="employeeID" value="<?= (int)$login['userID'] ?>">
+                      <?php endif; ?>
                       <div class="col-12">
                         <div class="d-flex align-items-center gap-20 mb-3">
                           <label class="form-label mb-0" for="skill">Choose listing type <span data-bs-toggle="tooltip" title="Select 'Equipment' if you want to list tools, machines, or physical assets (Drills, generators, lifts, vehicles). Select 'Workforce' if you want to list employees or labor services (Electricians, operators, technicians).">ⓘ</span></label>

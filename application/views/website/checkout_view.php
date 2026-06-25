@@ -470,10 +470,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <form id="checkout-form" method="POST">
                 <input type="hidden" name="<?= $csrf_token_name ?>" value="<?= $csrf_token_value ?>">
                 <input type="hidden" name="equipment_payment_id" value="<?= htmlspecialchars($order['equipment_payment_id'] ?? '') ?>">
+                <input type="hidden" name="workforce_payment_id" value="<?= htmlspecialchars($order['workforce_payment_id'] ?? '') ?>">
                 <input type="hidden" name="item_id" value="<?= htmlspecialchars($order['item_id']) ?>">
                 <input type="hidden" name="quantity" value="<?= htmlspecialchars($order['quantity']) ?>">
                 <input type="hidden" name="start_date" value="<?= htmlspecialchars($order['rental_start_date'] ?? '') ?>">
                 <input type="hidden" name="end_date" value="<?= htmlspecialchars($order['rental_end_date'] ?? '') ?>">
+                
+                <!-- RENTAL/PURCHASE INFO (SUMMARY) -->
+                <div class="form-section" style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border: 1px solid #d4edda; border-left: 4px solid #34FF67;">
+                    <h3 class="form-section-heading">Order Summary</h3>
+
+                    <?php if (!empty($order['order_id'])): ?>
+                    <div class="summary-row">
+                        <span class="summary-label">Order ID:</span>
+                        <span class="summary-value">#<?= intval($order['order_id']) ?></span>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">Item Type:</span>
+                        <span class="summary-value">
+                            <?php 
+                                if ($order['item_type'] == 1) {
+                                    echo $order['sale_type'] == 0 ? 'Equipment Marketplace' : 'Equipment Purchase';
+                                } else if ($order['item_type'] == 2) {
+                                    echo 'Workforce Rental';
+                                }
+                            ?>
+                        </span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">Quantity:</span>
+                        <span class="summary-value"><?= intval($order['quantity']) ?> unit<?= intval($order['quantity']) !== 1 ? 's' : '' ?></span>
+                    </div>
+                    
+                    <?php if (!empty($order['rental_start_date']) && !empty($order['rental_end_date'])): ?>
+                    <div class="summary-row">
+                        <span class="summary-label">Rental Period:</span>
+                        <span class="summary-value">
+                            <?= (new DateTime($order['rental_start_date']))->format('M d, Y') ?>
+                            to
+                            <?= (new DateTime($order['rental_end_date']))->format('M d, Y') ?>
+                        </span>
+                    </div>
+                    
+                    <?php if ($order['rental_days'] > 0): ?>
+                    <div class="summary-row">
+                        <span class="summary-label">Duration:</span>
+                        <span class="summary-value"><?= intval($order['rental_days']) ?> day<?= intval($order['rental_days']) !== 1 ? 's' : '' ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                </div>
                 
                 <!-- CONTACT INFORMATION -->
                 <div class="form-section">
@@ -631,7 +680,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     Back
                 </button>
                 <button type="button" class="btn btn-primary" id="pay-button" onclick="processPayment()">
-                    Pay $<?= number_format($order['total'], 2) ?>
+                    Pay <span id="pay-button-amount">$<?= number_format($order['total'], 2) ?></span>
                 </button>
             </div>
 
@@ -690,16 +739,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
             <?php endif; ?>
 
+            <!-- DELIVERY CHARGE (when customer pays delivery) -->
+            <?php 
+            $deliveryCharge = 0;
+            if (!empty($order['delivery_charge_bearer']) && $order['delivery_charge_bearer'] == 2 && !empty($order['delivery_charge'])) {
+                $deliveryCharge = floatval($order['delivery_charge']);
+            }
+            ?>
+            <?php if ($deliveryCharge > 0 && $order['delivery_option'] == 1): ?>
+            <div class="summary-row" id="delivery-fee-row" style="display: none;">
+                <span class="summary-label">Delivery Fee</span>
+                <span class="summary-value" id="delivery-fee-amount">$<?= number_format($deliveryCharge, 2) ?></span>
+            </div>
+            <?php endif; ?>
+
+            <!-- TOTAL (dynamic - updates when delivery method changes) -->
             <div class="summary-row total">
                 <span>Total</span>
-                <span>$<?= number_format($order['total'], 2) ?></span>
+                <span id="total-amount">$<?= number_format($order['total'], 2) ?></span>
             </div>
 
-            <!-- DELIVERY -->
+            <!-- DELIVERY STATUS INFO -->
             <div style="padding: 12px 0; font-size: 13px; color: #666;">
                 <strong>Delivery:</strong> 
-                <div style="margin-top: 4px; color: #888;">
-                    Calculated after address verification
+                <div style="margin-top: 4px; color: #888;" id="delivery-status-info">
+                    <?php 
+                    if ($order['delivery_option'] == 1) {
+                        if ($deliveryCharge > 0) {
+                            echo 'Select option above - Fee: $' . number_format($deliveryCharge, 2);
+                        } else {
+                            echo 'Available - Free Delivery';
+                        }
+                    } else {
+                        echo 'Pickup Only';
+                    }
+                    ?>
                 </div>
             </div>
         </div>
@@ -715,6 +789,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     <!-- SCRIPTS -->
     <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+    <script src="<?= base_url() ?>assets/js/theme-toastr.js"></script>
     <script>
         // Set global base URL for AJAX calls (works on localhost, ngrok, production)
         window.APP_BASE_URL = '<?= site_url('/') ?>';
@@ -741,10 +816,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     toastr.error(message);
                 } catch (e) {
                     console.warn('Toastr error call failed:', e);
-                    alert(message);
+                    AppToast.error(message);
                 }
             } else {
-                alert(message);
+                AppToast.error(message);
             }
         }
 
@@ -1049,7 +1124,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     console.error('❌ Stripe createPaymentMethod error:', error);
                     showError('Card error: ' + error.message);
                     payButton.disabled = false;
-                    payButton.innerHTML = 'Pay $<?= number_format($order['total'], 2) ?>';
+                    payButton.innerHTML = '<span id="pay-button-amount">Pay $<?= number_format($order['total'], 2) ?></span>';
+                    updatePayButtonText();
                     return;
                 }
 
@@ -1066,6 +1142,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         [window.CSRF_TOKEN_NAME]: window.CSRF_TOKEN_VALUE,
                         payment_method_id: paymentMethod.id,
                         equipment_payment_id: form.querySelector('input[name="equipment_payment_id"]').value,
+                        workforce_payment_id: form.querySelector('input[name="workforce_payment_id"]').value,
                         item_id: form.querySelector('input[name="item_id"]').value,
                         quantity: form.querySelector('input[name="quantity"]').value,
                         start_date: form.querySelector('input[name="start_date"]').value,
@@ -1088,7 +1165,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     console.error('❌ Backend error:', data.message);
                     showError(data.message || 'Payment failed');
                     payButton.disabled = false;
-                    payButton.innerHTML = 'Pay $<?= number_format($order['total'], 2) ?>';
+                    payButton.innerHTML = '<span id="pay-button-amount">Pay $<?= number_format($order['total'], 2) ?></span>';
+                    updatePayButtonText();
                     return;
                 }
 
@@ -1111,7 +1189,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         console.error('❌ Payment confirmation error:', result.error);
                         showError(result.error.message);
                         payButton.disabled = false;
-                        payButton.innerHTML = 'Pay $<?= number_format($order['total'], 2) ?>';
+                        payButton.innerHTML = '<span id="pay-button-amount">Pay $<?= number_format($order['total'], 2) ?></span>';
+                        updatePayButtonText();
                         return;
                     }
                 } else {
@@ -1127,7 +1206,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 console.error('❌ Payment processing error:', err);
                 showError('An error occurred during payment: ' + err.message);
                 payButton.disabled = false;
-                payButton.innerHTML = 'Pay $<?= number_format($order['total'], 2) ?>';
+                payButton.innerHTML = '<span id="pay-button-amount">Pay $<?= number_format($order['total'], 2) ?></span>';
+                updatePayButtonText();
             }
             } catch (err) {
                 console.error('❌ Outer error in payment processing:', err);
@@ -1135,7 +1215,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 const payButton = document.getElementById('pay-button');
                 if (payButton) {
                     payButton.disabled = false;
-                    payButton.innerHTML = 'Pay $<?= number_format($order['total'], 2) ?>';
+                    payButton.innerHTML = '<span id="pay-button-amount">Pay $<?= number_format($order['total'], 2) ?></span>';
+                    updatePayButtonText();
                 }
             }
         }
@@ -1147,20 +1228,80 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 if (this.checked) {
                     this.closest('.radio-option').classList.add('checked');
                 }
+
+                // Keep totals and delivery fee in sync with selected method
+                updateDeliveryDisplay();
             });
         });
 
+        // Helper function to get current total amount based on delivery selection
+        function getCurrentTotal() {
+            const equipmentAmount = parseFloat('<?= $order['total'] ?>');
+            const deliveryCharge = parseFloat('<?php echo !empty($order['delivery_charge']) ? floatval($order['delivery_charge']) : 0; ?>');
+            const deliveryOption = parseInt('<?= $order['delivery_option'] ?? 0 ?>');
+            const deliveryChargeBearer = parseInt('<?php echo !empty($order['delivery_charge_bearer']) ? $order['delivery_charge_bearer'] : 0; ?>');
+            const deliveryMethod = document.querySelector('input[name="delivery_method"]:checked');
+            
+            let total = equipmentAmount;
+            
+            if (deliveryMethod && deliveryMethod.value === '2' && deliveryOption === 1 && deliveryCharge > 0 && deliveryChargeBearer === 2) {
+                total = equipmentAmount + deliveryCharge;
+            }
+            
+            return total;
+        }
+        
+        // Helper function to update pay button text
+        function updatePayButtonText() {
+            const total = getCurrentTotal();
+            const payButtonAmount = document.getElementById('pay-button-amount');
+            if (payButtonAmount) {
+                payButtonAmount.textContent = '$' + total.toFixed(2);
+            }
+        }
+
         // Update delivery display based on selection
         function updateDeliveryDisplay() {
+            // Store cost values from PHP (equipment and delivery amounts)
+            const equipmentAmount = parseFloat('<?= $order['total'] ?>');
+            const deliveryCharge = parseFloat('<?php echo !empty($order['delivery_charge']) ? floatval($order['delivery_charge']) : 0; ?>');
+            const deliveryOption = parseInt('<?= $order['delivery_option'] ?? 0 ?>');
+            const deliveryChargeBearer = parseInt('<?php echo !empty($order['delivery_charge_bearer']) ? $order['delivery_charge_bearer'] : 0; ?>');
+            
             const deliveryMethod = document.querySelector('input[name="delivery_method"]:checked');
             const pickupSection = document.getElementById('pickup-section');
             const deliverySection = document.getElementById('delivery-section');
+            const deliveryFeeRow = document.getElementById('delivery-fee-row');
+            const totalAmountDisplay = document.getElementById('total-amount');
+            const payButtonAmount = document.getElementById('pay-button-amount');
+            const deliveryStatusInfo = document.getElementById('delivery-status-info');
             const deliveryInputs = deliverySection.querySelectorAll('input:not([name="delivery_notes"]), textarea');
+            
+            let totalAmount = equipmentAmount;
 
             if (deliveryMethod && deliveryMethod.value === '1') {
                 // Pickup selected
                 pickupSection.style.display = 'block';
                 deliverySection.style.display = 'none';
+                
+                // Hide delivery fee since not selected
+                if (deliveryFeeRow) {
+                    deliveryFeeRow.style.display = 'none';
+                }
+                
+                // Total is just equipment amount (no delivery charge)
+                totalAmount = equipmentAmount;
+                
+                // Update status info
+                if (deliveryStatusInfo) {
+                    if (deliveryOption === 1 && deliveryCharge > 0 && deliveryChargeBearer === 2) {
+                        deliveryStatusInfo.textContent = 'Select option above - Fee: $' + deliveryCharge.toFixed(2);
+                    } else if (deliveryOption === 1) {
+                        deliveryStatusInfo.textContent = 'Available - Free Delivery';
+                    } else {
+                        deliveryStatusInfo.textContent = 'Pickup Only';
+                    }
+                }
                 
                 // Remove required from delivery fields
                 deliveryInputs.forEach(input => {
@@ -1171,12 +1312,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 pickupSection.style.display = 'none';
                 deliverySection.style.display = 'block';
                 
+                // Show delivery fee if applicable
+                if (deliveryFeeRow && deliveryOption === 1 && deliveryCharge > 0 && deliveryChargeBearer === 2) {
+                    deliveryFeeRow.style.display = 'block';
+                    totalAmount = equipmentAmount + deliveryCharge;
+                }
+                
+                // Update status info
+                if (deliveryStatusInfo) {
+                    if (deliveryCharge > 0 && deliveryChargeBearer === 2) {
+                        deliveryStatusInfo.textContent = 'Selected - Fee: $' + deliveryCharge.toFixed(2);
+                    } else {
+                        deliveryStatusInfo.textContent = 'Selected - Free Delivery';
+                    }
+                }
+                
                 // Add required to delivery fields (except notes)
                 deliverySection.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(input => {
                     if (input.name !== 'delivery_notes') {
                         input.setAttribute('required', 'required');
                     }
                 });
+            }
+            
+            // Update total display
+            if (totalAmountDisplay) {
+                totalAmountDisplay.textContent = '$' + totalAmount.toFixed(2);
+            }
+            
+            // Update pay button
+            if (payButtonAmount) {
+                payButtonAmount.textContent = '$' + totalAmount.toFixed(2);
             }
         }
 

@@ -50,6 +50,8 @@
       </div>
     </div>
   </section>
+ <br>
+ <br>
 
   <!-- search -->
   <section class="search">

@@ -211,6 +211,7 @@
                       <th>Email</th>
                       <th>Phone</th>
                       <th>Skill</th>
+                      <th>Login</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
@@ -281,6 +282,21 @@
           </a>';
                             }
                             ?>
+                          </td>
+                          <td>
+                            <?php if (!empty($workforce['employeeUserID']) && (int)($workforce['employeeUserStatus'] ?? 0) === 1) { ?>
+                              <span class="badge bg-success">Active</span>
+                            <?php } elseif (!empty($workforce['employeeUserID'])) { ?>
+                              <span class="badge bg-warning text-dark">Invite pending</span>
+                              <?php if (!empty($workforce['employeeAuthToken']) && !empty($workforce['employeeAuthCode'])) { ?>
+                                <div class="small mt-1">
+                                  <a href="<?= base_url('verify-account?auth=' . $workforce['employeeAuthToken'] . '&userID=' . $workforce['employeeUserID']) ?>" target="_blank">Setup link</a>
+                                  <span class="text-muted">Code: <?= h($workforce['employeeAuthCode']) ?></span>
+                                </div>
+                              <?php } ?>
+                            <?php } else { ?>
+                              <span class="badge bg-secondary">No account</span>
+                            <?php } ?>
                           </td>
                           <td>
                             <?php
@@ -392,6 +408,26 @@
                                                     id="personEmail"
                                                     placeholder="Enter Email Address" />
                                                 </div>
+                                                <div class="col-6">
+                                                  <label class="form-label">Reset Employee Login Password</label>
+                                                  <input
+                                                    type="password"
+                                                    class="form-control"
+                                                    name="accountPassword"
+                                                    id="accountPassword"
+                                                    minlength="6"
+                                                    placeholder="Leave blank to keep current password" />
+                                                </div>
+                                                <div class="col-6">
+                                                  <label class="form-label">Confirm Password</label>
+                                                  <input
+                                                    type="password"
+                                                    class="form-control"
+                                                    name="accountPasswordConfirm"
+                                                    id="accountPasswordConfirm"
+                                                    minlength="6"
+                                                    placeholder="Confirm new password" />
+                                                </div>
                                                 <div class="col-12">
                                                   <label class="form-label">Additional Note</label>
                                                   <textarea
@@ -441,9 +477,16 @@
                               </script>
 
                               <a
+                                href="<?= base_url('resend-employee-invite/' . $workforce['workforceID']) ?>"
+                                class="text-primary"
+                                onclick="return AppDialog.confirmAction(event, this, 'Send a fresh employee setup invite and clear any existing password?');"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                title="Resend setup invite"><i class="bi bi-envelope-fill"></i></a>
+                              <a
                                 href="<?= base_url('delete-person/' . $workforce['workforceID']) ?>"
                                 class="text-danger"
-                                onclick="return confirm('Are you sure you want to delete this person?');"
+                                onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this person?');"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 title="Delete"><i class="bi bi-trash-fill"></i></a>
@@ -455,7 +498,7 @@
                     } else {
                       ?>
                       <tr>
-                        <td colspan="6" class="text-center">No workforce found.</td>
+                        <td colspan="7" class="text-center">No workforce found.</td>
                       </tr>
                     <?php
                     }
@@ -728,6 +771,52 @@
         "hideMethod": "fadeOut"
       }
       toastr.success('Person Added!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  $inviteLink = $this->session->flashdata('employeeInviteLink');
+  $inviteCode = $this->session->flashdata('employeeInviteCode');
+  if ($inviteLink && $inviteCode) {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "timeOut": 0,
+        "extendedTimeOut": 0,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.info('Employee setup link: <?= h($inviteLink) ?><br>Verification code: <?= h($inviteCode) ?>');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('inviteResent') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.success('Employee setup invite sent!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('passwordError') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.error('Employee password must be at least 6 characters and match the confirmation.');
     </script>
   <?php
   }

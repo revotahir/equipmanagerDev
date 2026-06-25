@@ -10,6 +10,28 @@ class Welcome extends MY_Controller
 		$this->load->model('Generic_model', 'generic');
 	}
 
+	private function employeeAccount($user_id)
+	{
+		$this->load->model('Employee_model', 'employee_model');
+		return $this->employee_model->resolve_employee((int)$user_id);
+	}
+
+	private function hasWorkforceLink($user_id)
+	{
+		$link = $this->generic->GetData('usercompanyworkforcelink', ['userID' => (int)$user_id]);
+		return !empty($link);
+	}
+
+	private function requiresEmployeePasswordSetup($user_id)
+	{
+		if (!$this->hasWorkforceLink($user_id)) {
+			return false;
+		}
+
+		$user = $this->generic->GetData('users', ['userID' => (int)$user_id]);
+		return !empty($user) && empty($user[0]['userPass']);
+	}
+
 	/**
 	 * Index Page for this controller.
 	 *
@@ -98,18 +120,86 @@ class Welcome extends MY_Controller
 		$this->load->view('website/equipmentMarketplace', $this->data);
 	}
 	public function equipmentDetailMarketPlace(){
+		$this->load->model('Review_model');
 		$itemid=$this->input->get('item', TRUE);
 		$decoded=base64_decode(strtr($itemid, '-_', '+/'));
 		$itemid=explode('|', $decoded)[0];
 		$this->data['equipment'] = $this->generic->GetMarketPlaceEquipmentData(array('si.itemStatus' => 1, 'si.liveStatus' => 1,'si.itemID'=>$itemid));
+		if (empty($this->data['equipment'])) {
+			show_404();
+			return;
+		}
+		$equip = $this->data['equipment'][0];
+		$this->data['item_reviews'] = $this->Review_model->get_item_reviews('equipment', (int)$equip['equipmentID']);
+		$company_id = (int)($equip['companyID'] ?? 0);
+		$this->data['company_rating_summary'] = $company_id > 0
+			? $this->Review_model->get_company_rating_summary($company_id)
+			: ['avg' => 0, 'total' => 0];
 		$this->load->view('website/equipmentDetail',$this->data);
 	}
 	public function WorkforceDetailMarketPlace(){
+		$this->load->model('Review_model');
 		$itemid=$this->input->get('item', TRUE);
 		$decoded=base64_decode(strtr($itemid, '-_', '+/'));
 		$itemid=explode('|', $decoded)[0];
 		$this->data['workforce'] = $this->generic->GetMarketPlaceWorkforceData(array('si.itemStatus' => 1, 'si.liveStatus' => 1,'si.itemID'=>$itemid));
+		if (empty($this->data['workforce'])) {
+			show_404();
+			return;
+		}
+		$wf = $this->data['workforce'][0];
+		$this->data['item_reviews'] = $this->Review_model->get_item_reviews('workforce', (int)$wf['workforceID']);
+		$company_id = (int)($wf['companyID'] ?? 0);
+		$this->data['company_rating_summary'] = $company_id > 0
+			? $this->Review_model->get_company_rating_summary($company_id)
+			: ['avg' => 0, 'total' => 0];
+		$this->data['workforce_rating_summary'] = $this->Review_model->get_workforce_rating_summary((int)$wf['workforceID'], $company_id);
+		$this->data['workforce_reviews'] = $this->Review_model->get_workforce_reviews((int)$wf['workforceID'], $company_id, 10);
 		$this->load->view('website/WorkforceDetail',$this->data);
+	}
+
+	public function companyProfile($company_id = 0){
+		$this->load->model('Review_model');
+		$company_id = (int)$company_id;
+		if ($company_id <= 0) {
+			show_404();
+			return;
+		}
+		$company = $this->generic->GetData('companydetail', ['companyID' => $company_id]);
+		if (empty($company)) {
+			show_404();
+			return;
+		}
+		$this->data['company'] = $company[0];
+		$this->data['company_rating_summary'] = $this->Review_model->get_company_rating_summary($company_id);
+		$this->data['company_reviews'] = $this->Review_model->get_company_reviews($company_id);
+		$this->load->view('website/companyProfile', $this->data);
+	}
+
+	public function userProfile($user_id = 0){
+		$this->load->model('Review_model');
+		$user_id = (int)$user_id;
+		if ($user_id <= 0) {
+			show_404();
+			return;
+		}
+
+		$user = $this->generic->GetData('users', ['userID' => $user_id, 'userStatus' => 1]);
+		if (empty($user)) {
+			show_404();
+			return;
+		}
+
+		$this->data['profile_user'] = $user[0];
+		$raw_name = trim((string)($user[0]['userName'] ?? ''));
+		$raw_email = trim((string)($user[0]['userEmail'] ?? ''));
+		if ($raw_name === '' && $raw_email !== '' && strpos($raw_email, '@') !== false) {
+			$raw_name = explode('@', $raw_email)[0];
+		}
+		$this->data['profile_display_name'] = ($raw_name !== '') ? $raw_name : 'User';
+		$this->data['user_rating_summary'] = $this->Review_model->get_aggregate_for_user($user_id);
+		$this->data['user_reviews'] = $this->Review_model->get_user_reviews_with_context($user_id);
+		$this->load->view('website/userProfile', $this->data);
 	}
 		// <!-- ============================================================== -->
 	// <!-- Utality pages -->
@@ -154,6 +244,9 @@ public function ContactFormData(){
 				//if manager then redirect to manager dashboard	
 				redirect(base_url('manager-dashboard'));
 			} elseif ($user[0]['userType'] == 4) {
+				if ($this->employeeAccount($user[0]['userID'])) {
+					redirect(base_url('employee/dashboard'));
+				}
 				//if normal user then redirect to home page	
 				redirect(base_url());
 			}
@@ -217,7 +310,11 @@ public function ContactFormData(){
 			//send email
 			$subject = 'Equip Manager - Account Verification';
 			$message = 'Your account has been created successfully. Your verification code is: ' . $authCode;
-			$this->send_email($email, $subject, $message);
+			$mailSent = $this->send_email($email, $subject, $message);
+			if (!$mailSent) {
+				$this->session->set_flashdata('mailError', 'Verification email could not be sent. Please contact support.');
+				log_message('error', 'Registration email failed for company user: ' . $email);
+			}
 			redirect(base_url('verify-account?auth=' . $authTocken . '&userID=' . $maxUserId[0]['result']));
 		}
 	}
@@ -265,7 +362,11 @@ public function ContactFormData(){
 			//send email
 			$subject = 'Equip Manager - Account Verification';
 			$message = 'Your account has been created successfully. Your verification code is: ' . $authCode;
-			$this->send_email($email, $subject, $message);
+			$mailSent = $this->send_email($email, $subject, $message);
+			if (!$mailSent) {
+				$this->session->set_flashdata('mailError', 'Verification email could not be sent. Please contact support.');
+				log_message('error', 'Registration email failed for user: ' . $email);
+			}
 			redirect(base_url('verify-account?auth=' . $authTocken . '&userID=' . $maxUserId[0]['result']));
 		}
 	}
@@ -279,8 +380,9 @@ public function ContactFormData(){
 		//check if auth code exists
 		$checkAuth = $this->generic->GetData('userauth', array('authTocken' => $authcode, 'userID' => $userIDParam, 'authStatus' => 0));
 		if ($checkAuth || $this->input->get('forgot') !== NULL) {
-			// die('a');
-			$this->load->view('verifyAccount');
+			$this->load->view('verifyAccount', [
+				'requires_password_setup' => $this->input->get('forgot') === NULL && $this->requiresEmployeePasswordSetup($userIDParam)
+			]);
 		} else {
 			$this->session->set_flashdata('authExpire', 1);
 			redirect(base_url());
@@ -294,17 +396,38 @@ public function ContactFormData(){
 		$authTocken  = $this->input->get('auth', TRUE);
 		$userIDParam = $this->input->get('userID', TRUE);
 		//get user by auth token
-		$userAuth = $this->generic->GetData('userauth', array('authTocken' => $authTocken, 'userID' => $userIDParam));
+		$authWhere = array('authTocken' => $authTocken, 'userID' => $userIDParam);
+		if ($forgotcheck != '1') {
+			$authWhere['authStatus'] = 0;
+		}
+		$userAuth = $this->generic->GetData('userauth', $authWhere);
 		if ($userAuth) {
 			// die($authCode );
 			if ($userAuth[0]['authCode'] == $authCode) {
-				//update user auth status
-				$this->generic->Update('userauth', array('userID' => $userAuth[0]['userID']), array('authStatus' => 1));
-				$this->generic->Update('users', array('userID' => $userAuth[0]['userID']), array('userStatus' => 1));
 				if ($forgotcheck == '1') {
 					// if forgot password then update user password
 					redirect(base_url('reset-password?auth=' . $authTocken . '&userID=' . $userIDParam));
 				} else {
+					$userUpdate = array('userStatus' => 1);
+					if ($this->requiresEmployeePasswordSetup($userAuth[0]['userID'])) {
+						$password = trim((string)$this->input->post('account_password'));
+						$confirmPassword = trim((string)$this->input->post('account_password_confirm'));
+
+						if (strlen($password) < 6 || $password !== $confirmPassword) {
+							$this->session->set_flashdata('passwordSetupError', 1);
+							redirect(base_url('verify-account?auth=' . $authTocken . '&userID=' . $userIDParam));
+							return;
+						}
+
+						$userUpdate['userPass'] = md5($password);
+					}
+
+					//update user auth status
+					$this->generic->Update('userauth', array('userID' => $userAuth[0]['userID']), array('authStatus' => 1));
+					$this->generic->Update('users', array('userID' => $userAuth[0]['userID']), $userUpdate);
+					if ($this->db->field_exists('employeeStatus', 'usercompanyworkforcelink')) {
+						$this->generic->Update('usercompanyworkforcelink', ['userID' => $userAuth[0]['userID']], ['employeeStatus' => 'active']);
+					}
 					$this->session->set_flashdata('successRegister', 1);
 					redirect(base_url());
 				}
@@ -338,7 +461,11 @@ public function ContactFormData(){
 			$email = $userdata[0]['userEmail'];
 			$subject = 'Equip Manager - Account Verification';
 			$message = 'Your account has been created successfully. Your verification code is: ' . $userAuth[0]['authCode'];
-			$this->send_email($email, $subject, $message);
+			$mailSent = $this->send_email($email, $subject, $message);
+			if (!$mailSent) {
+				$this->session->set_flashdata('mailError', 'Verification email could not be resent. Please try again later.');
+				log_message('error', 'Resend verification email failed for user: ' . $email);
+			}
 			$this->session->set_flashdata('newcodeSend', 1);
 			if ($this->input->get('forgot') !== NULL) {
 				redirect(base_url('verify-account?auth=' . $authTocken . '&userID=' . $userIDParam . '&forgot=1'));
@@ -369,7 +496,11 @@ public function ContactFormData(){
 			//send email
 			$subject = 'Equip Manager - Forgot Password';
 			$message = 'Your verification code is: ' . $authCode;
-			$this->send_email($email, $subject, $message);
+			$mailSent = $this->send_email($email, $subject, $message);
+			if (!$mailSent) {
+				$this->session->set_flashdata('mailError', 'Verification email could not be sent. Please try again later.');
+				log_message('error', 'Forgot password verification email failed for user: ' . $email);
+			}
 			redirect(base_url('verify-account?auth=' . $authdata[0]['authTocken'] . '&userID=' . $user[0]['userID'] . '&forgot=1'));
 		} else {
 			$this->session->set_flashdata('error', 1);
@@ -429,6 +560,10 @@ public function ContactFormData(){
 		}
 		switch ($login_data['userType']) {
 			case 4: // normal user
+				if ($this->employeeAccount($login_data['userID'])) {
+					redirect(base_url('employee/dashboard'));
+					return;
+				}
 				$this->load->view('dashboards/user_dashboard');
 				break;
 			case 2: // company admin
@@ -485,15 +620,9 @@ public function ContactFormData(){
 	// <!-- ============================================================== -->
 	public function LogOut()
 	{
-		// Get userType before unsetting loginData
-		$login_data = $this->session->userdata('loginData');
 		$this->session->unset_userdata('loginData');
-		
-		// If company admin, also unset company details
-		if ($login_data && isset($login_data['userType']) && $login_data['userType'] == 2) {
-			$this->session->unset_userdata('companyDetails');
-		}
-		
+		$this->session->unset_userdata('companyDetails');
+		$this->session->sess_destroy();
 		redirect('login');
 	}
 }

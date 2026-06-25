@@ -116,6 +116,90 @@
             border-left: 4px solid #ff6b6b;
         }
 
+        /* Filter Card */
+        .orders-filter-card {
+            background-color: #ffffff;
+            border: 1px solid #ececec;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .orders-filter-inner {
+            border: 1px solid #e4e4e4;
+            border-radius: 10px;
+            padding: 24px;
+            background: #fff;
+        }
+
+        .orders-filter-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #0f2f2c;
+            line-height: 1.1;
+            margin: 0 0 20px 0;
+        }
+
+        .orders-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .orders-filter-control {
+            width: 100%;
+            height: 56px;
+            border: 1px solid #cfd4dc;
+            border-radius: 10px;
+            padding: 0 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #122235;
+            background-color: #ffffff;
+        }
+
+        .orders-filter-control:focus {
+            outline: none;
+            border-color: #34FF67;
+            box-shadow: 0 0 0 3px rgba(52, 255, 103, 0.15);
+        }
+
+        .orders-filter-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-apply-filter {
+            height: 56px;
+            min-width: 220px;
+            border: none;
+            border-radius: 10px;
+            background: #0f4238;
+            color: #fff;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1;
+            padding: 0 28px;
+        }
+
+        .btn-clear-filter {
+            height: 56px;
+            min-width: 140px;
+            border: 1px solid #cfd4dc;
+            border-radius: 10px;
+            background: #fff;
+            color: #334155;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Status Filter Tabs - Modern Style */
         .status-filters {
             display: flex;
@@ -430,6 +514,30 @@
                 gap: 8px;
             }
 
+            .orders-filter-card,
+            .orders-filter-inner {
+                padding: 16px;
+            }
+
+            .orders-filter-title {
+                font-size: 30px;
+                margin-bottom: 14px;
+            }
+
+            .orders-filter-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .btn-apply-filter {
+                min-width: 100%;
+                font-size: 22px;
+            }
+
+            .btn-clear-filter {
+                min-width: 100%;
+            }
+
             .filter-btn {
                 padding: 8px 16px;
                 font-size: 13px;
@@ -511,32 +619,51 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
-                
+
+                <?php
+                    $filter_type = strtolower((string)($filter_type ?? ''));
+                    $status_query_suffix = !empty($filter_type) ? '&type=' . rawurlencode($filter_type) : '';
+                    $type_query_suffix = !empty($filter) ? '&status=' . rawurlencode((string)$filter) : '';
+                    $selected_status = strtolower((string)($filter ?? ''));
+                    $selected_scope = strtolower((string)$this->input->get('scope', TRUE));
+                ?>
                 <!-- Status Filter Tabs -->
                 <div class="status-filters">
-                    <a href="<?= base_url('company-orders') ?>" class="filter-btn <?= !$filter ? 'active' : '' ?>">
+                    <a href="<?= base_url('company-orders') ?>" class="filter-btn <?= (!$filter && !$filter_type) ? 'active' : '' ?>">
                         <i class="bi bi-list-ul"></i>
                         <span>All Orders</span>
                     </a>
-                    <a href="<?= base_url('company-orders?status=requested') ?>" class="filter-btn <?= $filter == 'requested' ? 'active' : '' ?>">
+                    <a href="<?= base_url('company-orders?status=requested' . $status_query_suffix) ?>" class="filter-btn <?= $filter == 'requested' ? 'active' : '' ?>">
                         <i class="bi bi-clock"></i>
                         <span>Pending Approval</span>
                     </a>
-                    <a href="<?= base_url('company-orders?status=payment_pending') ?>" class="filter-btn <?= $filter == 'payment_pending' ? 'active' : '' ?>">
+                    <a href="<?= base_url('company-orders?status=payment_pending' . $status_query_suffix) ?>" class="filter-btn <?= $filter == 'payment_pending' ? 'active' : '' ?>">
                         <i class="bi bi-credit-card"></i>
                         <span>Awaiting Payment</span>
                     </a>
-                    <a href="<?= base_url('company-orders?status=payment_secured') ?>" class="filter-btn <?= $filter == 'payment_secured' ? 'active' : '' ?>">
+                    <a href="<?= base_url('company-orders?status=payment_secured' . $status_query_suffix) ?>" class="filter-btn <?= $filter == 'payment_secured' ? 'active' : '' ?>">
                         <i class="bi bi-box"></i>
                         <span>Needs Action</span>
                     </a>
-                    <a href="<?= base_url('company-orders?status=shipped') ?>" class="filter-btn <?= $filter == 'shipped' ? 'active' : '' ?>">
+                    <a href="<?= base_url('company-orders?status=shipped' . $status_query_suffix) ?>" class="filter-btn <?= $filter == 'shipped' ? 'active' : '' ?>">
                         <i class="bi bi-truck"></i>
                         <span>On The Way</span>
                     </a>
-                    <a href="<?= base_url('company-orders?status=pickup_ready') ?>" class="filter-btn <?= $filter == 'pickup_ready' ? 'active' : '' ?>">
+                    <a href="<?= base_url('company-orders?status=pickup_ready' . $status_query_suffix) ?>" class="filter-btn <?= $filter == 'pickup_ready' ? 'active' : '' ?>">
                         <i class="bi bi-bag-check"></i>
                         <span>Ready for Pickup</span>
+                    </a>
+                    <a href="<?= base_url('company-orders?status=return_requested' . $status_query_suffix) ?>" class="filter-btn <?= $filter == 'return_requested' ? 'active' : '' ?>">
+                        <i class="bi bi-arrow-return-left"></i>
+                        <span>Pending Return</span>
+                    </a>
+                    <a href="<?= base_url('company-orders?type=rental' . $type_query_suffix) ?>" class="filter-btn <?= $filter_type == 'rental' ? 'active' : '' ?>">
+                        <i class="bi bi-calendar-range"></i>
+                        <span>Rental</span>
+                    </a>
+                    <a href="<?= base_url('company-orders?type=purchase' . $type_query_suffix) ?>" class="filter-btn <?= $filter_type == 'purchase' ? 'active' : '' ?>">
+                        <i class="bi bi-bag"></i>
+                        <span>Purchase</span>
                     </a>
                 </div>
                 
@@ -568,10 +695,11 @@
                             <thead>
                                 <tr>
                                     <th>Order ID</th>
-                                    <th>Equipment</th>
+                                    <th>Item</th>
                                     <th>Buyer</th>
                                     <th>Qty</th>
                                     <th>Amount</th>
+                                    <th>Type</th>
                                     <th>Status</th>
                                     <th>Date</th>
                                     <th>Actions</th>
@@ -580,12 +708,20 @@
                             <tbody>
                                 <?php if (!empty($orders)): ?>
                                     <?php foreach ($orders as $order): ?>
-                                        <tr data-id="<?= $order->equipmentPaymentID ?>" 
+                                        <?php $orderId = intval($order->orderID ?? 0); ?>
+                                        <tr data-id="<?= $orderId ?>" 
                                             data-date="<?= $order->createdAt ?>" 
-                                            data-amount="<?= $order->grossAmount ?>">
-                                            <td><span class="order-id">#<?= $order->equipmentPaymentID ?></span></td>
+                                            data-amount="<?= $order->grossAmount ?>"
+                                            data-sale-type="<?= ((($order->orderType ?? 'equipment') === 'workforce') || in_array(strtolower((string)($order->saleType ?? '')), ['rental', '0', '2'], true)) ? 'rental' : 'purchase' ?>"
+                                            data-order-kind="<?= ($order->orderType ?? 'equipment') === 'workforce' ? 'workforce' : 'equipment' ?>">
+                                            <td><span class="order-id"><?= $orderId > 0 ? ('#' . $orderId) : '#N/A' ?></span></td>
                                             <td>
-                                                <strong><?= htmlspecialchars($order->equipName) ?></strong>
+                                                <div style="display: flex; gap: 8px; align-items: center;">
+                                                    <strong><?= htmlspecialchars($order->itemName ?? $order->equipName ?? 'Item') ?></strong>
+                                                    <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; <?= ($order->orderType ?? 'equipment') === 'equipment' ? 'background-color: #d4edda; color: #155724;' : 'background-color: #d1ecf1; color: #0c5460;' ?>">
+                                                        <?= ($order->orderType ?? 'equipment') === 'equipment' ? 'Equipment' : 'Workforce' ?>
+                                                    </span>
+                                                </div>
                                             </td>
                                             <td>
                                                 <div class="buyer-info">
@@ -596,8 +732,51 @@
                                             <td><?= $order->quantity ?></td>
                                             <td><strong>$<?= number_format($order->grossAmount, 2) ?></strong></td>
                                             <td>
+                                                <?php
+                                                    $sale_type_label_value = strtolower((string)($order->saleType ?? ''));
+                                                    $is_rental_type_label = (($order->orderType ?? 'equipment') === 'workforce') || in_array($sale_type_label_value, ['rental', '0', '2'], true);
+                                                ?>
+                                                <span class="badge-custom <?= $is_rental_type_label ? 'badge-payment' : 'badge-secured' ?>">
+                                                    <?= $is_rental_type_label ? 'Rental' : 'Purchase' ?>
+                                                </span>
+                                            </td>
+                                            <td>
                                                 <?php 
+                                                $raw_order_status = strtolower((string)($order->orderStatus ?? 'requested'));
+                                                $rental_lifecycle_status = strtolower((string)($order->rentalLifecycleStatus ?? ''));
+                                                $display_status = $raw_order_status;
+                                                $sale_type = strtolower((string)($order->saleType ?? ''));
+                                                $is_equipment_order = (($order->orderType ?? 'equipment') === 'equipment');
+                                                $is_rental_order = (($order->orderType ?? 'equipment') === 'workforce') || ($is_equipment_order && ($sale_type === 'rental' || $sale_type === '0' || $sale_type === '2'));
+                                                $terminal_order_states = ['rejected', 'cancelled', 'refunded'];
+
+                                                if ($raw_order_status === 'payment_pending') {
+                                                    $display_status = 'payment_pending';
+                                                } elseif ($is_rental_order && !empty($rental_lifecycle_status)) {
+                                                    // For rental rows, lifecycle status is primary unless order is terminal.
+                                                    $display_status = in_array($raw_order_status, $terminal_order_states, true)
+                                                        ? $raw_order_status
+                                                        : $rental_lifecycle_status;
+                                                } elseif (in_array($raw_order_status, ['payment_secured', 'shipped', 'pickup_ready', 'delivered', 'completed', 'rejected', 'cancelled'], true)) {
+                                                    $display_status = $raw_order_status;
+                                                }
+
+                                                // Heal stale mixed states for UI logic (old rows: requested + request_rejected).
+                                                if ($display_status === 'request_rejected' && !in_array($raw_order_status, $terminal_order_states, true)) {
+                                                    $raw_order_status = 'rejected';
+                                                } elseif ($display_status === 'rental_cancelled' && !in_array($raw_order_status, $terminal_order_states, true)) {
+                                                    $raw_order_status = 'cancelled';
+                                                }
+
+                                                $has_active_issue = intval($order->hasActiveIssue ?? 0) === 1;
+                                                if ($has_active_issue && !in_array($raw_order_status, ['completed', 'cancelled', 'rejected', 'refunded'], true)) {
+                                                    $display_status = 'under_review';
+                                                }
+
+                                                $can_accept_or_reject = in_array($display_status, ['requested', 'request_pending'], true);
+                                                $can_ship_or_pickup = ($raw_order_status === 'payment_secured');
                                                 $status_badges = [
+                                                    // Equipment statuses
                                                     'requested' => '<span class="badge-custom badge-pending">Pending Approval</span>',
                                                     'payment_pending' => '<span class="badge-custom badge-payment">Awaiting Payment</span>',
                                                     'payment_secured' => '<span class="badge-custom badge-secured">Payment Secured</span>',
@@ -607,9 +786,22 @@
                                                     'completed' => '<span class="badge-custom badge-completed">Completed</span>',
                                                     'rejected' => '<span class="badge-custom badge-rejected">Rejected</span>',
                                                     'cancelled' => '<span class="badge-custom badge-rejected">Cancelled</span>',
-                                                    'refunded' => '<span class="badge-custom badge-rejected">Refunded</span>'
+                                                    'refunded' => '<span class="badge-custom badge-rejected">Refunded</span>',
+                                                    // Workforce statuses
+                                                    'request_pending' => '<span class="badge-custom badge-pending">Pending Approval</span>',
+                                                    'request_approved' => '<span class="badge-custom badge-secured">Approved</span>',
+                                                    'awaiting_handover' => '<span class="badge-custom badge-secured">Awaiting Handover</span>',
+                                                    'request_rejected' => '<span class="badge-custom badge-rejected">Rejected</span>',
+                                                    'rental_active' => '<span class="badge-custom" style="background-color: #e0f0ff; color: #0057b8;">Rental Period Started</span>',
+                                                    'return_requested' => '<span class="badge-custom badge-payment">Pending Return (72h)</span>',
+                                                    'rental_overdue' => '<span class="badge-custom badge-rejected">Overdue</span>',
+                                                    'returned_by_renter' => '<span class="badge-custom badge-secured">Awaiting Return Confirmation</span>',
+                                                    'received_by_owner' => '<span class="badge-custom badge-secured">Received By Owner</span>',
+                                                    'under_review' => '<span class="badge-custom badge-pending">Under Review</span>',
+                                                    'rental_completed' => '<span class="badge-custom badge-completed">Completed</span>',
+                                                    'rental_cancelled' => '<span class="badge-custom badge-rejected">Cancelled</span>'
                                                 ];
-                                                echo $status_badges[$order->orderStatus] ?? '<span class="badge-custom">' . ucfirst($order->orderStatus) . '</span>';
+                                                echo $status_badges[$display_status] ?? '<span class="badge-custom">' . ucfirst(str_replace('_', ' ', $display_status)) . '</span>';
                                                 ?>
                                             </td>
                                             <td><small><?= date('M d, Y', strtotime($order->createdAt)) ?></small></td>
@@ -617,60 +809,109 @@
                                                 <div class="action-buttons">
                                                     <!-- View Details -->
                                                     <button type="button" class="btn-action btn-view" 
-                                                            onclick="viewOrderDetails(<?= $order->equipmentPaymentID ?>)"
+                                                            onclick="viewOrderDetails(<?= $orderId ?>)"
+                                                            <?= $orderId > 0 ? '' : 'disabled' ?>
                                                             title="View Details">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
                                                     
                                                     <!-- Chat -->
-                                                    <a href="<?= base_url('chat/view/' . $order->equipmentPaymentID) ?>" 
+                                                    <a href="<?= $orderId > 0 ? base_url('chat/view/' . $orderId) : 'javascript:void(0);' ?>" 
                                                        class="btn-action btn-chat" 
                                                        title="Open Chat">
                                                         <i class="bi bi-chat-dots"></i>
                                                     </a>
                                                     
-                                                    <!-- Accept/Reject (only for requested) -->
-                                                    <?php if ($order->orderStatus == 'requested'): ?>
+                                                    <!-- Accept/Reject (only for requested/request_pending) -->
+                                                    <?php if ($can_accept_or_reject): ?>
                                                         <form method="POST" action="<?= base_url('company-orders/accept') ?>" style="display: inline;">
-                                                            <input type="hidden" name="order_id" value="<?= $order->equipmentPaymentID ?>" />
+                                                            <input type="hidden" name="order_id" value="<?= $orderId ?>" />
                                                             <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>" />
                                                             <button type="submit" class="btn-action btn-accept" 
-                                                                    onclick="return confirm('Accept this purchase request?')"
+                                                                    <?= $orderId > 0 ? '' : 'disabled' ?>
+                                                                    onclick="return AppDialog.confirmAction(event, this, 'Accept this request?');"
                                                                     title="Accept Request">
                                                                 <i class="bi bi-check-circle"></i>
                                                             </button>
                                                         </form>
                                                         
                                                         <button type="button" class="btn-action btn-reject" 
-                                                                onclick="rejectOrder(<?= $order->equipmentPaymentID ?>)"
+                                                                onclick="rejectOrder(<?= $orderId ?>)"
+                                                                <?= $orderId > 0 ? '' : 'disabled' ?>
                                                                 title="Reject Request">
                                                             <i class="bi bi-x-circle"></i>
                                                         </button>
                                                     <?php endif; ?>
                                                     
                                                     <!-- Mark as Shipped OR Allow Pickup (only for payment_secured) -->
-                                                    <?php if ($order->orderStatus == 'payment_secured'): ?>
+                                                    <?php if ($can_ship_or_pickup): ?>
                                                         <?php
                                                         $_om  = json_decode($order->paymentMetadata ?? '{}', true);
                                                         $_odm = intval($_om['delivery_method'] ?? 0);
                                                         ?>
                                                         <?php if ($_odm === 2): // delivery ?>
                                                             <button type="button" class="btn-action btn-ship" 
-                                                                    onclick="markAsShipped(<?= $order->equipmentPaymentID ?>)"
+                                                                    onclick="markAsShipped(<?= $orderId ?>)"
+                                                                    <?= $orderId > 0 ? '' : 'disabled' ?>
                                                                     title="Mark as Shipped">
                                                                 <i class="bi bi-truck"></i>
                                                             </button>
                                                         <?php else: // pickup ?>
                                                             <form method="POST" action="<?= base_url('company-orders/allow_pickup') ?>" style="display:inline;">
-                                                                <input type="hidden" name="order_id" value="<?= $order->equipmentPaymentID ?>">
+                                                                <input type="hidden" name="order_id" value="<?= $orderId ?>">
                                                                 <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                                                                 <button type="submit" class="btn-action btn-accept"
-                                                                        onclick="return confirm('Allow buyer to pick up order #<?= $order->equipmentPaymentID ?>?')"
+                                                                        <?= $orderId > 0 ? '' : 'disabled' ?>
+                                                                        onclick="return AppDialog.confirmAction(event, this, 'Allow buyer to pick up order #<?= $orderId ?>?');"
                                                                         title="Allow Pickup">
                                                                     <i class="bi bi-bag-check"></i>
                                                                 </button>
                                                             </form>
                                                         <?php endif; ?>
+                                                    <?php endif; ?>
+
+                                                    <!-- Confirm receipt when renter already marked return -->
+                                                    <?php if (($order->rentalLifecycleStatus ?? '') === 'returned_by_renter' || (($order->rentalLifecycleStatus ?? '') === 'under_review' && !empty($order->renterConfirmedReturn))): ?>
+                                                        <?php
+                                                        $paymentIdForConfirm = (($order->orderType ?? 'equipment') === 'workforce')
+                                                            ? intval($order->workforcePaymentID ?? 0)
+                                                            : intval($order->equipmentPaymentID ?? 0);
+                                                        $itemTypeForConfirm = (($order->orderType ?? 'equipment') === 'workforce') ? 'workforce' : 'equipment';
+                                                        ?>
+                                                        <?php if ($paymentIdForConfirm > 0): ?>
+                                                        <button type="button" class="btn-action btn-accept"
+                                                                onclick="confirmReturnReceipt(<?= $paymentIdForConfirm ?>, '<?= $itemTypeForConfirm ?>', <?= $orderId ?>)"
+                                                                title="Confirm Receipt">
+                                                            <i class="bi bi-check2-all"></i>
+                                                        </button>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
+
+                                                    <?php
+                                                        $rental_lifecycle = $order->rentalLifecycleStatus ?? null;
+                                                        $raw_order_status_lc = strtolower((string)($raw_order_status ?? ''));
+                                                        $rental_status_lc = strtolower((string)($rental_lifecycle ?? ''));
+                                                        $rental_start_ts = !empty($order->rentalStartDate) ? strtotime($order->rentalStartDate . ' 00:00:00') : null;
+                                                        $rental_end_ts = !empty($order->rentalEndDate) ? strtotime($order->rentalEndDate . ' 23:59:59') : null;
+                                                        $is_past_return_grace = $rental_end_ts ? (time() > ($rental_end_ts + (72 * 3600))) : false;
+                                                        $post_handover_states = ['rental_active','return_requested','rental_overdue','returned_by_renter','received_by_owner','under_review','rental_completed','rental_cancelled'];
+                                                        $pre_handover_order_states = ['request_approved','awaiting_handover','payment_secured','shipped','pickup_ready','delivered'];
+                                                        $owner_late_arrival_window = $rental_start_ts
+                                                            && time() >= $rental_start_ts
+                                                            && in_array($raw_order_status_lc, $pre_handover_order_states, true)
+                                                            && !in_array($rental_status_lc, $post_handover_states, true);
+                                                        $owner_active_window = ($rental_status_lc === 'rental_active');
+                                                        $owner_overdue_window = empty($order->renterConfirmedReturn) && (
+                                                            $rental_status_lc === 'rental_overdue'
+                                                            || $is_past_return_grace
+                                                        );
+                                                        $owner_return_inspection_window = !empty($order->renterConfirmedReturn) && empty($order->ownerConfirmedReturn);
+                                                        $can_report_issue = $owner_active_window || $owner_late_arrival_window || $owner_overdue_window || $owner_return_inspection_window;
+                                                    ?>
+                                                    <?php if ($can_report_issue): ?>
+                                                        <a href="<?= $orderId > 0 ? (base_url('company-orders/view/' . $orderId) . '#reportIssueModal') : 'javascript:void(0);' ?>" class="btn-action" title="Report Issue" style="background-color:#fff7e6;color:#b45309;border-color:#fcd9a5;">
+                                                            <i class="bi bi-flag"></i>
+                                                        </a>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
@@ -678,7 +919,7 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="8">
+                                        <td colspan="9">
                                             <div class="empty-state">
                                                 <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
                                                 <div class="empty-state-text">No orders found</div>
@@ -889,7 +1130,8 @@
             let pendingCount = 0;
             
             rows.forEach(row => {
-                const statusCell = row.querySelector('td:nth-child(6)');
+                if (row.style.display === 'none') return;
+                const statusCell = row.querySelector('td:nth-child(7)');
                 if (statusCell && !row.querySelector('.empty-state-icon')) {
                     totalCount++;
                     if (statusCell.textContent.includes('Pending')) {
@@ -910,6 +1152,17 @@
                 pluralS.textContent = 's';
             }
         }
+
+        function applyScopeFilter(scope) {
+            const dataRows = document.querySelectorAll('table tbody tr[data-order-kind]');
+            dataRows.forEach(function(row) {
+                if (!scope || row.getAttribute('data-order-kind') === scope) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
         
         function rejectOrder(orderId) {
             document.getElementById('reject_order_id').value = orderId;
@@ -926,12 +1179,54 @@
         function viewOrderDetails(orderId) {
             window.location.href = '<?= base_url("company-orders/view/") ?>' + orderId;
         }
+
+        function confirmReturnReceipt(paymentId, itemType, orderId) {
+            if (!paymentId || !orderId) {
+                AppToast.error('Missing order/payment reference. Please refresh and try again.');
+                return;
+            }
+
+            AppDialog.confirm('Confirm that you have received the returned item for order #' + orderId + '?', {
+                title: 'Confirm Return Receipt',
+                okText: 'Confirm Receipt'
+            }).then(function(confirmed) {
+                if (!confirmed) {
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('payment_id', paymentId);
+                formData.append('item_type', itemType);
+                formData.append('notes', 'Confirmed from orders list');
+                formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
+
+                fetch('<?= site_url('company-orders/api_confirm_return') ?>', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.success) {
+                        location.reload();
+                    } else {
+                        AppToast.error((data && data.message) ? data.message : 'Failed to confirm receipt.');
+                    }
+                })
+                .catch(() => {
+                    AppToast.error('Request failed. Please try again.');
+                });
+            });
+        }
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            updateStats();
+            const selectedScope = '<?= htmlspecialchars($selected_scope, ENT_QUOTES, 'UTF-8') ?>';
+            applyScopeFilter(selectedScope);
             // Sort by newest first by default
             sortTable('date-desc');
+            updateStats();
         });
     </script>
 </body>

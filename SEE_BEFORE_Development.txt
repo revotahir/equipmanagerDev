@@ -1,1 +1,9 @@
 Changed the DB port to 3307, if someone is using the default 3306, they can go to the database config file and change it.
+
+
+Now I see the issue. The workforce_payments table doesn't have columns like rejectionReason, approvedBy, trackingNumber, shippingNotes, deliveredAt, and shippedAt. I need to fix the query to only select columns that exist:
+Removed wp.rejectionReason - Only equipment payments have rejection reasons
+Removed wp.approvedBy from COALESCE - Only equipment payments track approver
+Changed saleType default - Defaults to 'rental' for workforce orders
+Only select shipping/tracking fields from ep - These don't exist in workforce_payments
+Fixed approver join - Only uses ep.approvedBy since workforce_payments doesn't have this field

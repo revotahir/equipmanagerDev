@@ -45,6 +45,20 @@ a {
 	text-decoration: none;
 }
 
+.btn-brand {
+	background: #13372E;
+	color: #fff;
+	border: 1px solid #13372E;
+	padding: 0.25rem 0.7rem;
+	border-radius: 0.25rem;
+}
+
+.btn-brand:hover {
+	background: #2A7A66;
+	border-color: #2A7A66;
+	color: #fff;
+}
+
 ::placeholder {
 	opacity: 0.4 !important;
 }

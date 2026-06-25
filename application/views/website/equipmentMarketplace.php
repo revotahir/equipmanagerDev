@@ -480,8 +480,49 @@
         <div class="equipment-grid">
 
           <?php
+          $getRentalUnitLabel = static function ($rawType) {
+            $value = strtolower(trim((string)$rawType));
+            if ($value === '' || $value === '0') {
+              return 'Per Day';
+            }
+            $directMap = [
+              '1' => 'Per Day',
+              '2' => 'Per Week',
+              '3' => 'Per Month',
+              '4' => 'Per Year',
+              'day' => 'Per Day',
+              'daily' => 'Per Day',
+              'week' => 'Per Week',
+              'weekly' => 'Per Week',
+              'month' => 'Per Month',
+              'monthly' => 'Per Month',
+              'year' => 'Per Year',
+              'yearly' => 'Per Year',
+              'annually' => 'Per Year',
+            ];
+            if (isset($directMap[$value])) {
+              return $directMap[$value];
+            }
+            if (strpos($value, 'day') !== false) {
+              return 'Per Day';
+            }
+            if (strpos($value, 'week') !== false) {
+              return 'Per Week';
+            }
+            if (strpos($value, 'month') !== false) {
+              return 'Per Month';
+            }
+            if (strpos($value, 'year') !== false || strpos($value, 'annual') !== false) {
+              return 'Per Year';
+            }
+            return 'Per Day';
+          };
+
           if ($equipmentlisting) {
             foreach ($equipmentlisting as $row) {
+              $saleTypeRaw = strtolower(trim((string)($row['saleType'] ?? '')));
+              $isRentalListing = in_array($saleTypeRaw, ['0', 'rental', 'rent', 'for_rent'], true);
+              $rentalUnitLabel = $getRentalUnitLabel($row['eqpRentalType'] ?? '');
           ?>
               <!-- single equipment grid -->
               <div class="single-equipment-grid">
@@ -494,14 +535,27 @@
                     <span><?= $row['web_catName'] ?></span>
                     <span>
                       <?php
-                      if ($row['equipQty'] <= 0) {
-                        echo '<span style="color: red; font-weight: bold;">Out of Stock</span>';
-                      } elseif ($row['saleType'] == 1) {
-                        echo 'Rental';
+                      // Calculate availability based on sale type
+                       if ($isRentalListing) {
+                        // Rental - check rental quantity availability
+                        $availableQty = max(0, intval($row['equipRentalTotalQuantity'] ?? 0) - intval($row['equipRentalLockedQuantity'] ?? 0));
+                        // Fallback to equipQty if rental quantities not set
+                        if ($availableQty == 0 && isset($row['equipQty'])) {
+                          $availableQty = intval($row['equipQty']);
+                        }
+                        if ($availableQty <= 0) {
+                          echo '<span style="color: red; font-weight: bold;">Out of Stock</span>';
+                        } else {
+                          echo 'For Rent';
+                        }
                       } else {
-                        echo 'For Sale';
+                        // Purchase - check regular quantity
+                        if ($row['equipQty'] <= 0) {
+                          echo '<span style="color: red; font-weight: bold;">Out of Stock</span>';
+                        } else {
+                          echo 'For Sale';
+                        }
                       }
-
                       ?>
                     </span>
                     <label class="custom-heart-toggle">
@@ -526,17 +580,8 @@
                       <span>Price</span>
                       <span>$<?= $row['eqpPrice'] ?>
                         <?php
-                        if ($row['saleType'] == 1) {
-                          echo ' /';
-                          if ($row['eqpRentalType'] == 1) {
-                            echo 'Per Day';
-                          } else if ($row['eqpRentalType'] == 2) {
-                            echo 'Per Week';
-                          } else if ($row['eqpRentalType'] == 3) {
-                            echo 'Per Month';
-                          } else {
-                            echo 'Per Year';
-                          }
+                        if ($isRentalListing) {
+                          echo ' / ' . $rentalUnitLabel;
                         }
                         ?>
                       </span>
@@ -558,7 +603,22 @@
                         width: 100%;
                       "></div>
                     </foreignObject>
-                    <?php if ($row['equipQty'] > 0): ?>
+                    <?php
+                      // Check availability based on sale type
+                      $isAvailable = false;
+                      if ($row['saleType'] == 0) {
+                        // Rental - check rental quantity
+                        $availableRentalQty = max(0, intval($row['equipRentalTotalQuantity'] ?? 0) - intval($row['equipRentalLockedQuantity'] ?? 0));
+                        if ($availableRentalQty == 0 && isset($row['equipQty'])) {
+                          $availableRentalQty = intval($row['equipQty']);
+                        }
+                        $isAvailable = ($availableRentalQty > 0);
+                      } else {
+                        // Purchase - check regular quantity
+                        $isAvailable = ($row['equipQty'] > 0);
+                      }
+                    ?>
+                    <?php if ($isAvailable): ?>
                       <a href="<?= base_url('equipment-detail?item=' . rtrim(strtr(base64_encode($row['itemID'] . '|mySecret'), '+/', '-_'), '=')) ?>">
                       <?php else: ?>
                         <a href="javascript:void(0)" style="cursor: not-allowed; opacity: 0.5;">
