@@ -46,6 +46,25 @@
       --width: 25%;
     }
 
+    /* Keep add-listing step style while fitting longer project labels in the circles */
+    #multiTabsBtnsContentSection .multi_tabs-btn .tab-btn ._circle {
+      font-size: 13px !important;
+      line-height: 1.15;
+      padding: 0 6px;
+      text-align: center;
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    #multiTabsBtnsContentSection #step3div .tab-btn ._circle {
+      width: 90px;
+      font-size: 12px !important;
+      white-space: nowrap;
+      letter-spacing: -0.2px;
+      padding: 0 2px;
+    }
+
     /* Force tooltips to stay centered on top */
     .tooltip-inner {
       transform: translateX(-50%) !important;
@@ -62,9 +81,22 @@
       display: none !important;
     }
 
+    [data-bs-toggle="tooltip"] {
+      cursor: help;
+    }
+
     @media (max-width: 550px) {
       .width-ctrl {
         --width: 37%;
+      }
+
+      #multiTabsBtnsContentSection .multi_tabs-btn .tab-btn ._circle {
+        font-size: 11px !important;
+      }
+
+      #multiTabsBtnsContentSection #step3div .tab-btn ._circle {
+        width: 78px;
+        font-size: 11px !important;
       }
 
       .multi_tabs-container {
@@ -72,7 +104,7 @@
           & .tab-btn {
             & ._circle {
               width: 70px;
-              font-size: 14px;
+              font-size: 12px;
             }
           }
         }
@@ -151,24 +183,24 @@
           <div class="multi_tabs_btns-container">
             <div class="multi_tabs_btns-wrapper">
               <!-- Btn -->
-              <div class="multi_tabs-btn active_tab width-ctrl" id="step1div" data-bs-toggle="tooltip" data-bs-placement="top" title="Project Overview">
+              <div class="multi_tabs-btn active_tab width-ctrl" id="step1div">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn" id="step-1">
-                  <span class="_circle">Step 1</span>
+                  <span class="_circle">Project Overview</span>
                 </button>
               </div>
               <!-- Btn -->
-              <div class="multi_tabs-btn   width-ctrl" id="step2div" data-bs-toggle="tooltip" data-bs-placement="top" title="Resources">
+              <div class="multi_tabs-btn   width-ctrl" id="step2div">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn " id="step-2">
-                  <span class="_circle">Step 2</span>
+                  <span class="_circle">Resources</span>
                 </button>
               </div>
               <!-- Btn -->
-              <div class="multi_tabs-btn" style="--width: 50%" id="step3div" data-bs-toggle="tooltip" data-bs-placement="top" title="Responsibility">
+              <div class="multi_tabs-btn" style="--width: 50%" id="step3div">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn" id="step-3">
-                  <span class="_circle">Step 3</span>
+                  <span class="_circle">Responsibility</span>
                 </button>
               </div>
             </div>
@@ -192,7 +224,7 @@
                       <!-- SECURITY FIX: Add CSRF token to form -->
                       <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
                       <div class="col-12">
-                        <label class="form-label">Project name <span data-bs-toggle="tooltip" title="Give the project a clear and recognizable name. This helps your team and partners quickly identify the project across equipment, workforce, and tracking. Examples: 'Office renovation – electrical installation' or 'Warehouse expansion – phase 1'">ⓘ</span></label>
+                        <label class="form-label">Project name <span data-bs-toggle="tooltip" title="Give the project a clear and recognizable name. This helps your team and partners quickly identify the project across equipment, workforce, and tracking. Example: Office renovation - electrical installation, Warehouse expansion - phase 1.">ⓘ</span></label>
                         <input
                           type="text"
                           required
@@ -207,7 +239,7 @@
                           placeholder="Enter Project name" />
                       </div>
                       <div class="col-12">
-                        <label class="form-label">Project category <span data-bs-toggle="tooltip" title="Select the category that best describes the type of work. This helps organize projects and improves filtering and reporting later. Categories: Electrical, Construction, Plumbing, Renovation, Infrastructure">ⓘ</span></label>
+                        <label class="form-label">Project category <span data-bs-toggle="tooltip" title="Select the category that best describes the type of work. This helps organize projects and improves filtering and reporting later. Example categories: Electrical, Construction, Plumbing, Renovation, Infrastructure.">ⓘ</span></label>
                         <select name="pCatID" id="pCatID" required class="form-control">
                           <option value="">select Category</option>
                           <?php
@@ -230,7 +262,7 @@
                         </select>
                       </div>
                       <div class="col-12">
-                        <label class="form-label">Location <span data-bs-toggle="tooltip" title="Enter the primary location of the project. This is used to link equipment, workforce, and logistics to the correct site. You can use a city name, site name, or address.">ⓘ</span></label>
+                        <label class="form-label">Location <span data-bs-toggle="tooltip" title="Enter the primary location of the project. This is used to link equipment, workforce, and logistics to the correct site. Tip: You can use a city name, site name, or address.">ⓘ</span></label>
                         <input
                           type="text"
                           required
@@ -245,7 +277,7 @@
                           placeholder="Add  Location" />
                       </div>
                       <div class="col-12">
-                        <label class="form-label">Upload Image (Max 10, Optional) <span data-bs-toggle="tooltip" title="Upload relevant files for the project. This can include photos, technical drawings, plans, documents, or other project-related files (Site photos, Technical drawings PDF/DWG, Electrical diagrams, Safety documents, Specifications). These files help create a shared understanding of the project for everyone involved.">ⓘ</span></label>
+                        <label class="form-label">Upload Image / Files (Max 10, Optional) <span data-bs-toggle="tooltip" title="Upload relevant files for the project. This can include photos, technical drawings, plans, documents, or other project-related files. Examples: Site photos, Technical drawings (PDF, DWG), Electrical diagrams, Safety documents, Specifications or manuals. Tip: These files help create a shared understanding of the project for everyone involved.">ⓘ</span></label>
                         <input type="file" multiple id="pImg" name="pImg[]" class="form-control" />
                         <div id="previewContainer" class="mt-3 d-flex flex-wrap gap-2">
                           <?php
@@ -268,7 +300,7 @@
                           const files = event.target.files;
 
                           if (files.length > 10) {
-                            alert("You can only upload a maximum of 10 files.");
+                            AppToast.warning("You can only upload a maximum of 10 files.");
                             event.target.value = ""; // Clear the input
                             return;
                           }
@@ -353,6 +385,16 @@
                                                     }
                                                     ?></textarea>
                       </div>
+                      <div class="col-12">
+                        <label class="form-label">Project Status</label>
+                        <?php $currentProjectStatus = isset($projectData[0]['pStatus']) ? (int)$projectData[0]['pStatus'] : 1; ?>
+                        <select name="pStatus" id="pStatus" class="form-control" required>
+                          <option value="1" <?= $currentProjectStatus === 1 ? 'selected' : '' ?>>Draft</option>
+                          <option value="2" <?= $currentProjectStatus === 2 ? 'selected' : '' ?>>In Progress</option>
+                          <option value="3" <?= $currentProjectStatus === 3 ? 'selected' : '' ?>>Delayed</option>
+                          <option value="4" <?= $currentProjectStatus === 4 ? 'selected' : '' ?>>Completed</option>
+                        </select>
+                      </div>
                       <div class="row justify-content-center mt-3">
                         <div class="col-sm-1">
                           <div class="d-flex">
@@ -389,7 +431,7 @@
                     <form class="row g-3">
                       <div class="col-12">
                         <div class="d-flex align-items-center gap-20 mb-3">
-                          <label class="form-label mb-0">Select Workforce <span data-bs-toggle="tooltip" title="Select the employees or workforce members who will be assigned to this project. This helps with planning, coordination, and responsibility tracking. You can add or remove workforce members later if the project changes.">ⓘ</span></label>
+                          <label class="form-label mb-0">Select Workforce <span data-bs-toggle="tooltip" title="Select the employees or workforce members who will be assigned to this project. This helps with planning, coordination, and responsibility tracking. Tip: You can add or remove workforce members later if the project changes.">ⓘ</span></label>
                         </div>
                         <select name="workforce" id="workforce" onchange="return step2ajax()" class="form-control">
                           <option value="">Select Workforce</option>
@@ -432,7 +474,7 @@
                                         src="<?= base_url('assets/uploads/workforce/' . $sel['personImg']) ?>"
                                         class="card-img-top-main rounded-top"
                                         alt="Helen Heidenreich" />
-                                      <a href="javascript:removeworkforce(<?= $sel['workforceID'] ?>)" onclick="return confirm('Are you sure you want to remove person from project?')">
+                                      <a href="javascript:removeworkforce(<?= $sel['workforceID'] ?>)" onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to remove person from project?');">
                                         <svg
                                           width="29"
                                           height="29"
@@ -471,7 +513,7 @@
 
                       <div class="col-5">
                         <div class="d-flex align-items-center gap-20 mb-3">
-                          <label class="form-label mb-0">Select Equipment <span data-bs-toggle="tooltip" title="Select the equipment that will be used for this project. Assigned equipment can be tracked, planned, and linked to availability and usage. You can add or remove equipment later if the project changes.">ⓘ</span></label>
+                          <label class="form-label mb-0">Select Equipment <span data-bs-toggle="tooltip" title="Select the equipment that will be used for this project. Assigned equipment can be tracked, planned, and linked to availability and usage. Tip: You can add or remove equipment later if the project changes.">ⓘ</span></label>
                         </div>
                         <select name="equipment" id="equipment" class="form-control">
                           <option value="">Select Equipment</option>
@@ -520,7 +562,7 @@
                       </div>
                       <div class="col-5">
                         <div class="d-flex align-items-center gap-20 mb-3">
-                          <label class="form-label mb-0">Quantity <span data-bs-toggle="tooltip" title="Enter only the number of units you want to assign to this project. Only enter numbers (e.g., 1, 3, 10).">ⓘ</span></label>
+                          <label class="form-label mb-0">Quantity <span data-bs-toggle="tooltip" title="Enter only the number of units you want to assign to this project. Example: 1, 3, 10.">ⓘ</span></label>
                         </div>
                         <input type="number" name="qty" id="qty" class="form-control" placeholder="Select equipment first" />
                       </div>
@@ -556,7 +598,7 @@
                                           src="<?= base_url() ?>assets/uploads/equipment/<?= $equip['equipImg'] ?>"
                                           class="card-img-top-main rounded-top img-fix-cover"
                                           alt="Helen Heidenreich" />
-                                        <a href="javascript:removeequipment(<?= $equip['equipmentID'] ?>)" onclick="return confirm('Are you sure you want to remove Equipment from project?')">
+                                        <a href="javascript:removeequipment(<?= $equip['equipmentID'] ?>)" onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to remove equipment from project?');">
                                           <svg
                                             width="29"
                                             height="29"
@@ -687,7 +729,7 @@
 
                         <div class="col-6">
                           <div class="d-flex align-items-center gap-20 mb-3">
-                            <label class="form-label mb-0">Assigning Quantity <span data-bs-toggle="tooltip" title="Enter only the number of units to assign. Don't enter text. Examples: 1, 2, 5">ⓘ</span></label>
+                            <label class="form-label mb-0">Assigning Quantity <span data-bs-toggle="tooltip" title="Enter only the number of units to assign. Don't enter text. Example: 1, 2, 5.">ⓘ</span></label>
                           </div>
                           <input type="number" name="assqty" id="assqty" class="form-control" placeholder="Enter Quantity to assign" />
                         </div>
@@ -700,17 +742,6 @@
                               class="btn btn-primary btn-clash">
                               Assign
                             </button>
-                            <?php
-                            if (isset($_GET['id'])) {
-                            ?>
-                              <a
-                                href="<?= base_url('mark-project-as-inprogress?id=' . $_GET['id']) ?>"
-                                class="btn btn-primary btn-clash-outline">
-                                Submit Project
-                              </a>
-                            <?php
-                            }
-                            ?>
                           </div>
                         </div>
                       </form>
@@ -770,7 +801,7 @@
 
                                 <a
                                   href="javascript:;"
-                                  onclick="confirm('Are you sure you want to delete this assignment?') ? deleteAssignedEquipment(<?= $assign['assignID'] ?>) : false"
+                                  onclick="return AppDialog.runConfirmed(event, function(){ deleteAssignedEquipment(<?= $assign['assignID'] ?>); }, 'Are you sure you want to delete this assignment?');"
                                   class="text-danger"
                                   data-bs-toggle="tooltip"
                                   data-bs-placement="bottom"
@@ -826,52 +857,45 @@
   <!-- Initialize Bootstrap Tooltips -->
   <script>
     (function() {
-      function initTooltips() {
+      function applyTooltips() {
         if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) {
-          console.warn('Bootstrap Tooltip not available');
-          return;
+          return false;
         }
 
-        var triggers = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-
-        // Dispose any existing instances
-        triggers.forEach(function(el) {
-          var existing = bootstrap.Tooltip.getInstance(el);
-          if (existing) existing.dispose();
+        var elements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        elements.forEach(function(el) {
+          if (!bootstrap.Tooltip.getInstance(el)) {
+            new bootstrap.Tooltip(el, {
+              trigger: 'hover focus',
+              placement: 'top',
+              fallbackPlacements: [],
+              container: 'body',
+              delay: { show: 100, hide: 50 }
+            });
+          }
         });
 
-        // Create fresh tooltips
-        triggers.forEach(function(el) {
-          new bootstrap.Tooltip(el, {
-            trigger: 'hover focus',
-            placement: 'top',
-            fallbackPlacements: [],
-            container: 'body',
-            delay: { show: 100, hide: 50 }
-          });
-        });
+        return true;
       }
 
-      // On full page load to ensure all elements exist
-      window.addEventListener('load', function() {
-        setTimeout(initTooltips, 150);
-      });
-
-      // Re-run after tab/step interactions
-      document.addEventListener('click', function(e) {
-        if (e.target.closest('[id^="step-"]') || e.target.closest('.tab-btn')) {
-          setTimeout(initTooltips, 100);
+      function initTooltipsWithRetry(retriesLeft) {
+        if (!applyTooltips() && retriesLeft > 0) {
+          setTimeout(function() {
+            initTooltipsWithRetry(retriesLeft - 1);
+          }, 120);
         }
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        initTooltipsWithRetry(20);
       });
 
-      // Observe DOM changes inside the tabs container (for dynamic content)
-      var tabsContainer = document.getElementById('multiTabsBtnsContentSection');
-      if (tabsContainer && 'MutationObserver' in window) {
-        var observer = new MutationObserver(function() {
-          setTimeout(initTooltips, 50);
-        });
-        observer.observe(tabsContainer, { childList: true, subtree: true, attributes: true });
-      }
+      // Re-apply after dynamic updates/tab interactions
+      document.addEventListener('click', function() {
+        setTimeout(function() {
+          applyTooltips();
+        }, 80);
+      });
     })();
   </script>
   <!-- date selection  -->
@@ -1043,6 +1067,16 @@
               }
               // explode by array //
               response = response.split("//");
+              if (response[0] == "Projectstatuserror") {
+                document.getElementById("loader").style.display = "none";
+                toastr.options = {
+                  "closeButton": true,
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+                toastr.error(response[1] ? response[1] : 'Unable to update project status.');
+                return;
+              }
 
               if (response[0] == "Projectadded") {
 

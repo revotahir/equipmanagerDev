@@ -8,20 +8,20 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  padding: 60px 60px 150px 60px;
-  border-radius: 22px;
-  margin-top: 40px;
+  padding: clamp(24px, 3.6vw, 52px) clamp(16px, 3.6vw, 52px) clamp(46px, 8.5vw, 124px);
+  border-radius: 18px;
+  margin-top: clamp(14px, 2.2vw, 30px);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(10px, 1.1vw, 16px);
 }
 .slide {
   position: relative;
   color: var(--primary-parrot-green);
   font-family: "ClashGrotesk", sans-serif;
   font-weight: 500;
-  font-size: 16px;
-  padding: 0 0 0 140px;
+  font-size: clamp(13px, 1.11vw, 16px);
+  padding: 0 0 0 clamp(62px, 8vw, 114px);
 }
 .slide::after {
   position: absolute;
@@ -35,38 +35,40 @@
 }
 .inner-hero-section h1 {
   color: var(--white);
-  font-size: 48px;
+  font-size: clamp(25px, 3.33vw, 35px);
   font-family: "Manrope", sans-serif;
   font-weight: 800;
-  padding: 0 45% 0 0;
+  padding: 0 35% 0 0;
+  max-width: 900px;
 }
 .inner-hero-section p {
   color: var(--white);
   font-family: "ClashGrotesk", sans-serif;
   font-weight: 400;
-  font-size: 18px;
-  line-height: 30px;
-  padding: 0 55% 0 0;
+  font-size: clamp(14px, 1.25vw, 18px);
+  line-height: clamp(22px, 2.08vw, 30px);
+  padding: 0 45% 0 0;
+  max-width: 800px;
 }
 .hero-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 12px;
 }
 .btns {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 .client {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   background-color: #ffffff1a;
   backdrop-filter: blur(32px);
-  padding: 5px 12px 5px 7px;
+  padding: 3px 8px 3px 5px;
   border-radius: 360px;
 }
 .client span {
@@ -76,68 +78,125 @@
   font-weight: 700;
 }
 
+.hero-section .btn-parrot-green,
+.hero-section .btn-white-transparent {
+  padding: 13px 26px;
+}
+
+.search .inner-search {
+  gap: 10px;
+  padding: 18px;
+}
+
+.search .custom-select-label-wrapper {
+  padding: 12px 8px;
+  max-height: 48px;
+}
+
+.search .custom-select-icon-txt {
+  gap: 8px;
+}
+
+.search .custom-select-icon-txt svg {
+  height: 26px;
+}
+
+.search .btn-dark-green {
+  padding: 12px 24px;
+}
+
 /* under hero section */
 .how-it-work {
   display: flex;
   justify-content: center;
-  padding: 120px 0;
+  padding: clamp(30px, 5vw, 52px) 0;
 }
 .inner-how-it-works {
   display: flex;
-  gap: 50px;
+  gap: clamp(14px, 2.6vw, 28px);
   justify-content: space-between;
   flex-wrap: wrap;
 }
 .inner-how-it-works > .how-img {
-  width: 48%;
+  width: 38%;
 }
 .inner-how-it-works > .how-img img {
   width: 100%;
-  border-radius: 30px;
+  border-radius: 22px;
   object-fit: cover;
-  height: 100%;
+  height: clamp(360px, 42vw, 620px);
 }
 .how-works {
   width: 48%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
+}
+
+.how-works .sub-heading {
+  font-size: 18px;
+}
+
+.how-works .text-h2 {
+  font-size: clamp(22px, 2.2vw, 32px);
+}
+
+.how-works .text-para {
+  font-size: clamp(13px, 1.05vw, 16px);
+  line-height: clamp(20px, 1.8vw, 26px);
 }
 
 /* timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .timeline-card {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
+
+.timeline-card img {
+  width: clamp(44px, 3.2vw, 54px);
+  height: auto;
+}
+
 .timeline-card span {
   color: var(--title-black);
   font-family: "Manrope", sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
 }
 .timeline-line {
-  padding: 0 0 0 30px;
+  padding: 0 0 0 18px;
+}
+
+.timeline-line img {
+  height: 42px;
+  width: auto;
 }
 
 /* available */
 .available {
   display: flex;
   justify-content: center;
-  margin: 0 0 120px 0;
+  margin: 0 0 clamp(30px, 4.6vw, 60px) 0;
 }
 .inner-available {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
 }
 .tabs {
   background-color: var(--off-white);
   display: flex;
-  padding: 10px;
+  padding: 6px;
   border-radius: 360px;
-  gap: 20px;
+  gap: 8px;
   align-items: center;
   justify-content: center;
 }
@@ -149,7 +208,7 @@
   color: #585b7c;
   background-color: var(--white);
   cursor: pointer;
-  padding: 11px 33px;
+  padding: 8px 22px;
   text-align: center;
   border-radius: 360px;
   transition: all 0.3s ease;
@@ -172,23 +231,23 @@
 
 .tab-content.active-tab {
   display: flex;
-  gap: 20px;
+  gap: 14px;
   width: 100%;
 }
 .cards {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   flex-wrap: wrap;
   justify-content: space-between;
   width: 100%;
 }
 
 .single-card {
-  width: 49%;
+  width: 48.8%;
   position: relative;
   overflow: hidden;
-  padding: 22px;
-  border-radius: 22px;
+  padding: clamp(13px, 1.2vw, 18px);
+  border-radius: 16px;
   /* Remove the ::after pseudo-element and add this instead */
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(6px);
@@ -205,7 +264,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   z-index: -2; /* Changed to -2 to be behind the card background */
-  border-radius: 22px;
+  border-radius: 16px;
 }
 
 .one-card::before {
@@ -227,16 +286,16 @@
   bottom: 0;
   backdrop-filter: blur(6px);
   z-index: -1;
-  border-radius: 22px; /* Add this */
+  border-radius: 16px; /* Add this */
 }
 
 .single-card > svg {
   position: absolute;
-  top: 22px;
-  right: 22px;
+  top: 14px;
+  right: 14px;
   cursor: pointer;
-  width: 40px;
-  height: 46px;
+  width: 30px;
+  height: 36px;
   transition: all 0.3s ease;
 }
 .single-card > svg:hover {
@@ -245,28 +304,28 @@
 }
 
 .card-info {
-  padding: 80px 0 0 0;
+  padding: clamp(28px, 4.5vw, 60px) 0 0 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(10px, 1.1vw, 14px);
 }
 .card-info > div:nth-child(1) {
   background-color: #ffffff1a;
-  padding: 12px 11px 11px 11px;
+  padding: 8px;
   border-radius: 360px;
-  width: 43px;
+  width: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .card-info svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 .card-info span {
   color: var(--white);
   font-family: "Manrope", sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   text-transform: capitalize;
 }
@@ -284,21 +343,21 @@
 .price-location > div:nth-child(3) > div {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .price-location > div:nth-child(1) svg,
 .price-location > div:nth-child(3) svg {
-  height: 30px;
+  height: 22px;
 }
 .price-location > div:nth-child(1) > span,
 .price-location > div:nth-child(3) > span {
-  font-size: 16px;
+  font-size: 14px;
 }
 .price-location > div:nth-child(1) > span {
-  padding-left: 30px;
+  padding-left: 20px;
 }
 .price-location > div:nth-child(3) > div {
-  margin-left: -30px;
+  margin-left: -20px;
 }
 .line {
   border: 1px solid var(--white);
@@ -308,36 +367,43 @@
 .features {
   background-color: var(--off-white);
   display: flex;
+  padding: -100%;
   justify-content: center;
-  padding: 120px 0;
+  padding: clamp(44px, 6.4vw, 88px) 0;
+  --feature-visual-height: clamp(500px, 36vw, 620px);
 }
 .inner-features {
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 .key-feature {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   justify-content: space-between;
   flex-wrap: wrap;
 }
 .box-area {
   width: 68%;
   display: flex;
-  gap: 20px;
+  gap: 12px;
   flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: space-between;
   justify-content: space-evenly;
+  min-height: var(--feature-visual-height);
 }
 .single-icon-box {
   background-color: var(--white);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  border-radius: 20px;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
   width: 48%;
+  height: auto;
+  min-height: calc((var(--feature-visual-height) - 12px) / 2);
   transition: all 0.4s ease;
 }
 .single-icon-box:hover {
@@ -349,8 +415,17 @@
   color: var(--white);
   transition: all 0.4s ease;
 }
+.single-icon-box .text-h3 {
+  font-size: clamp(20px, 1.55vw, 24px);
+  line-height: 1.25;
+}
+
+.single-icon-box .text-para {
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: clamp(22px, 1.65vw, 27px);
+}
 .single-icon-box svg {
-  height: 54px;
+  height: 44px;
 }
 .single-icon-box:hover svg path {
   fill: var(--primary-parrot-green);
@@ -359,30 +434,30 @@
   width: 30%;
   display: flex;
   padding: 0;
-  align-items: center;
+  align-items: flex-start;
 }
 .img-area img {
   width: 100%;
-  height: 645px;
+  height: var(--feature-visual-height);
   object-fit: cover;
   object-position: center left;
-  border-radius: 35px;
+  border-radius: 26px;
 }
 
 /* popular */
 .popular {
   display: flex;
   justify-content: center;
-  padding: 120px 0 0 0;
+    padding: clamp(30px, 5vw, 52px) 0;
 }
 .inner-popular {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 12px;
 }
 .para-btn {
   display: flex;
-  gap: 50px;
+  gap: 24px;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
@@ -393,16 +468,16 @@
 .bg-slider {
   background-image: url("../img/a9f33acfa2ceaac963b1a7f8bb165f200cfaffba.webp");
   display: flex;
-  padding: 340px 0 0 0;
+  padding: clamp(110px, 14vw, 210px) 0 0 0;
   background-position: top center;
   background-repeat: no-repeat;
   background-size: cover;
-  margin-bottom: 120px;
+  margin-bottom: clamp(30px, 4.6vw, 62px);
 }
 .single-slide-box {
-  width: 360px;
+  width: clamp(228px, 20vw, 290px);
   border-right: 1px solid var(--white);
-  padding: 24px;
+  padding: clamp(10px, 1.1vw, 15px);
   display: flex;
   flex-direction: column;
   backdrop-filter: blur(15px);
@@ -474,24 +549,24 @@
 }
 
 .single-slide-box div {
-  padding-bottom: 240px;
+  padding-bottom: clamp(62px, 9.5vw, 132px);
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: clamp(10px, 1.2vw, 16px);
 }
 
 .single-slide-box div svg {
-  height: 68px;
+  height: 48px;
 }
 
 .single-box-btn {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   color: var(--primary-parrot-green);
   font-family: "ClashGrotesk", sans-serif;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   transition: all 0.6s ease;
 }
 .single-slide-box:hover .single-box-btn {
@@ -510,12 +585,12 @@
 .blog {
   display: flex;
   justify-content: center;
-  padding: 120px 0 240px 0;
+  padding: clamp(34px, 5vw, 70px) 0 clamp(64px, 9vw, 130px) 0;
 }
 .inner-blog {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 20px;
 }
 
 .title {
@@ -525,16 +600,16 @@
 }
 .all-blogs {
   display: flex;
-  gap: 20px;
+  gap: 14px;
 }
 
 .single-blog {
   background-color: var(--off-white);
-  padding: 24px;
+  padding: 14px;
   width: 50%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 .single-blog > div {
   display: flex;
@@ -549,11 +624,11 @@
   width: 50%;
   display: flex;
   flex-direction: column;
-  gap: 57px;
+  gap: 30px;
 }
 .multi-blog-list {
   background-color: var(--off-white);
-  padding: 24px;
+  padding: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -577,13 +652,13 @@
 .faq {
   display: flex;
   justify-content: center;
-  padding: 120px 0;
+  padding: clamp(34px, 5vw, 70px) 0;
 }
 .inner-faq {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 16px;
 }
 
 ul.accordion-list {
@@ -591,7 +666,7 @@ ul.accordion-list {
   display: block;
   width: 100%;
   height: auto;
-  padding: 20px 0;
+  padding: 10px 0;
   margin: 0;
   list-style: none;
 }
@@ -601,8 +676,8 @@ ul.accordion-list li {
   width: 100%;
   height: auto;
   background-color: #fff;
-  padding: 20px;
-  margin: 0 auto 15px auto;
+  padding: 12px;
+  margin: 0 auto 10px auto;
   border: 1px solid #dddddd;
   border-radius: 12px;
   cursor: pointer;
@@ -613,13 +688,13 @@ ul.accordion-list li.active h3:after {
 
 ul.accordion-list li h3 {
   font-family: "Manrope", sans-serif;
-  font-size: 20px;
+  font-size: clamp(16px, 1.39vw, 20px);
   font-weight: 700;
   position: relative;
   display: block;
   width: 100%;
   height: auto;
-  padding: 0 0 0 0;
+  padding: 0 34px 0 0;
   margin: 0;
   letter-spacing: 0.01em;
   cursor: pointer;
@@ -630,8 +705,8 @@ ul.accordion-list li h3::after {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background-image: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.4004 11.4004V6.40039C13.4004 6.13517 13.295 5.88082 13.1075 5.69328C12.92 5.50575 12.6656 5.40039 12.4004 5.40039C12.1352 5.40039 11.8808 5.50575 11.6933 5.69328C11.5057 5.88082 11.4004 6.13517 11.4004 6.40039V11.4004H6.40039C6.13517 11.4004 5.88082 11.5057 5.69328 11.6933C5.50575 11.8808 5.40039 12.1352 5.40039 12.4004C5.40039 12.6656 5.50575 12.92 5.69328 13.1075C5.88082 13.295 6.13517 13.4004 6.40039 13.4004H11.4004V18.4004C11.4004 18.6656 11.5057 18.92 11.6933 19.1075C11.8808 19.295 12.1352 19.4004 12.4004 19.4004C12.6656 19.4004 12.92 19.295 13.1075 19.1075C13.295 18.92 13.4004 18.6656 13.4004 18.4004V13.4004H18.4004C18.6656 13.4004 18.92 13.295 19.1075 13.1075C19.295 12.92 19.4004 12.6656 19.4004 12.4004C19.4004 12.1352 19.295 11.8808 19.1075 11.6933C18.92 11.5057 18.6656 11.4004 18.4004 11.4004H13.4004Z" fill="%230F2F2C"/></svg>');
   background-repeat: no-repeat;
   background-position: center;
@@ -649,8 +724,8 @@ ul.accordion-list li div.answer {
 ul.accordion-list li div.answer p {
   position: relative;
   display: block;
-  padding: 10px 0 0 0;
+  padding: 8px 0 0 0;
   cursor: pointer;
   line-height: 150%;
-  margin: 0 0 15px 0;
+  margin: 0 0 10px 0;
 }

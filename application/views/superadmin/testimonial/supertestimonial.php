@@ -282,7 +282,7 @@
                                                 </a>
                                                 <a href="<?= base_url('delet-testmoni/' . $superTesti['web_testimonialID']) ?>"
                                                     class="text-danger ms-2"
-                                                    onclick="return confirm('Are you sure you want to delete this testimonial?');"
+                                                    onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this testimonial?');"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom"
                                                     title="Delete">

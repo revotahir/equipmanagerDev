@@ -28,85 +28,124 @@ console.log('Total Orders Count: <?= count($orders) ?>');
 <!-- END DEBUG -->
 
     <?php foreach ($orders as $order): ?>
-                        <?php $orderStatus = $order->orderStatus ?? 'requested'; ?>
-                        <script>console.log('Order #' + <?= $order->equipmentPaymentID ?> + ' Status: ' + '<?= $orderStatus ?>');</script>
+                        <?php
+                            $rawOrderStatus = $order->orderStatus ?? 'requested';
+                            $orderStatus = $rawOrderStatus;
+                            $saleType = strtolower((string)($order->saleType ?? ''));
+                            $is_equipment_order = (($order->orderType ?? 'equipment') === 'equipment');
+                            $is_rental_order = (($order->orderType ?? 'equipment') === 'workforce') || ($is_equipment_order && $saleType === 'rental');
+                            $is_purchase_order = $is_equipment_order && ($saleType === 'purchase' || $saleType === '1');
+
+                            $effectiveCheckoutToken = (string)($order->checkoutToken ?? '');
+                            $effectiveCheckoutTokenExpiry = $order->checkoutTokenExpiry ?? null;
+                            if (($order->orderType ?? 'equipment') === 'workforce' && !empty($order->paymentMetadata)) {
+                                $meta = json_decode((string)$order->paymentMetadata, true);
+                                if (is_array($meta)) {
+                                    $effectiveCheckoutToken = (string)($meta['checkout_token'] ?? $effectiveCheckoutToken);
+                                    $effectiveCheckoutTokenExpiry = $meta['checkout_token_expiry'] ?? $effectiveCheckoutTokenExpiry;
+                                }
+                            }
+
+                            if ($rawOrderStatus === 'payment_pending') {
+                                $orderStatus = 'payment_pending';
+                            } elseif (in_array($rawOrderStatus, ['payment_secured', 'shipped', 'pickup_ready', 'delivered', 'completed', 'rejected', 'cancelled'], true)) {
+                                $orderStatus = $rawOrderStatus;
+                            } elseif ($is_rental_order && !empty($order->rentalLifecycleStatus)) {
+                                $orderStatus = $order->rentalLifecycleStatus;
+                            }
+                            $is_purchase_link_expired = false;
+                            if ($is_purchase_order && $rawOrderStatus === 'payment_pending' && !empty($effectiveCheckoutToken)) {
+                                if (!empty($effectiveCheckoutTokenExpiry)) {
+                                    $is_purchase_link_expired = (time() > strtotime($effectiveCheckoutTokenExpiry));
+                                } else {
+                                    $base_ts = !empty($order->createdAt) ? strtotime($order->createdAt) : time();
+                                    $is_purchase_link_expired = (time() > ($base_ts + (7 * 24 * 60 * 60)));
+                                }
+                            }
+                            if ($is_purchase_link_expired) {
+                                $orderStatus = 'expired';
+                            }
+                        ?>
+                        <script>console.log('Order #' + <?= $order->orderID ?> + ' Status: ' + '<?= $orderStatus ?>');</script>
                         <tr class="order-row">
-                            <td class="order-name">
-                                <span><?= htmlspecialchars($order->equipName ?? 'Equipment') ?></span>
+                            <td class="order-name" data-label="Name">
+                                <span><?= htmlspecialchars($order->itemName ?? $order->equipName ?? 'Item') ?></span>
                             </td>
-                            <td class="order-category">
-                                <span><?= htmlspecialchars($order->catName ?? 'N/A') ?></span>
+                            <td class="order-category" data-label="Category">
+                                <span><?= htmlspecialchars($order->itemCategory ?? $order->catName ?? 'N/A') ?></span>
                             </td>
-                            <td class="order-price">
+                            <td class="order-price" data-label="Price">
                                 <span>$<?= number_format($order->grossAmount ?? 0, 2) ?></span>
                             </td>
-                            <td class="order-date">
+                            <td class="order-date" data-label="Date">
                                 <span><?= date('m/d/Y', strtotime($order->createdAt ?? now())) ?></span>
                             </td>
-                            <td class="order-status">
+                            <td class="order-status" data-label="Status">
                                 <?php 
                                 $status_badges = [
                                     'requested' => '<span class="status-badge status-warning">Pending Approval</span>',
                                     'payment_pending' => '<span class="status-badge status-info">Awaiting Payment</span>',
+                                    'expired' => '<span class="status-badge status-danger">Expired</span>',
                                     'payment_secured' => '<span class="status-badge status-primary">Payment Secured</span>',
                                     'shipped' => '<span class="status-badge status-info">Shipment On The Way</span>',
                                     'pickup_ready' => '<span class="status-badge status-primary">Ready for Pickup</span>',
                                     'delivered' => '<span class="status-badge status-success">Delivered</span>',
                                     'completed' => '<span class="status-badge status-completed">Completed</span>',
                                     'rejected' => '<span class="status-badge status-danger">Rejected</span>',
-                                    'cancelled' => '<span class="status-badge status-secondary">Cancelled</span>'
+                                    'cancelled' => '<span class="status-badge status-secondary">Cancelled</span>',
+                                    'request_pending' => '<span class="status-badge status-warning">Pending Approval</span>',
+                                    'request_approved' => '<span class="status-badge status-info">Awaiting Payment</span>',
+                                    'awaiting_handover' => '<span class="status-badge status-primary">Awaiting Handover</span>',
+                                    'rental_active' => '<span class="status-badge status-success">Rental Period Started</span>',
+                                    'return_requested' => '<span class="status-badge status-info">Pending Return (72h)</span>',
+                                    'rental_overdue' => '<span class="status-badge status-danger">Overdue</span>',
+                                    'returned_by_renter' => '<span class="status-badge status-primary">Awaiting Owner Confirmation</span>',
+                                    'received_by_owner' => '<span class="status-badge status-primary">Received By Owner</span>',
+                                    'under_review' => '<span class="status-badge status-warning">Under Review</span>',
+                                    'rental_completed' => '<span class="status-badge status-completed">Completed</span>',
+                                    'rental_cancelled' => '<span class="status-badge status-danger">Cancelled</span>'
                                 ];
                                 echo $status_badges[$orderStatus] ?? '<span class="status-badge status-secondary">' . ucfirst($orderStatus) . '</span>';
                                 ?>
                             </td>
-                            <td class="order-action">
+                            <td class="order-action" data-label="Actions">
                                 <div class="action-buttons">
                                     <!-- View Details Button -->
-                                    <button class="view-button" onclick="viewOrder(<?= $order->equipmentPaymentID ?>)" title="View Details">
+                                    <button class="view-button" onclick="viewOrder(<?= $order->orderID ?>)" title="View Details">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     
                                     <!-- Chat Button (if chat exists) -->
                                     <?php if (isset($order->chatID) && $order->chatID): ?>
-                                    <a href="<?= base_url('chat/' . $order->equipmentPaymentID) ?>" class="chat-button" title="Open Chat">
+                                    <a href="<?= base_url('chat/' . $order->orderID) ?>" class="chat-button" title="Open Chat">
                                         <i class="bi bi-chat-dots"></i>
                                     </a>
                                     <?php endif; ?>
                                     
                                     <!-- Pay Now Button (only if payment_pending) -->
-                                    <?php if ($orderStatus === 'payment_pending'): 
-                                        $now_str = date('Y-m-d H:i:s');
-                                        if (!empty($order->checkoutTokenExpiry)) {
-                                            $token_expired = $order->checkoutTokenExpiry < $now_str;
-                                        } else {
-                                            $token_expired = !empty($order->createdAt) && $order->createdAt < date('Y-m-d H:i:s', strtotime('-7 days'));
-                                        }
-                                        if (!empty($order->checkoutToken) && !$token_expired): ?>
-                                    <a href="<?= base_url('checkout/pay/' . $order->checkoutToken) ?>" class="btn-pay-now" title="Complete Payment">
+                                    <?php if ($rawOrderStatus === 'payment_pending'): 
+                                        if (!empty($effectiveCheckoutToken) && !$is_purchase_link_expired): ?>
+                                    <a href="<?= base_url('checkout/pay/' . $effectiveCheckoutToken) ?>" class="btn-pay-now" title="Complete Payment">
                                         <i class="bi bi-credit-card"></i> Pay Now
                                     </a>
-                                        <?php elseif ($token_expired): ?>
-                                    <span class="btn-expired-link" title="Payment link has expired. Please contact the seller to request a new link.">
-                                        <i class="bi bi-clock-history"></i> Link Expired
-                                    </span>
                                         <?php endif;
                                     endif; ?>
                                     
                                     <!-- Confirm Receipt Button (only if shipped) -->
-                                    <?php if ($orderStatus === 'shipped'): ?>
-                                    <button type="button" class="btn-confirm-delivery" onclick="confirmDelivery(<?= $order->equipmentPaymentID ?>)">
+                                    <?php if ($rawOrderStatus === 'shipped'): ?>
+                                    <button type="button" class="btn-confirm-delivery" onclick="confirmDelivery(event, <?= $order->orderID ?>, this)">
                                         <i class="bi bi-check-circle"></i> Confirm
                                     </button>
                                     <?php endif; ?>
                                     
                                     <!-- Confirm Pickup Button (only if pickup_ready) -->
-                                    <?php if ($orderStatus === 'pickup_ready'): ?>
-                                    <script>console.log('✅ PICKUP READY DETECTED for order #<?= $order->equipmentPaymentID ?>');</script>
-                                    <button type="button" class="btn-confirm-delivery" onclick="confirmPickup(<?= $order->equipmentPaymentID ?>)">
+                                    <?php if ($rawOrderStatus === 'pickup_ready'): ?>
+                                    <script>console.log('✅ PICKUP READY DETECTED for order #<?= $order->orderID ?>');</script>
+                                    <button type="button" class="btn-confirm-delivery" onclick="confirmPickup(event, <?= $order->orderID ?>, this)">
                                         <i class="bi bi-bag-check"></i> Pickup
                                     </button>
                                     <?php else: ?>
-                                    <script>console.log('❌ Order #<?= $order->equipmentPaymentID ?> status: <?= htmlspecialchars($orderStatus) ?>');</script>
+                                    <script>console.log('❌ Order #<?= $order->orderID ?> status: <?= htmlspecialchars($orderStatus) ?>');</script>
                                     <?php endif; ?>
                                 </div>
                             </td>
@@ -489,12 +528,9 @@ console.log('Total Orders Count: <?= count($orders) ?>');
         }
 
         /* Stack table as cards on mobile */
-        .table-container {
-            display: none;
-        }
-
         .orders-table {
             display: block;
+            width: 100%;
         }
 
         .orders-table thead {
@@ -505,6 +541,7 @@ console.log('Total Orders Count: <?= count($orders) ?>');
             display: flex;
             flex-direction: column;
             gap: 16px;
+            width: 100%;
         }
 
         .order-row {
@@ -513,9 +550,9 @@ console.log('Total Orders Count: <?= count($orders) ?>');
             gap: 12px;
             padding: 16px;
             border: 1px solid var(--border-color);
-            border-bottom: none;
             border-radius: 8px;
             background: var(--card-bg);
+            width: 100%;
         }
 
         .order-row:hover {
@@ -526,14 +563,17 @@ console.log('Total Orders Count: <?= count($orders) ?>');
             padding: 0;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
         }
 
         .orders-table tbody td::before {
             content: attr(data-label);
             font-weight: 600;
             color: var(--text-secondary);
-            min-width: 80px;
+            min-width: 90px;
+            font-size: 12px;
         }
 
         .order-action {
@@ -673,100 +713,115 @@ console.log('Total Orders Count: <?= count($orders) ?>');
         window.location.href = BASE_URL + 'orders/' + orderId;
     }
 
-    function confirmDelivery(orderId) {
-        if (!confirm('Have you received your order? Confirming delivery will release payment to the seller. This action cannot be undone.')) {
-            return;
-        }
-        
-        // Show loading state
-        const button = event.target;
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
-        
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('order_id', orderId);
-        formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
-        
-        // Make AJAX request with credentials to preserve session cookies
-        fetch('<?= base_url("orders/confirm_delivery") ?>', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include',  // IMPORTANT: Include cookies in request and response
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+    function confirmDelivery(evt, orderId, buttonEl) {
+        AppDialog.confirm('Have you received your order? Confirming delivery will release payment to the seller. This action cannot be undone.', {
+            title: 'Confirm Delivery',
+            okText: 'Confirm Delivery'
+        }).then(function(confirmed) {
+            if (!confirmed) {
+                return;
             }
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            
-            if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
+
+            const button = buttonEl || (evt && evt.currentTarget ? evt.currentTarget : null);
+            if (!button) {
+                AppToast.error('Action button unavailable. Please refresh and try again.');
+                return;
             }
-            
-            // Parse as JSON
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
-            
-            if (data.success) {
-                alert('✅ ' + data.message);
-                // Redirect to orders page after success
-                window.location.href = data.redirect;
-            } else {
-                alert('❌ ' + data.message);
+
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+
+            const formData = new FormData();
+            formData.append('order_id', orderId);
+            formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
+
+            fetch('<?= base_url("orders/confirm_delivery") ?>', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    AppToast.success(data.message);
+                    window.location.href = data.redirect;
+                } else {
+                    AppToast.error(data.message);
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error confirming delivery:', error);
+                AppToast.error('Error confirming delivery: ' + error.message);
                 button.disabled = false;
                 button.innerHTML = originalText;
-            }
-        })
-        .catch(error => {
-            console.error('Error confirming delivery:', error);
-            alert('⚠️ Error confirming delivery: ' + error.message);
-            button.disabled = false;
-            button.innerHTML = originalText;
+            });
         });
     }
 
-    function confirmPickup(orderId) {
-        if (!confirm('Have you collected your order? Confirming pickup will release payment to the seller. This action cannot be undone.')) {
-            return;
-        }
+    function confirmPickup(evt, orderId, buttonEl) {
+        AppDialog.confirm('Have you collected your order? Confirming pickup will release payment to the seller. This action cannot be undone.', {
+            title: 'Confirm Pickup',
+            okText: 'Confirm Pickup'
+        }).then(function(confirmed) {
+            if (!confirmed) {
+                return;
+            }
 
-        const button = event.target;
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+            const button = buttonEl || (evt && evt.currentTarget ? evt.currentTarget : null);
+            if (!button) {
+                AppToast.error('Action button unavailable. Please refresh and try again.');
+                return;
+            }
 
-        const formData = new FormData();
-        formData.append('order_id', orderId);
-        formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
 
-        fetch('<?= base_url("orders/confirm_pickup") ?>', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok: ' + response.statusText);
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                alert('✅ ' + data.message);
-                window.location.href = data.redirect;
-            } else {
-                alert('❌ ' + data.message);
+            const formData = new FormData();
+            formData.append('order_id', orderId);
+            formData.append('<?= $this->security->get_csrf_token_name() ?>', '<?= $this->security->get_csrf_hash() ?>');
+
+            fetch('<?= base_url("orders/confirm_pickup") ?>', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok: ' + response.statusText);
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    AppToast.success(data.message);
+                    window.location.href = data.redirect;
+                } else {
+                    AppToast.error(data.message);
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error confirming pickup:', error);
+                AppToast.error('Error confirming pickup: ' + error.message);
                 button.disabled = false;
                 button.innerHTML = originalText;
-            }
-        })
-        .catch(error => {
-            console.error('Error confirming pickup:', error);
-            alert('⚠️ Error confirming pickup: ' + error.message);
-            button.disabled = false;
-            button.innerHTML = originalText;
+            });
         });
     }

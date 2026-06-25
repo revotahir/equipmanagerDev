@@ -158,7 +158,7 @@
                       <a
                         href="<?=base_url().'delete-category/'.$cat['equipCatID']?>"
                         class="text-danger"
-                        onclick="return confirm('Are you sure you want to delete this category?');"
+                        onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this category?');"
                         data-bs-toggle="tooltip"
                         data-bs-placement="bottom"
                         title="Delete"><i class="bi bi-trash-fill"></i></a>

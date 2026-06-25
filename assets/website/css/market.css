@@ -23,20 +23,20 @@
 }
 
 .market-box-fix {
-  padding: 80px 20px;
+  padding: clamp(30px, 4.6vw, 64px) 16px;
 }
 
 .equipment {
   display: flex;
   justify-content: center;
-  padding: 120px 0;
+  padding: clamp(40px, 6vw, 84px) 0;
   background-color: var(--off-white);
 }
 
 .inner-equipment {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 22px;
 }
 
 .title {
@@ -156,21 +156,22 @@
 /* hamburger end */
 .equipment-grid {
   display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(10px, 1.1vw, 16px);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 .equipment-grid.compact-grid {
   grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
+  gap: 14px;
 }
 .single-equipment-grid {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(10px, 1.1vw, 16px);
 }
 .bg-img {
-  padding: 20px 20px 240px 20px;
-  border-radius: 14px;
+  padding: clamp(8px, 1vw, 14px) clamp(8px, 1vw, 14px)
+    clamp(110px, 13vw, 184px) clamp(8px, 1vw, 14px);
+  border-radius: 12px;
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -182,13 +183,13 @@
 }
 .wish > span {
   background-color: #ffffffab;
-  padding: 8px 14px;
+  padding: 7px 12px;
   border-radius: 360px;
   color: var(--primary-dark-green);
   font-family: "Manrope", sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  margin-left: 10px;
+  margin-left: 8px;
 }
 
 /* heart animation start */
@@ -261,7 +262,7 @@
 
 .heading-price {
   display: flex;
-  gap: 30px;
+  gap: clamp(10px, 1.3vw, 18px);
   align-items: center;
 }
 .heading-price > div {
@@ -280,12 +281,12 @@
 .prod-name {
   color: var(--primary-dark-green);
   font-family: "Manrope", sans-serif;
-  font-size: 20px;
+  font-size: clamp(15px, 1.15vw, 18px);
   font-weight: 700;
 }
 .prod-price span {
   color: var(--text-gray);
   font-family: "Manrope", sans-serif;
-  font-size: 16px;
+  font-size: clamp(12px, 0.95vw, 14px);
   font-weight: 500;
 }

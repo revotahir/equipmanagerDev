@@ -265,8 +265,8 @@ main-wrapper {
 
                 <!-- BUTTONS -->
                 <div class="button-group">
-                    <?php if (isset($paymentID) && $paymentID): ?>
-                        <a href="<?= site_url('chat/view/' . $paymentID) ?>" class="btn btn-primary">Go to Chat</a>
+                    <?php if (isset($order_id) && $order_id): ?>
+                        <a href="<?= site_url('chat/' . $order_id) ?>" class="btn btn-primary">Go to Chat</a>
                     <?php else: ?>
                         <a href="<?= site_url('/') ?>" class="btn btn-primary">Continue Shopping</a>
                     <?php endif; ?>

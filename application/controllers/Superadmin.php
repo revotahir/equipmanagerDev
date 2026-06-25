@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class superadmin extends MY_Controller
@@ -1105,33 +1105,47 @@ class superadmin extends MY_Controller
         // Get filter parameter from URL
         $filter = $this->input->get('status');
 
-        // Build query to get all orders
+        // Build unified query to get both equipment and workforce orders.
         $this->db->select([
-            'ep.equipmentPaymentID',
-            'ep.buyerUserID',
-            'ep.sellerCompanyID',
-            'ep.grossAmount',
-            'ep.commissionAmount as commission',
-            'ep.orderStatus as status',
-            'ep.createdAt',
+            'o.orderID',
+            "CASE WHEN o.equipmentPaymentID IS NOT NULL THEN 'equipment' ELSE 'workforce' END as orderType",
+            'o.createdAt',
+            'COALESCE(ep.grossAmount, wp.grossAmount) as grossAmount',
+            'COALESCE(ep.commissionAmount, wp.commissionAmount) as commission',
+            'COALESCE(ep.orderStatus, wp.orderStatus) as orderStatus',
+            'COALESCE(ep.rentalRequestStatus, wp.rentalRequestStatus) as rentalRequestStatus',
+            'COALESCE(ep.hasActiveIssue, wp.hasActiveIssue) as hasActiveIssue',
+            'COALESCE(ep.currentIssueID, wp.currentIssueID) as currentIssueID',
+            "COALESCE(ep.saleType, 'rental') as saleType",
             'u.userName as buyerFirstName',
             'u.userEmail as buyerEmail',
             'cd.companyName'
-        ])
-        ->from('equipment_payments ep')
-        ->join('users u', 'ep.buyerUserID = u.userID', 'left')
-        ->join('companydetail cd', 'ep.sellerCompanyID = cd.companyID', 'left');
+        ], false)
+        ->from('orders o')
+        ->join('equipment_payments ep', 'o.equipmentPaymentID = ep.equipmentPaymentID', 'left')
+        ->join('workforce_payments wp', 'o.workforcePaymentID = wp.workforcePaymentID', 'left')
+        ->join('users u', 'u.userID = COALESCE(ep.buyerUserID, wp.buyerUserID)', 'left', false)
+        ->join('companydetail cd', 'cd.companyID = COALESCE(ep.sellerCompanyID, wp.sellerCompanyID)', 'left', false);
 
         // Apply filter if provided
         if ($filter && !empty($filter)) {
-            $valid_filters = ['requested', 'payment_pending', 'payment_secured', 'shipped', 'completed', 'rejected'];
+            $valid_filters = [
+                'requested', 'payment_pending', 'payment_secured', 'shipped', 'pickup_ready', 'delivered', 'completed', 'rejected', 'cancelled',
+                'request_pending', 'request_approved', 'request_rejected', 'awaiting_handover', 'rental_active', 'return_requested',
+                'rental_overdue', 'returned_by_renter', 'received_by_owner', 'under_review', 'rental_completed', 'rental_cancelled'
+            ];
             if (in_array($filter, $valid_filters)) {
-                $this->db->where('ep.orderStatus', $filter);
+                $esc_filter = $this->db->escape($filter);
+                if ($filter === 'under_review') {
+                    $this->db->where("(COALESCE(ep.rentalRequestStatus, wp.rentalRequestStatus) = {$esc_filter} OR COALESCE(ep.hasActiveIssue, wp.hasActiveIssue) = 1)", null, false);
+                } else {
+                    $this->db->where("(COALESCE(ep.orderStatus, wp.orderStatus) = {$esc_filter} OR COALESCE(ep.rentalRequestStatus, wp.rentalRequestStatus) = {$esc_filter})", null, false);
+                }
             }
         }
 
         // Order by newest first
-        $this->db->order_by('ep.createdAt', 'DESC');
+        $this->db->order_by('o.createdAt', 'DESC');
 
         $query = $this->db->get();
         $orders = $query->result();
@@ -1165,38 +1179,92 @@ class superadmin extends MY_Controller
 
         $this->load->database();
 
-        // Get complete order details
-        $order = $this->db->select([
-            'ep.*',
-            'e.equipName as equipmentName',
-            'e.equipDesc',
-            'e.equipImg as equipImage',
-            'e.equipTotalQuantity',
-            'u.userName as buyerName',
-            'u.userEmail as buyerEmail',
-            'u.userPhone as buyerPhone',
-            'cd.companyName as sellerCompanyName',
-            'seller.userName as sellerUserName',
-            'oc.chatID',
-            'approver.userName as approvedByName'
-        ])
-        ->from('equipment_payments ep')
+        // Get complete order details using unified orders table
+        $has_chat_links = $this->db->table_exists('order_chat_links');
+
+        $order_query = $this->db->select("
+            o.orderID,
+            o.equipmentPaymentID,
+            o.workforcePaymentID,
+            CASE WHEN o.equipmentPaymentID IS NOT NULL THEN 'equipment' ELSE 'workforce' END as orderType,
+            COALESCE(ep.grossAmount, wp.grossAmount) as grossAmount,
+            COALESCE(ep.commissionPercent, wp.commissionPercent) as commissionPercent,
+            COALESCE(ep.commissionAmount, wp.commissionAmount) as commissionAmount,
+            COALESCE(ep.netAmount, wp.netAmount) as netAmount,
+            COALESCE(ep.paymentStatus, wp.paymentStatus) as paymentStatus,
+            COALESCE(ep.orderStatus, wp.orderStatus, wp.rentalRequestStatus) as orderStatus,
+            COALESCE(ep.rentalRequestStatus, wp.rentalRequestStatus) as rentalRequestStatus,
+            COALESCE(ep.hasActiveIssue, wp.hasActiveIssue) as hasActiveIssue,
+            COALESCE(ep.currentIssueID, wp.currentIssueID) as currentIssueID,
+            COALESCE(ep.saleType, 'rental') as saleType,
+            COALESCE(ep.rentalType, wp.rentalType) as rentalType,
+            COALESCE(ep.currency, wp.currency) as currency,
+            COALESCE(ep.createdAt, wp.createdAt) as createdAt,
+            COALESCE(ep.updatedAt, wp.updatedAt) as updatedAt,
+            COALESCE(ep.quantity, DATEDIFF(wp.rentalEndDate, wp.rentalStartDate) + 1) as quantity,
+            COALESCE(ep.rentalStartDate, wp.rentalStartDate) as rentalStartDate,
+            COALESCE(ep.rentalEndDate, wp.rentalEndDate) as rentalEndDate,
+            COALESCE(ep.itemID, wp.itemID) as itemID,
+            COALESCE(ep.buyerUserID, wp.buyerUserID) as buyerUserID,
+            COALESCE(ep.sellerCompanyID, wp.sellerCompanyID) as sellerCompanyID,
+            e.equipName as equipmentName,
+            e.equipDesc,
+            e.equipImg as equipImage,
+            e.equipTotalQuantity,
+            e.equipmentID,
+            wf.personName as workforceName,
+            wf.workforceID,
+            sw.workforceCity,
+            sw.WorkforceAdd,
+            sw.workforceAvailableStart,
+            sw.workforceAvailableEnd,
+            COALESCE(e.equipName, wf.personName) as itemName,
+            u.userName as buyerName,
+            u.userEmail as buyerEmail,
+            u.userPhone as buyerPhone,
+            cd.companyName as sellerCompanyName,
+            seller.userName as sellerUserName,
+            oc.chatID,
+            ep.approvedBy,
+            approver.userName as approvedByName,
+            COALESCE(ep.paymentMetadata, wp.paymentMetadata) as paymentMetadata,
+            ep.trackingNumber,
+            ep.shippingNotes,
+            ep.shippedAt,
+            ep.deliveredAt,
+            ep.fundsReleasedAt,
+            ep.approvedAt,
+            ep.rejectionReason
+        ", false)
+        ->from('orders o')
+        ->join('equipment_payments ep', 'o.equipmentPaymentID = ep.equipmentPaymentID', 'left')
+        ->join('workforce_payments wp', 'o.workforcePaymentID = wp.workforcePaymentID', 'left')
         ->join('equipment e', 'ep.equipmentID = e.equipmentID', 'left')
-        ->join('users u', 'ep.buyerUserID = u.userID', 'left')
-        ->join('companydetail cd', 'ep.sellerCompanyID = cd.companyID', 'left')
-        ->join('users seller', 'cd.userID = seller.userID', 'left')
-        ->join('order_chats oc', 'ep.equipmentPaymentID = oc.equipmentPaymentID', 'left')
-        ->join('users approver', 'ep.approvedBy = approver.userID', 'left')
-        ->where('ep.equipmentPaymentID', $order_id)
-        ->get()
-        ->row();
+        ->join('workforce wf', 'wp.workforceID = wf.workforceID', 'left')
+        ->join('shopworkforce sw', 'wp.itemID = sw.itemID', 'left')
+        ->join('users u', 'COALESCE(ep.buyerUserID, wp.buyerUserID) = u.userID', 'left')
+        ->join('companydetail cd', 'COALESCE(ep.sellerCompanyID, wp.sellerCompanyID) = cd.companyID', 'left')
+        ->join('users seller', 'cd.userID = seller.userID', 'left');
+
+        if ($has_chat_links) {
+            $order_query->join('order_chat_links ocl', 'o.orderID = ocl.orderID', 'left')
+                ->join('order_chats oc', 'ocl.chatID = oc.chatID', 'left');
+        } else {
+            $order_query->join('order_chats oc', 'o.orderID = oc.orderID', 'left');
+        }
+
+        $order = $order_query
+            ->join('users approver', 'ep.approvedBy = approver.userID', 'left')
+            ->where('o.orderID', $order_id)
+            ->get()
+            ->row();
 
         if (!$order) {
             show_404();
             return;
         }
 
-        // Build images array — try shopequipments first, fallback to equipment main image
+        // Build images array â€” try shopequipments first, fallback to equipment main image
         $images = [];
         if (!empty($order->itemID)) {
             $shop_eq = $this->db->select([
@@ -1227,13 +1295,621 @@ class superadmin extends MY_Controller
         }
 
         // Prepare data for view
+        $this->load->helper('invoice');
+        $this->load->model('Issue_model');
         $data = [
             'order'  => $order,
-            'images' => $images
+            'images' => $images,
+            'can_download_invoice' => invoice_can_download($order),
+            'order_issues' => $this->Issue_model->getIssuesForOrder((int)$order_id),
         ];
 
         // Load the view with layout
         $this->load->view('superadmin/order_detail', $data);
     }
+
+    /**
+     * Download invoice PDF for any order (SuperAdmin only).
+     *
+     * @param int $order_id
+     * @return void
+     */
+    public function invoice($order_id)
+    {
+        if (($this->session->userdata('loginData')['userType'] ?? null) != 1) {
+            redirect(base_url());
+            return;
+        }
+
+        if (!is_numeric($order_id)) {
+            show_404();
+            return;
+        }
+
+        $this->load->helper('invoice');
+        $order = $this->get_invoice_order_for_superadmin((int)$order_id);
+        if (!$order) {
+            show_404();
+            return;
+        }
+
+        if (!invoice_can_download($order)) {
+            $this->session->set_flashdata('error', 'Invoice is available only after payment is completed.');
+            redirect('super-admin-orders/view/' . (int)$order_id);
+            return;
+        }
+
+        $invoice_data = invoice_build_payload($order);
+        $this->stream_invoice_pdf($invoice_data);
+    }
+
+    /**
+     * Get invoice-ready order payload for SuperAdmin.
+     *
+     * @param int $order_id
+     * @return object|null
+     */
+    private function get_invoice_order_for_superadmin($order_id)
+    {
+        return $this->db->select(" 
+            o.orderID,
+            o.equipmentPaymentID,
+            o.workforcePaymentID,
+            COALESCE(ep.grossAmount, wp.grossAmount) as grossAmount,
+            COALESCE(ep.commissionPercent, wp.commissionPercent) as commissionPercent,
+            COALESCE(ep.commissionAmount, wp.commissionAmount) as commissionAmount,
+            COALESCE(ep.netAmount, wp.netAmount) as netAmount,
+            COALESCE(ep.currency, wp.currency, 'USD') as currency,
+            COALESCE(ep.paymentStatus, wp.paymentStatus) as paymentStatus,
+            COALESCE(ep.orderStatus, wp.orderStatus, wp.rentalRequestStatus) as orderStatus,
+            COALESCE(ep.rentalRequestStatus, wp.rentalRequestStatus) as rentalRequestStatus,
+            COALESCE(ep.stripePaymentIntentID, wp.stripePaymentIntentID) as stripePaymentIntentID,
+            COALESCE(ep.saleType, 'rental') as saleType,
+            COALESCE(ep.quantity, DATEDIFF(wp.rentalEndDate, wp.rentalStartDate) + 1) as quantity,
+            COALESCE(ep.rentalStartDate, wp.rentalStartDate) as rentalStartDate,
+            COALESCE(ep.rentalEndDate, wp.rentalEndDate) as rentalEndDate,
+            COALESCE(ep.rentalType, wp.rentalType) as rentalType,
+            COALESCE(ep.paymentMetadata, wp.paymentMetadata) as paymentMetadata,
+            COALESCE(ep.createdAt, wp.createdAt) as createdAt,
+            COALESCE(ep.updatedAt, wp.updatedAt) as updatedAt,
+            COALESCE(e.equipName, wf.personName) as itemName,
+            buyer.userName as buyerName,
+            buyer.userEmail as buyerEmail,
+            buyer.userPhone as buyerPhone,
+            cd.companyName as sellerCompanyName,
+            seller.userName as sellerContactName,
+            seller.userEmail as sellerEmail,
+            seller.userPhone as sellerPhone
+        ", false)
+        ->from('orders o')
+        ->join('equipment_payments ep', 'o.equipmentPaymentID = ep.equipmentPaymentID', 'left')
+        ->join('workforce_payments wp', 'o.workforcePaymentID = wp.workforcePaymentID', 'left')
+        ->join('equipment e', 'ep.equipmentID = e.equipmentID', 'left')
+        ->join('workforce wf', 'wp.workforceID = wf.workforceID', 'left')
+        ->join('users buyer', 'COALESCE(ep.buyerUserID, wp.buyerUserID) = buyer.userID', 'left')
+        ->join('companydetail cd', 'COALESCE(ep.sellerCompanyID, wp.sellerCompanyID) = cd.companyID', 'left')
+        ->join('users seller', 'cd.userID = seller.userID', 'left')
+        ->where('o.orderID', $order_id)
+        ->get()
+        ->row();
+    }
+
+    /**
+     * Render and stream invoice PDF.
+     *
+     * @param array $invoice_data
+     * @return void
+     */
+    private function stream_invoice_pdf(array $invoice_data)
+    {
+        if (!class_exists('Dompdf\\Dompdf')) {
+            $autoload_path = FCPATH . 'vendor/autoload.php';
+            if (!file_exists($autoload_path)) {
+                show_error('PDF library is not installed. Please run composer install.', 500);
+                return;
+            }
+            require_once $autoload_path;
+        }
+
+        $html = $this->load->view('invoices/order_invoice_pdf', ['invoice' => $invoice_data], true);
+
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', false);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->render();
+
+        $filename = 'invoice-' . preg_replace('/[^A-Za-z0-9\-_]/', '', (string)$invoice_data['invoice_number']) . '.pdf';
+        $this->output
+            ->set_content_type('application/pdf')
+            ->set_header('Content-Disposition: attachment; filename="' . $filename . '"')
+            ->set_output($dompdf->output());
+    }
+
+    // =============================================
+    // RENTAL ISSUE & DISPUTE MANAGEMENT METHODS
+    // =============================================
+
+    /**
+     * Issues list for SuperAdmin
+     * GET /superadmin/issues
+     */
+    public function issues()
+    {
+        if ($this->session->userdata('loginData')['userType'] != 1) {
+            redirect(base_url());
+        }
+
+        $this->load->model('Issue_model');
+        $this->load->helper('status_display');
+
+        $page         = max(1, intval($this->input->get('page')));
+        $per_page     = 20;
+        $filter_status = $this->input->get('status', TRUE) ?: '';
+
+        $filters = [];
+        if ($filter_status) { $filters['status'] = $filter_status; }
+
+        $issues = $this->Issue_model->getAllIssues($filters, $per_page, ($page - 1) * $per_page);
+        $total  = $this->Issue_model->countAllIssues($filters);
+
+        $data = [
+            'issues'        => $issues,
+            'total'         => $total,
+            'per_page'      => $per_page,
+            'current_page'  => $page,
+            'filter_status' => $filter_status,
+        ];
+
+        $this->load->view('superadmin/issues_list', $data);
+    }
+
+    /**
+     * Issue detail + resolution form
+     * GET /superadmin/issue_detail/{id}
+     */
+    public function issue_detail($issue_id = null)
+    {
+        if ($this->session->userdata('loginData')['userType'] != 1) {
+            redirect(base_url());
+        }
+
+        if (!$issue_id) { show_404(); }
+
+        $this->load->model('Issue_model');
+        $this->load->helper('status_display');
+
+        $issue = $this->Issue_model->getIssueById($issue_id);
+        if (!$issue) { show_404(); }
+
+        // Get all super admins for assign dropdown
+        $admins = $this->db->select('userID, userName')
+            ->from('users')
+            ->where('userType', 1)
+            ->where('userStatus', 1)
+            ->get()->result();
+
+        // Get related chat
+        if ($this->db->table_exists('order_chat_links')) {
+            $chat = $this->db->select('oc.chatID')
+                ->from('order_chat_links ocl')
+                ->join('order_chats oc', 'oc.chatID = ocl.chatID', 'inner')
+                ->where('ocl.orderID', $issue->orderID)
+                ->order_by('ocl.linkID', 'DESC')
+                ->get()->row();
+        } else {
+            $chat = $this->db->select('chatID')
+                ->from('order_chats')
+                ->where('orderID', $issue->orderID)
+                ->order_by('chatID', 'DESC')
+                ->get()->row();
+        }
+
+        $issue->chatID = $chat ? $chat->chatID : null;
+
+        $data = ['issue' => $issue, 'admins' => $admins];
+        $this->load->view('superadmin/issue_detail', $data);
+    }
+
+    /**
+     * API: Assign issue to admin
+     * POST /superadmin/api_assign_issue
+     */
+    public function api_assign_issue()
+    {
+        header('Content-Type: application/json');
+        if ($this->session->userdata('loginData')['userType'] != 1) {
+            echo json_encode(['success'=>false,'message'=>'Access denied']); return;
+        }
+        $issue_id = intval($this->input->post('issue_id', TRUE));
+        $admin_id = intval($this->input->post('admin_id', TRUE));
+        if (!$issue_id || !$admin_id) {
+            echo json_encode(['success'=>false,'message'=>'Invalid parameters']); return;
+        }
+        $this->load->model('Issue_model');
+        $result = $this->Issue_model->assignToAdmin($issue_id, $admin_id);
+        echo json_encode(['success' => (bool)$result, 'message' => $result ? 'Assigned' : 'Failed to assign']);
+    }
+
+    /**
+     * API: Resolve issue with outcome + optional refund
+     * POST /superadmin/api_resolve_issue
+     */
+    public function api_resolve_issue()
+    {
+        header('Content-Type: application/json');
+
+        $login_data = $this->session->userdata('loginData');
+        if (!$login_data || $login_data['userType'] != 1) {
+            echo json_encode(['success'=>false,'message'=>'Access denied']); return;
+        }
+
+        $admin_id     = $login_data['userID'];
+        $issue_id     = intval($this->input->post('issue_id', TRUE));
+        $outcome      = $this->input->post('outcome', TRUE);
+        $notes        = $this->input->post('notes', TRUE);
+        $refund_amount= floatval($this->input->post('refund_amount', TRUE));
+
+        $valid_outcomes = ['no_action','refund_partial','refund_full','compensation','insurance_claim'];
+        if (!$issue_id || !in_array($outcome, $valid_outcomes) || !$notes) {
+            echo json_encode(['success'=>false,'message'=>'Missing required fields']); return;
+        }
+
+        $this->load->model('Issue_model');
+        $this->load->helper('notification');
+
+        $issue = $this->Issue_model->getIssueById($issue_id);
+        if (!$issue) {
+            echo json_encode(['success'=>false,'message'=>'Issue not found']); return;
+        }
+
+        $resolution_data = [
+            'outcome'            => $outcome,
+            'notes'              => $notes,
+            'refund_amount'      => $refund_amount > 0 ? $refund_amount : null,
+            'resolved_by'        => $admin_id,
+        ];
+
+        $result = $this->Issue_model->resolveIssue($issue_id, $resolution_data);
+
+        if ($result) {
+            $payment_table = $issue->equipmentPaymentID ? 'equipment_payments' : 'workforce_payments';
+            $pk = $issue->equipmentPaymentID ? 'equipmentPaymentID' : 'workforcePaymentID';
+            $pay_id = $issue->equipmentPaymentID ?? $issue->workforcePaymentID;
+
+            // Normalize legacy under_review lifecycle/status flags after issue resolution.
+            $this->normalize_payment_after_issue_resolution($issue, $payment_table, $pk, $pay_id);
+
+            // Resolve chat behavior based on whether order is still ongoing
+            if ($this->db->table_exists('order_chat_links')) {
+                $chat = $this->db->select('oc.chatID')
+                    ->from('order_chat_links ocl')
+                    ->join('order_chats oc', 'oc.chatID = ocl.chatID', 'inner')
+                    ->where('ocl.orderID', $issue->orderID)
+                    ->where('oc.chatType', 'dispute')
+                    ->order_by('ocl.linkID', 'DESC')
+                    ->get()->row();
+            } else {
+                $chat = $this->db->select('chatID')
+                    ->from('order_chats')
+                    ->where('orderID', $issue->orderID)
+                    ->where('chatType', 'dispute')
+                    ->get()->row();
+            }
+
+            $payment = $this->db->get_where($payment_table, [$pk => $pay_id])->row();
+
+            $is_order_ongoing = true;
+            if ($payment) {
+                $order_status = strtolower(trim((string)($payment->orderStatus ?? '')));
+                $rental_status = strtolower(trim((string)($payment->rentalRequestStatus ?? '')));
+                $terminal_order_statuses = ['completed', 'cancelled', 'refunded'];
+                $terminal_rental_statuses = ['rental_completed', 'rental_cancelled'];
+                if (in_array($order_status, $terminal_order_statuses, true) || in_array($rental_status, $terminal_rental_statuses, true)) {
+                    $is_order_ongoing = false;
+                }
+            }
+
+            if ($chat) {
+                $this->load->model('Chat_model');
+                // Remove superadmin participation after resolution.
+                // Keep chat open for buyer/seller while order is ongoing.
+                $this->Chat_model->deescalate_dispute_chat($chat->chatID, $is_order_ongoing);
+                if (!$is_order_ongoing) {
+                    $this->Chat_model->lock_chat($chat->chatID, true);
+                }
+
+                $resolution_message = $is_order_ongoing
+                    ? "✅ Issue #$issue_id resolved by SuperAdmin. Outcome: " . ucwords(str_replace('_', ' ', $outcome)) . ". " . $notes . "\n\nThis dispute chat remains available for buyer, company admin, and superadmin until order completion."
+                    : "✅ Issue #$issue_id resolved by SuperAdmin. Outcome: " . ucwords(str_replace('_', ' ', $outcome)) . ". " . $notes . "\n\nOrder is already completed/cancelled, so this chat is now closed but remains available for history.";
+
+                $this->db->insert('order_chat_messages', [
+                    'chatID'       => $chat->chatID,
+                    'senderUserID' => $admin_id,
+                    'messageText'  => $resolution_message,
+                    'createdAt'    => date('Y-m-d H:i:s'),
+                ]);
+            }
+
+            // Notify both parties
+            if ($payment) {
+                send_notification($payment->buyerUserID, 'issue_resolved', $issue->orderID);
+                $owner = $this->db->select('userID')->from('companydetail')->where('companyID', $payment->sellerCompanyID)->get()->row();
+                if ($owner) { send_notification($owner->userID, 'issue_resolved', $issue->orderID); }
+            }
+
+            echo json_encode(['success'=>true,'message'=>'Issue resolved successfully']);
+            log_message('info', "SuperAdmin $admin_id resolved issue $issue_id with outcome: $outcome");
+        } else {
+            echo json_encode(['success'=>false,'message'=>'Failed to resolve issue']);
+        }
+    }
+
+    /**
+     * SuperAdmin: List all dispute/issue chats
+     * GET /superadmin/issue-chats
+     */
+    public function issue_chats()
+    {
+        if ($this->session->userdata('loginData')['userType'] != 1) {
+            redirect(base_url());
+        }
+
+        $this->load->model('Chat_model');
+        $filter_status = $this->input->get('status', TRUE) ?: '';
+
+        $filters = [];
+        if ($filter_status && in_array($filter_status, ['open', 'locked'], true)) {
+            $filters['status'] = $filter_status;
+        }
+
+        $data = [
+            'chats' => $this->Chat_model->get_dispute_chats($filters),
+            'filter_status' => $filter_status,
+        ];
+
+        $this->load->view('superadmin/issue_chats_list', $data);
+    }
+
+    /**
+     * SuperAdmin: Open a specific dispute chat
+     * GET /superadmin/issue-chats/view/{chatID}
+     */
+    public function issue_chat_view($chat_id = null)
+    {
+        if ($this->session->userdata('loginData')['userType'] != 1) {
+            redirect(base_url());
+        }
+
+        $chat_id = intval($chat_id);
+        if (!$chat_id) {
+            show_404();
+            return;
+        }
+
+        $this->load->model('Chat_model');
+        $this->load->model('Issue_model');
+        $this->load->library('Jwt_service');
+
+        $chat_row = $this->Chat_model->get_chat_by_id($chat_id);
+        if (!$chat_row) {
+            show_error('Issue chat not found', 404);
+            return;
+        }
+
+        $issue_id = intval($chat_row->disputeIssueID ?? 0);
+        if ($issue_id <= 0) {
+            $issue_id = intval($this->input->get('issue_id', TRUE));
+        }
+        if ($issue_id <= 0) {
+            $fallback_issue = $this->db->select('issueID')
+                ->from('rental_issues')
+                ->where('orderID', $chat_row->orderID)
+                ->order_by('reportedAt', 'DESC')
+                ->limit(1)
+                ->get()->row();
+            $issue_id = $fallback_issue ? intval($fallback_issue->issueID) : 0;
+        }
+
+        $issue = $issue_id > 0 ? $this->Issue_model->getIssueById($issue_id) : null;
+        if (!$issue) {
+            show_error('Related issue not found', 404);
+            return;
+        }
+
+        $login_data = $this->session->userdata('loginData');
+        $user_id = intval($login_data['userID']);
+
+        $data = [
+            'chat' => $this->Chat_model->get_chat_details($chat_id),
+            'messages' => $this->Chat_model->get_messages($chat_id),
+            'issue' => $issue,
+            'current_user_id' => $user_id,
+            'user_role' => 'superadmin',
+            'jwt_token' => $this->jwt_service->generate_token($user_id, $chat_id, 'superadmin'),
+        ];
+
+        $this->load->view('superadmin/issue_chat_view', $data);
+    }
+
+    /**
+     * SuperAdmin: One-click resolve from issue chat page
+     * POST /superadmin/resolve-issue-chat
+     */
+    public function resolve_issue_chat()
+    {
+        if ($this->session->userdata('loginData')['userType'] != 1) {
+            redirect(base_url());
+        }
+
+        if (strtoupper($this->input->server('REQUEST_METHOD')) !== 'POST') {
+            show_error('Invalid request method', 405);
+            return;
+        }
+
+        $chat_id = intval($this->input->post('chat_id', TRUE));
+        if (!$chat_id) {
+            $this->session->set_flashdata('error', 'Invalid chat reference.');
+            redirect(base_url('superadmin/issue-chats'));
+            return;
+        }
+
+        $this->load->model('Chat_model');
+        $this->load->model('Issue_model');
+        $this->load->helper('notification');
+
+        $login_data = $this->session->userdata('loginData');
+        $admin_id = intval($login_data['userID']);
+
+        $chat_row = $this->Chat_model->get_chat_by_id($chat_id);
+        if (!$chat_row || $chat_row->chatType !== 'dispute' || empty($chat_row->disputeIssueID)) {
+            $this->session->set_flashdata('error', 'Issue chat not found.');
+            redirect(base_url('superadmin/issue-chats'));
+            return;
+        }
+
+        $issue_id = intval($chat_row->disputeIssueID);
+        $issue = $this->Issue_model->getIssueById($issue_id);
+        if (!$issue) {
+            $this->session->set_flashdata('error', 'Related issue not found.');
+            redirect(base_url('superadmin/issue-chats'));
+            return;
+        }
+
+        if (!in_array($issue->issueStatus, ['resolved', 'closed'], true)) {
+            $resolution_data = [
+                'outcome' => 'no_action',
+                'notes' => 'Issue resolved by SuperAdmin from issue chat.',
+                'resolved_by' => $admin_id,
+            ];
+            $this->Issue_model->resolveIssue($issue_id, $resolution_data);
+        }
+
+        $payment_table = $issue->equipmentPaymentID ? 'equipment_payments' : 'workforce_payments';
+        $pk = $issue->equipmentPaymentID ? 'equipmentPaymentID' : 'workforcePaymentID';
+        $pay_id = $issue->equipmentPaymentID ?? $issue->workforcePaymentID;
+
+        // Normalize legacy under_review lifecycle/status flags after issue resolution.
+        $this->normalize_payment_after_issue_resolution($issue, $payment_table, $pk, $pay_id);
+
+        $payment = $this->db->get_where($payment_table, [$pk => $pay_id])->row();
+
+        $is_order_ongoing = true;
+        if ($payment) {
+            $order_status = strtolower(trim((string)($payment->orderStatus ?? '')));
+            $rental_status = strtolower(trim((string)($payment->rentalRequestStatus ?? '')));
+            $terminal_order_statuses = ['completed', 'cancelled', 'refunded'];
+            $terminal_rental_statuses = ['rental_completed', 'rental_cancelled'];
+            if (in_array($order_status, $terminal_order_statuses, true) || in_array($rental_status, $terminal_rental_statuses, true)) {
+                $is_order_ongoing = false;
+            }
+        }
+
+        // Remove superadmin from dispute chat after resolution.
+        // Keep buyer/seller chat open when order is still ongoing.
+        $this->Chat_model->deescalate_dispute_chat($chat_id, $is_order_ongoing);
+        if (!$is_order_ongoing) {
+            $this->Chat_model->lock_chat($chat_id, true);
+        }
+
+        $resolution_message = $is_order_ongoing
+            ? "✅ Issue #{$issue_id} marked as resolved by SuperAdmin. This dispute chat remains available for buyer, company admin, and superadmin until order completion."
+            : "✅ Issue #{$issue_id} marked as resolved by SuperAdmin. Order is already completed/cancelled, so this chat is now closed but remains available for history.";
+
+        $this->db->insert('order_chat_messages', [
+            'chatID' => $chat_id,
+            'senderUserID' => $admin_id,
+            'messageText' => $resolution_message,
+            'createdAt' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Notify both parties
+        if ($payment) {
+            send_notification($payment->buyerUserID, 'issue_resolved', $issue->orderID);
+            $owner = $this->db->select('userID')->from('companydetail')->where('companyID', $payment->sellerCompanyID)->get()->row();
+            if ($owner) {
+                send_notification($owner->userID, 'issue_resolved', $issue->orderID);
+            }
+        }
+
+        $this->session->set_flashdata('success', $is_order_ongoing
+            ? "Issue #{$issue_id} resolved. Dispute chat remains open for all parties."
+            : "Issue #{$issue_id} resolved and chat closed (history preserved).");
+        redirect(base_url('superadmin/issue-chats'));
+    }
+
+    /**
+     * Normalize payment flags and lifecycle status after an issue is resolved.
+     *
+     * Legacy flows set rentalRequestStatus=under_review directly on payment rows.
+     * This restores the expected lifecycle so renter/owner actions remain available.
+     *
+     * @param object $issue
+     * @param string $payment_table
+     * @param string $pk
+     * @param int $pay_id
+     * @return void
+     */
+    private function normalize_payment_after_issue_resolution($issue, $payment_table, $pk, $pay_id)
+    {
+        if (empty($pay_id)) {
+            return;
+        }
+
+        $payment = $this->db->get_where($payment_table, [$pk => $pay_id])->row();
+        if (!$payment) {
+            return;
+        }
+
+        $open_issue_count = $this->db->from('rental_issues')
+            ->group_start()
+                ->where('equipmentPaymentID', $issue->equipmentPaymentID)
+                ->or_where('workforcePaymentID', $issue->workforcePaymentID)
+            ->group_end()
+            ->where_in('issueStatus', ['reported', 'under_review'])
+            ->count_all_results();
+
+        $update = ['updatedAt' => date('Y-m-d H:i:s')];
+
+        if ($open_issue_count === 0) {
+            $update['hasActiveIssue'] = 0;
+            $update['currentIssueID'] = null;
+        }
+
+        $rental_status = strtolower(trim((string)($payment->rentalRequestStatus ?? '')));
+        if ($rental_status === 'under_review') {
+            $order_status = strtolower(trim((string)($payment->orderStatus ?? '')));
+            $start_ts = !empty($payment->rentalStartDate) ? strtotime($payment->rentalStartDate . ' 00:00:00') : null;
+            $end_ts = !empty($payment->rentalEndDate) ? strtotime($payment->rentalEndDate . ' 23:59:59') : null;
+            $renter_confirmed = !empty($payment->renterConfirmedReturn);
+            $owner_confirmed = !empty($payment->ownerConfirmedReturn);
+
+            $restored_status = 'rental_active';
+
+            if ($renter_confirmed && $owner_confirmed) {
+                $restored_status = 'rental_completed';
+            } elseif ($renter_confirmed) {
+                $restored_status = 'returned_by_renter';
+            } elseif ($owner_confirmed) {
+                $restored_status = 'received_by_owner';
+            } elseif ($start_ts && time() < $start_ts) {
+                $restored_status = in_array($order_status, ['request_pending', 'request_approved', 'awaiting_handover'], true)
+                    ? $order_status
+                    : 'awaiting_handover';
+            } elseif ($end_ts && time() > ($end_ts + (72 * 3600))) {
+                $restored_status = 'rental_overdue';
+            } elseif ($end_ts && time() > $end_ts) {
+                $restored_status = 'return_requested';
+            }
+
+            $update['rentalRequestStatus'] = $restored_status;
+        }
+
+        $this->db->update($payment_table, $update, [$pk => $pay_id]);
+    }
 }
+
 

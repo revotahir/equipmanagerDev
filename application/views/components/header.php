@@ -1,3 +1,5 @@
+  <script src="<?= base_url() ?>assets/js/theme-toastr.js"></script>
+  <script src="<?= base_url() ?>assets/js/theme-dialog.js"></script>
    <style>
      .bg-dark-green img {
        background-color: #0b2523 !important;
@@ -133,6 +135,9 @@
        </form>
        <div class="top-navbar-right ms-3">
          <ul class="navbar-nav align-items-center">
+           <!-- NOTIFICATION BELL - Added March 2026 -->
+           <?php $this->load->view('partials/notification_bell'); ?>
+           <!-- END NOTIFICATION BELL -->
            <li class="nav-item dropdown dropdown-large">
              <a
                class="nav-link dropdown-toggle dropdown-toggle-nocaret"
@@ -245,7 +250,7 @@
                <li>
                  <a
                    class="dropdown-item"
-                   href="<?= base_url('login-data') ?>">
+                   href="<?= base_url('logout') ?>">
                    <div class="d-flex align-items-center">
                      <div class="setting-icon">
                        <i class="bi bi-lock-fill"></i>
@@ -257,6 +262,7 @@
              </ul>
            </li>
 
+           <!-- REPLACED: Static notification dropdown replaced with dynamic notification_bell.php -->
            <!-- <li class="nav-item dropdown dropdown-large d-none d-sm-block">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                 <div class="notifications">

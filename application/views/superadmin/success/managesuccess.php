@@ -238,7 +238,7 @@
                                                 </a>
                                                 <a href="<?= base_url('delet-metrics/' . $sucesData['web_successID']) ?>"
                                                     class="text-danger ms-2"
-                                                    onclick="return confirm('Are you sure you want to delete this Metrics?');"
+                                                    onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this metric?');"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="bottom"
                                                     title="Delete">

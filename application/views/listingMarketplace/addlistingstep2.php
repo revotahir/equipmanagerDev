@@ -249,7 +249,7 @@
       <!--breadcrumb-->
       <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3" style="border: none">
-          Equipment Listings
+          Equipment Marketplace Listings
         </div>
       </div>
       <!--end breadcrumb-->
@@ -265,31 +265,23 @@
               <!-- Btn -->
               <div class="multi_tabs-btn 
                 
-                width-ctrl" data-bs-toggle="tooltip" data-bs-placement="top" title="Listing Type">
+                width-ctrl">
                 <div class="tab-progress-bar"></div>
-                <a href="
-                <?php
-                if (!isset($_GET['edit'])) {
-                  echo base_url('add-listing');
-                } else {
-                  echo base_url('add-listing/?itemID=' . urlencode($_GET['itemID']) . '&edit=1');
-                }
-                ?>
-                " class="tab-btn">
-                  <span class="_circle">Step 1</span>
-                </a>
+                <button type="button" class="tab-btn" onclick="window.location.href='<?php echo (!isset($_GET['edit'])) ? base_url('add-listing') : base_url('add-listing/?itemID=' . urlencode($_GET['itemID']) . '&edit=1'); ?>';">
+                  <span class="_circle">Listing Type</span>
+                </button>
               </div>
               <!-- Btn -->
               <div class="multi_tabs-btn 
                 active_tab
-                width-ctrl" data-bs-toggle="tooltip" data-bs-placement="top" title="Listing Details">
+                width-ctrl">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn">
-                  <span class="_circle">Step 2</span>
+                  <span class="_circle">Listing Details</span>
                 </button>
               </div>
               <!-- Btn -->
-              <div class="multi_tabs-btn" style="--width: 50%" data-bs-toggle="tooltip" data-bs-placement="top" title="Terms & Conditions">
+              <div class="multi_tabs-btn" style="--width: 50%">
                 <div class="tab-progress-bar"></div>
                 <button class="tab-btn" <?php if (!isset($_GET['edit'])) {
                                           echo 'disabled';
@@ -301,7 +293,7 @@
                     <?php
                   }
                     ?>
-                    <span class="_circle">Step 3</span>
+                    <span class="_circle">Terms & Conditions</span>
                     <?php
                     if (isset($_GET['edit'])) {
                     ?>
@@ -335,6 +327,10 @@
                       <hr />
                       <form class="row g-3" method="post" enctype="multipart/form-data" action="<?= base_url('add-equipment-listing-data/?skill=' . urlencode($_GET['skill']) . '&rentalType=' . urlencode($_GET['rentalType'])) ?>">
                         <?= csrf_field() ?>
+                        <?php $login = $this->session->userdata('loginData'); ?>
+                        <?php if (isset($login['userType']) && (int)$login['userType'] === 4): ?>
+                          <input type="hidden" name="employeeID" value="<?= (int)$login['userID'] ?>">
+                        <?php endif; ?>
                         <?php
                         if (isset($_GET['itemID']) && $_GET['itemID'] != '') {
                         ?>
@@ -526,7 +522,6 @@ replacement."><i class="bi bi-star star-icon"></i></label>
                             style="display: none;"
                             rows="4"
                             name="eqpSpec"
-                            required
                             id="eqpSpec"
                             cols="4"
                             placeholder="Write Here"><?php
@@ -701,6 +696,10 @@ replacement."><i class="bi bi-star star-icon"></i></label>
                       <hr />
                       <form class="row g-3" method="post" enctype="multipart/form-data" action="<?= base_url('add-workforce-listing-data/?skill=' . urlencode($_GET['skill']) . '&rentalType=' . urlencode($_GET['rentalType']))  ?>">
                         <?= csrf_field() ?>
+                        <?php $login = $this->session->userdata('loginData'); ?>
+                        <?php if (isset($login['userType']) && (int)$login['userType'] === 4): ?>
+                          <input type="hidden" name="employeeID" value="<?= (int)$login['userID'] ?>">
+                        <?php endif; ?>
                         <?php
                         if (isset($_GET['itemID'])) {
                         ?>
@@ -1379,7 +1378,7 @@ replacement."><i class="bi bi-star star-icon"></i></label>
               renderTags();
               tagInput.val('').focus();
             } else {
-              alert('This tag already exists');
+              AppToast.warning('This tag already exists');
               tagInput.val('');
             }
           }

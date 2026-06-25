@@ -229,7 +229,7 @@
                           <a
                             href="<?= base_url('delet-skill/' . $skill['skillID']) ?>"
                             class="text-danger"
-                            onclick="return confirm('Are you sure you want to delete this skill?');"
+                            onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this skill?');"
                             data-bs-toggle="tooltip"
                             data-bs-placement="bottom"
                             title="Delete"><i class="bi bi-trash-fill"></i></a>

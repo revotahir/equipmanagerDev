@@ -150,7 +150,7 @@
                             echo 'selected';
                           }
                         ?>
-                        value="3">Pending</option>
+                        value="3">Delayed</option>
                         <option 
                         <?php 
                           if(!empty($_GET['pstatus']) && $_GET['pstatus'] == '4'){
@@ -265,7 +265,7 @@
                         echo '<span class="badge text-bg-primary">In Progress</span>';
                       }
                       else if($project['pStatus'] == 3){
-                        echo '<span class="badge text-bg-warning">Pending</span>';
+                        echo '<span class="badge text-bg-warning">Delayed</span>';
                       }
                       else if($project['pStatus'] == 4){
                         echo '<span class="badge text-bg-success">Completed</span>';
@@ -307,7 +307,7 @@
                     ?>
                         <a
                           href="javascript:;"
-                          onclick="return confirm('Are you sure you want to delete this project?') ? window.location.href='<?=base_url('delete-project/'.$project['ProjectID'])?>' : false;"
+                          onclick="return AppDialog.runConfirmed(event, function(){ window.location.href='<?=base_url('delete-project/'.$project['ProjectID'])?>'; }, 'Are you sure you want to delete this project?');"
                           class="text-danger"
                           data-bs-toggle="tooltip"
                           data-bs-placement="bottom"

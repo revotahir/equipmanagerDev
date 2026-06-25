@@ -52,6 +52,12 @@
                         <div class="inputs">
                             <label for="password">Enter Verification Code</label>
                             <input type="number" name="password" id="password" placeholder="Enter four Digit Code" />
+                            <?php if (!empty($requires_password_setup)) { ?>
+                                <label for="account_password" style="margin-top:14px;">Create Login Password</label>
+                                <input type="password" name="account_password" id="account_password" placeholder="Minimum 6 characters" />
+                                <label for="account_password_confirm" style="margin-top:14px;">Confirm Login Password</label>
+                                <input type="password" name="account_password_confirm" id="account_password_confirm" placeholder="Confirm password" />
+                            <?php } ?>
                             <?php
               if (isset($_GET['forgot'])) { ?>
                             <input type="hidden" name="forgotcheck" id="forgotcheck" value="1">
@@ -107,6 +113,20 @@
         "hideMethod": "fadeOut"
     }
     toastr.success('New Code is sent to your Email!');
+    </script>
+    <?php
+  }
+  ?>
+    <?php
+  if ($this->session->flashdata('passwordSetupError') != '') {
+  ?>
+    <script type="text/javascript">
+    toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+    toastr.error('Password must be at least 6 characters and match the confirmation.');
     </script>
     <?php
   }

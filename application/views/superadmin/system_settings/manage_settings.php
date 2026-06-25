@@ -108,7 +108,7 @@
                                         max="100"
                                         required
                                         placeholder="Enter commission percentage" />
-                                    <small class="form-text text-muted">Set the global commission percentage for all marketplace transactions (equipment rentals/purchases and workforce services).</small>
+                                    <small class="form-text text-muted">Set the global commission percentage for all marketplace transactions (equipment marketplace listings/purchases and workforce services).</small>
                                 </div>
 
                                 <div class="mb-3">
@@ -137,7 +137,7 @@
                                 <h6>Commission Information:</h6>
                                 <ul class="mb-0">
                                     <li>This commission percentage applies to <strong>all marketplace transactions</strong></li>
-                                    <li>It applies to both <strong>equipment rentals/purchases</strong> and <strong>workforce services</strong></li>
+                                    <li>It applies to both <strong>equipment marketplace listings/purchases</strong> and <strong>workforce services</strong></li>
                                     <li>The commission is deducted from the seller's earnings</li>
                                     <li>Changes take effect immediately on new transactions</li>
                                     <li>Last updated: <?php 

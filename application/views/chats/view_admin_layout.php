@@ -36,9 +36,8 @@
             --table-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
+        .chat-header-panel *,
+        .chat-interface-container * {
             box-sizing: border-box;
         }
 
@@ -53,9 +52,12 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 600px;
-            max-height: 70vh;
-            margin-top: 12px;
+            width: 100%;
+            max-width: 1120px;
+            margin: 12px auto 0;
+            height: min(72vh, 700px);
+            max-height: min(72vh, 700px);
+            min-height: 460px;
         }
 
         /* Hide add button */
@@ -105,6 +107,8 @@
             gap: 10px;
             flex: 1;
             min-width: 0;
+            text-decoration: none;
+            color: inherit;
         }
 
         .chat-header-panel .user-avatar-small {
@@ -537,12 +541,26 @@
             }
 
             .chat-interface-container {
+                max-width: 100%;
                 height: 500px;
                 max-height: 65vh;
             }
         }
 
         @media (max-width: 768px) {
+            .chat-header-panel {
+                align-items: flex-start;
+            }
+
+            .chat-header-panel .back-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .chat-header-panel .status-badge-small {
+                margin-top: 6px;
+            }
+
             .chat-header {
                 padding: 12px 16px;
                 flex-wrap: wrap;
@@ -602,8 +620,10 @@
             }
 
             .chat-interface-container {
-                height: 450px;
-                max-height: 60vh;
+                max-width: 100%;
+                height: calc(100vh - 230px);
+                max-height: calc(100vh - 230px);
+                min-height: 400px;
             }
         }
 
@@ -613,8 +633,10 @@
             }
 
             .chat-interface-container {
-                height: 400px;
-                max-height: 55vh;
+                max-width: 100%;
+                height: calc(100vh - 200px);
+                max-height: calc(100vh - 200px);
+                min-height: 360px;
             }
 
             .main-wrapper {
@@ -625,7 +647,62 @@
                 padding: 12px;
             }
         }
+
+        /* Stability overrides: keep composer visible and prevent layout bleed */
+        .chat-interface-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .chat-interface-container .chat-view-root {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+            height: 100%;
+        }
+
+        .chat-interface-container .chat-orders-strip {
+            max-height: 104px;
+            overflow-y: auto;
+            flex: 0 0 auto;
+        }
+
+        .chat-interface-container .messages-area {
+            flex: 1 1 auto;
+            min-height: 0 !important;
+            height: 0 !important;
+            overflow-y: auto;
+        }
+
+        .chat-interface-container .chat-input-area,
+        .chat-interface-container .order-completed-banner {
+            flex: 0 0 auto;
+            z-index: 2;
+        }
+
+        .chat-interface-container .chat-input-area {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-height: 72px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+        }
     </style>
+    <?php if (!isset($user_role) || $user_role !== 'seller'): ?>
+    <style>
+        .chat-header-panel .user-order-text {
+            font-size: 0 !important;
+        }
+        .chat-header-panel .user-order-text::after {
+            content: 'Chat';
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+    </style>
+    <?php endif; ?>
 </head>
 
 <body>
@@ -638,11 +715,12 @@
         <main class="page-content">
             <!-- Chat Header Panel aligned to sidebar -->
             <div class="chat-header-panel">
-                <a href="<?= base_url('chats') ?>" class="back-btn">
+                <?php $login_data = $this->session->userdata('loginData'); ?>
+                <a href="<?= ((int)($login_data['userType'] ?? 0) === 4) ? base_url('employee/dashboard') : base_url('chats') ?>" class="back-btn">
                     <i class="bx bx-arrow-back"></i>
                     Back
                 </a>
-                <div class="user-info">
+                <a class="user-info" href="<?= !empty($counterparty_profile_url) ? $counterparty_profile_url : 'javascript:void(0);' ?>">
                     <div class="user-avatar-small"></div>
                     <div class="user-info-text">
                         <div class="user-name-text">
@@ -652,10 +730,23 @@
                                 <?= isset($chat->buyerFirstName, $chat->buyerLastName) ? htmlspecialchars(trim($chat->buyerFirstName . ' ' . $chat->buyerLastName)) : 'User' ?>
                             <?php endif; ?>
                         </div>
-                        <div class="user-order-text">Order #<?= isset($chat) ? $chat->equipmentPaymentID : 'N/A' ?> • $<?= isset($chat) ? number_format($chat->grossAmount, 2) : '0.00' ?></div>
+                        <?php
+                        $orders_count = isset($chat->ordersCount) ? (int)$chat->ordersCount : 0;
+                        $latest_order_id = (isset($chat) && !empty($chat->orderID)) ? (int)$chat->orderID : null;
+                        ?>
+                        <div class="user-order-text">
+                            <?php if ($orders_count > 0): ?>
+                                <?= $orders_count ?> linked order<?= $orders_count > 1 ? 's' : '' ?>
+                                <?php if (!empty($latest_order_id)): ?>
+                                    - latest #<?= $latest_order_id ?>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                Direct inquiry chat
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <div class="status-badge-small"><?= isset($chat) && isset($chat->chatStatus) ? ucfirst(htmlspecialchars($chat->chatStatus)) : 'Open' ?></div>
-                </div>
+                </a>
             </div>
 
             <!-- Chat Container -->
@@ -667,9 +758,11 @@
                         $view_data = array(
                             'chat' => isset($chat) ? $chat : null,
                             'messages' => isset($messages) ? $messages : array(),
+                            'chat_orders' => isset($chat_orders) ? $chat_orders : array(),
                             'current_user_id' => isset($current_user_id) ? $current_user_id : null,
                             'user_role' => isset($user_role) ? $user_role : null,
                             'jwt_token' => isset($jwt_token) ? $jwt_token : null,
+                            'counterparty_profile_url' => isset($counterparty_profile_url) ? $counterparty_profile_url : null,
                         );
                         $this->load->view('chats/view', $view_data); 
                         ?>

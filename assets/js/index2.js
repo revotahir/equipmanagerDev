@@ -359,7 +359,13 @@ var options = {
 		showTooltip: true,
 		onRegionClick: function (element, code, region) {
 			var message = 'You clicked "' + region + '" which has the code: ' + code.toUpperCase();
-			alert(message);
+            if (window.AppToast) {
+                AppToast.info(message);
+            } else if (window.toastr && typeof window.toastr.info === 'function') {
+                window.toastr.info(message);
+            } else {
+                console.log(message);
+            }
 		}
 	});
 

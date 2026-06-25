@@ -69,6 +69,8 @@ $route['work-force-marketplace']='welcome/workforceMarketPlace';
 $route['equipment-marketplace']='welcome/equipmentMarketPlace';
 $route['equipment-detail']='welcome/equipmentDetailMarketPlace';
 $route['workforce-detail']='welcome/WorkforceDetailMarketPlace';
+$route['company-profile/(:num)']='welcome/companyProfile/$1';
+$route['user-profile/(:num)']='welcome/userProfile/$1';
 //--website utality pages
 $route['contact-form-data']='welcome/ContactFormData';
 
@@ -77,6 +79,12 @@ $route['user-dashboard'] = 'welcome/userDashboard';
 $route['settings'] = 'welcome/userSettings';
 $route['company-dashboard'] = 'welcome/companyDashboard';
 $route['manager-dashboard'] = 'welcome/managerDashboard';
+$route['employee/dashboard'] = 'employee/dashboard';
+$route['employee/projects'] = 'employee/projects';
+$route['employee/equipment'] = 'employee/equipment';
+$route['employee/rentals'] = 'employee/rentals';
+$route['employee/profile'] = 'employee/profile';
+$route['employee/messages'] = 'employee/messages';
 
 
 //manage workforce company
@@ -90,6 +98,7 @@ $route['add-workforce'] = 'workforce/addWorkforce';
 $route['add-skill-data-ajax'] = 'workforce/addSkillDataAjax';
 $route['add-work-force-data'] = 'workforce/addWorkForceData';
 $route['all-workforce'] = 'workforce/allWorkforce';
+$route['resend-employee-invite/:any'] = 'workforce/resendEmployeeInvite';
 $route['delete-person/:any'] = 'workforce/DeletePerson';
 $route['edit-work-force/:any'] = 'workforce/editWorkForce';
 
@@ -223,6 +232,11 @@ $route['change-website-listing-status/:any/:any']='superadmin/ChangeMarketplacel
 // Super admin orders route
 $route['super-admin-orders'] = 'superadmin/all_orders';
 $route['super-admin-orders/view/(:num)'] = 'superadmin/view_order/$1';
+$route['super-admin-orders/invoice/(:num)'] = 'superadmin/invoice/$1';
+
+// Public invoice verification (QR destination)
+$route['invoice/verify'] = 'invoice_verify/index';
+$route['invoice/verify/(:any)'] = 'invoice_verify/index/$1';
 
 $route['login-data'] = 'welcome/LoginData';
 
@@ -244,6 +258,8 @@ $route['checkout/(:any)'] = 'checkout/$1';
 $route['chats'] = 'chats/index';
 $route['chats/(:any)'] = 'chats/$1';
 $route['chat/debug/(:num)'] = 'chat/debug/$1';
+$route['chat/start-company/(:num)'] = 'chat/start_company_chat/$1';
+$route['chat/thread/(:num)'] = 'chat/thread/$1';
 $route['chat/(:num)'] = 'chat/view/$1';
 $route['chat/api/(:any)'] = 'chat/api_$1';
 
@@ -255,21 +271,61 @@ $route['company-chats/(:any)'] = 'chats/$1';
 // Orders routes (user order history and details)
 $route['orders'] = 'orders/index';
 $route['orders/confirm_delivery'] = 'orders/confirm_delivery';
+$route['orders/invoice/(:num)'] = 'orders/invoice/$1';
 $route['orders/(:num)'] = 'orders/view/$1';  // Route numeric IDs to view method: /orders/21 → orders/view/21
 $route['orders/(:alpha)'] = 'orders/$1';     // Route method names like test_session
 $route['dashboard/orders'] = 'orders/index';
 $route['dashboard/orders/(:num)'] = 'orders/view/$1';  // Numeric IDs to view
 $route['dashboard/orders/(:alpha)'] = 'orders/$1';     // Method names
+$route['dashboard/reviews'] = 'reviews/index';
+$route['reviews'] = 'reviews/index';
+$route['company-reviews'] = 'reviews/company_index';
 
 // Company Orders routes (admin approval dashboard for purchase requests)
 $route['company-orders'] = 'company_orders/index';
 $route['company-orders/view/(:num)'] = 'company_orders/view/$1';
+$route['company-orders/invoice/(:num)'] = 'company_orders/invoice/$1';
 $route['company-orders/accept'] = 'company_orders/accept';
 $route['company-orders/reject'] = 'company_orders/reject';
 $route['company-orders/mark_shipped'] = 'company_orders/mark_shipped';
 $route['company-orders/allow_pickup'] = 'company_orders/allow_pickup';
+$route['company-orders/api_report_issue'] = 'company_orders/api_report_issue';
+$route['company-orders/api-report-issue'] = 'company_orders/api_report_issue';
+$route['company-orders/api_approve_rental'] = 'company_orders/api_approve_rental';
+$route['company-orders/api-approve-rental'] = 'company_orders/api_approve_rental';
+$route['company-orders/api_cancel_rental'] = 'company_orders/api_cancel_rental';
+$route['company-orders/api-cancel-rental'] = 'company_orders/api_cancel_rental';
+$route['company-orders/api_confirm_return'] = 'company_orders/api_confirm_return';
+$route['company-orders/api-confirm-return'] = 'company_orders/api_confirm_return';
+
+// Issues API route
+$route['issues/api_create_issue'] = 'issues/api_create_issue';
+$route['issues/api-create-issue'] = 'issues/api_create_issue';
+
+// SuperAdmin issue management routes
+$route['superadmin/issues'] = 'superadmin/issues';
+$route['superadmin/issue_detail/(:num)'] = 'superadmin/issue_detail/$1';
+$route['superadmin/api_assign_issue'] = 'superadmin/api_assign_issue';
+$route['superadmin/api_resolve_issue'] = 'superadmin/api_resolve_issue';
+
+// SuperAdmin issue chats (three-way dispute communication)
+$route['superadmin/issue-chats'] = 'superadmin/issue_chats';
+$route['superadmin/issue-chats/view/(:num)'] = 'superadmin/issue_chat_view/$1';
+$route['superadmin/resolve-issue-chat'] = 'superadmin/resolve_issue_chat';
+
+// Notifications routes
+$route['notifications'] = 'notifications/index';
+$route['notifications/api_get_unread_count'] = 'notifications/api_get_unread_count';
+$route['notifications/api_get_recent'] = 'notifications/api_get_recent';
+$route['notifications/api_mark_read'] = 'notifications/api_mark_read';
+$route['notifications/api_mark_all_read'] = 'notifications/api_mark_all_read';
+$route['notifications/api_delete'] = 'notifications/api_delete';
 
 $route['orders/confirm_pickup'] = 'orders/confirm_pickup';
+$route['reviews/submit'] = 'reviews/submit';
+$route['reviews/update/(:num)'] = 'reviews/update/$1';
+$route['reviews/delete/(:num)'] = 'reviews/delete/$1';
+$route['reviews/report/(:num)'] = 'reviews/report/$1';
 
 $route['logout'] = 'welcome/LogOut';
 $route['default_controller'] = 'welcome';

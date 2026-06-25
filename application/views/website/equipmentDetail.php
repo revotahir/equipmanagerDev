@@ -25,6 +25,62 @@
       margin-bottom: 0.5rem;
     }
 
+    .owner-contact-link {
+      color: inherit;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .owner-contact-icon {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #FF9500;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #FF9500;
+      flex-shrink: 0;
+      font-size: 1.15rem;
+    }
+
+    .owner-chat-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.42rem 0.9rem;
+      border-radius: 999px;
+      background: #13372E;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-decoration: none;
+      line-height: 1;
+      border: 1px solid #13372E;
+    }
+
+    .owner-chat-btn:hover {
+      background: #0f2f2c;
+      border-color: #0f2f2c;
+      color: #ffffff;
+    }
+
+    .owner-chat-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Hide error element during calculations to show loading state instead */
+    #rental-calc-error {
+      display: none !important;
+    }
+
+    /* Only show error if explicitly marked with show-error class */
+    #rental-calc-error.show-error {
+      display: block !important;
+    }
+
     /* The dark background overlay */
     .payment-overlay {
       display: none;
@@ -519,7 +575,7 @@
   </style>
 </head>
 
-<body class="off_white">
+<body class="off_white equipment-detail-page <?= ($equipment[0]['saleType'] == 1) ? 'is-purchase' : 'is-rental' ?>">
   <!-- header section-->
   <?php $this->load->view('components/websiteHeader'); ?>
   <!-- hero section start -->
@@ -574,6 +630,16 @@
             <img
               src="<?= base_url() ?>assets/website/images/<?= $equipment[0]['eqpimg1'] ?>"
               alt="Product Image" />
+            <button type="button" class="gallery-nav gallery-nav-prev" aria-label="Previous image">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <button type="button" class="gallery-nav gallery-nav-next" aria-label="Next image">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
           </div>
 
           <!-- product sub imgs -->
@@ -595,34 +661,71 @@
         </div>
 
         <!-- heavy duty -->
+        <?php
+          $mapRentalUnitLabel = static function ($rawType) {
+            $value = strtolower(trim((string)$rawType));
+            if ($value === '' || $value === '0') {
+              return 'Per Day';
+            }
+            $directMap = [
+              '1' => 'Per Day',
+              '2' => 'Per Week',
+              '3' => 'Per Month',
+              '4' => 'Per Year',
+              'day' => 'Per Day',
+              'daily' => 'Per Day',
+              'week' => 'Per Week',
+              'weekly' => 'Per Week',
+              'month' => 'Per Month',
+              'monthly' => 'Per Month',
+              'year' => 'Per Year',
+              'yearly' => 'Per Year',
+              'annually' => 'Per Year',
+            ];
+            if (isset($directMap[$value])) {
+              return $directMap[$value];
+            }
+            if (strpos($value, 'day') !== false) {
+              return 'Per Day';
+            }
+            if (strpos($value, 'week') !== false) {
+              return 'Per Week';
+            }
+            if (strpos($value, 'month') !== false) {
+              return 'Per Month';
+            }
+            if (strpos($value, 'year') !== false || strpos($value, 'annual') !== false) {
+              return 'Per Year';
+            }
+            return 'Per Day';
+          };
+          $equipmentSaleTypeRaw = strtolower(trim((string)($equipment[0]['saleType'] ?? '')));
+          $isEquipmentRental = in_array($equipmentSaleTypeRaw, ['0', 'rental', 'rent', 'for_rent'], true);
+          $equipmentRentalUnitLabel = $mapRentalUnitLabel($equipment[0]['eqpRentalType'] ?? '');
+        ?>
         <div class="heavy-duty-main">
           <div class="heavy-duty">
             <h2 class="text-h2">
               <?= $equipment[0]['equipName'] ?>
             </h2>
-            <p class="text-para text-dark-green">
-              Price:
-              <span>$<?= $equipment[0]['eqpPrice'] ?>
-                <?php
-                if ($equipment[0]['saleType'] == 1) {
-                  echo ' /';
-                  if ($equipment[0]['eqpRentalType'] == 1) {
-                    echo 'Per Day';
-                  } else if ($equipment[0]['eqpRentalType'] == 2) {
-                    echo 'Per Week';
-                  } else if ($equipment[0]['eqpRentalType'] == 3) {
-                    echo 'Per Month';
-                  } else {
-                    echo 'Per Year';
-                  }
-                } else {
-                  echo '(For Sale)';
-                }
-                ?>
-              </span>
+            <p class="text-para text-dark-green detail-price-line">
+              <span class="detail-price-label">Price</span>
+              <span class="detail-price-value">$<?= $equipment[0]['eqpPrice'] ?><?= $isEquipmentRental ? (' / ' . $equipmentRentalUnitLabel) : '' ?></span>
             </p>
+            <h3 class="detail-subtitle">
+              <?= !empty($equipment[0]['eqpBrandModel']) ? $equipment[0]['eqpBrandModel'] : 'Heavy-Duty Equipment Ideal For Construction Projects' ?>
+            </h3>
+            <?php
+              $contactCompanyID = isset($equipment[0]['companyID']) ? (int)$equipment[0]['companyID'] : 0;
+              $directChatUrl = $contactCompanyID > 0 ? base_url('chat/start-company/' . $contactCompanyID) : '';
+              $companyProfileUrl = $contactCompanyID > 0 ? base_url('company-profile/' . $contactCompanyID . '#reviews') : '';
+              $companyAvg = isset($company_rating_summary['avg']) ? (float)$company_rating_summary['avg'] : 0.0;
+              $companyTotalReviews = isset($company_rating_summary['total']) ? (int)$company_rating_summary['total'] : 0;
+              $companyStarsFilled = (int)round($companyAvg);
+              $companyStars = str_repeat('★', max(0, min(5, $companyStarsFilled))) . str_repeat('☆', 5 - max(0, min(5, $companyStarsFilled)));
+            ?>
             <!-- owner info -->
-            <div class="owner-info-main">
+            <div class="owner-info-main owner-info-inline">
               <h4 class="text-h4-blog text-dark-green">Owner Information</h4>
               <div class="owner-info">
                 <!-- single owner info -->
@@ -648,8 +751,8 @@
                     </defs>
                   </svg>
                   <div>
-                    <span class="owner-para-fat">Verified Landlord Profile</span>
-                    <span class="owner-para-thin">John Equipment Rentals</span>
+                    <span class="owner-para-fat">Verified Profile Name</span>
+                    <span class="owner-para-thin"><?= htmlspecialchars(!empty($equipment[0]['companyName']) ? $equipment[0]['companyName'] : (!empty($equipment[0]['userName']) ? $equipment[0]['userName'] : 'N/A'), ENT_QUOTES, 'UTF-8') ?></span>
                   </div>
                 </div>
                 <!-- single owner info -->
@@ -667,25 +770,27 @@
                   </svg>
                   <div>
                     <span class="owner-para-fat">Rating</span>
-                    <span class="owner-para-thin">0 / 5 (0 reviews)</span>
+                    <span class="owner-para-thin">
+                      <?php if (!empty($companyProfileUrl)): ?>
+                        <a href="<?= $companyProfileUrl ?>" class="owner-contact-link"><?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?></a>
+                      <?php else: ?>
+                        <?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?>
+                      <?php endif; ?>
+                    </span>
                   </div>
                 </div>
                 <!-- single owner info -->
                 <div class="single-owner-info">
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M7.66667 1.5C4.26091 1.5 1.5 4.26091 1.5 7.66667V12.6C1.5 26.9042 13.0958 38.5 27.4 38.5H32.3333C35.7391 38.5 38.5 35.7391 38.5 32.3333V28.9245C38.5 27.523 37.7082 26.2419 36.4547 25.6151L30.4954 22.6355C28.4815 21.6285 26.0426 22.6387 25.3306 24.7748L24.5961 26.9783C24.317 27.8155 23.4582 28.3139 22.5928 28.1408C17.1764 27.0575 12.9425 22.8236 11.8592 17.4072C11.6861 16.5418 12.1845 15.683 13.0217 15.4039L15.7564 14.4924C17.5905 13.881 18.6448 11.9605 18.1758 10.0849L16.7303 4.30262C16.3185 2.6555 14.8386 1.5 13.1408 1.5H7.66667Z"
-                      stroke="#FF9500"
-                      stroke-width="3" />
-                  </svg>
+                  <span class="owner-contact-icon"><i class="bi bi-chat-dots"></i></span>
                   <div>
-                    <span class="owner-para-fat">Contact options</span>
-                    <span class="owner-para-thin">Message</span>
+                    
+                    <span class="owner-para-thin">
+                      <?php if (!empty($directChatUrl)): ?>
+                        <a href="<?= $directChatUrl ?>" class="owner-chat-btn">Chat Now</a>
+                      <?php else: ?>
+                        <span class="owner-chat-btn disabled">Unavailable</span>
+                      <?php endif; ?>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -843,6 +948,77 @@ replacement.</span>';
               ?>
               <span class="text-para"><strong>City :</strong> <?= $equipment[0]['eqpLocCity'] ?></span>
             </div>
+            <!-- Delivery Information Feature -->
+            <div class="single-feature">
+              <div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M9 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <span class="text-para"><strong>Delivery Available:</strong>
+                  <?= ($equipment[0]['eqpDeliveryOpt'] == 1) ? 'Yes' : 'No' ?>
+                </span>
+              </div>
+            </div>
+
+            <?php if ($equipment[0]['eqpDeliveryOpt'] == 1): ?>
+            <div class="single-feature">
+              <div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <span class="text-para"><strong>Delivery Price:</strong>
+                  <?php
+                    $deliveryChargeRaw = isset($equipment[0]['deliveryCharge']) ? trim((string)$equipment[0]['deliveryCharge']) : '';
+                    $isNumericCharge = $deliveryChargeRaw !== '' && is_numeric($deliveryChargeRaw);
+                    echo $isNumericCharge ? ('$' . number_format((float)$deliveryChargeRaw, 2)) : 'Free';
+                  ?>
+                </span>
+              </div>
+            </div>
+            <?php endif; ?>
+          </div>
+          <div class="owner-sidebar-card">
+            <h4 class="text-h4-blog text-dark-green owner-sidebar-title">Owner Information</h4>
+            <div class="owner-sidebar-list">
+              <div class="owner-sidebar-item">
+                <span class="owner-sidebar-icon"><i class="bi bi-patch-check"></i></span>
+                <div class="owner-sidebar-copy">
+                  <span class="owner-para-fat">Verified Profile Name</span>
+                  <span class="owner-para-thin"><?= htmlspecialchars(!empty($equipment[0]['companyName']) ? $equipment[0]['companyName'] : (!empty($equipment[0]['userName']) ? $equipment[0]['userName'] : 'N/A'), ENT_QUOTES, 'UTF-8') ?></span>
+                </div>
+              </div>
+              <div class="owner-sidebar-item">
+                <span class="owner-sidebar-icon"><i class="bi bi-star"></i></span>
+                <div class="owner-sidebar-copy">
+                  <span class="owner-para-fat">Rating</span>
+                  <span class="owner-para-thin">
+                    <?php if (!empty($companyProfileUrl)): ?>
+                      <a href="<?= $companyProfileUrl ?>" class="owner-contact-link"><?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?></a>
+                    <?php else: ?>
+                      <?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?>
+                    <?php endif; ?>
+                  </span>
+                </div>
+              </div>
+              <div class="owner-sidebar-item">
+                <span class="owner-sidebar-icon"><i class="bi bi-chat-dots"></i></span>
+                <div class="owner-sidebar-copy">
+               
+                  <span class="owner-para-thin">
+                    <?php if (!empty($directChatUrl)): ?>
+                      <a href="<?= $directChatUrl ?>" class="owner-chat-btn">Chat Now</a>
+                    <?php else: ?>
+                      <span class="owner-chat-btn disabled">Unavailable</span>
+                    <?php endif; ?>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -991,21 +1167,29 @@ replacement.</span>';
               <div class="cnt-form product-form">
                 <h3 class="text-h3 text-dark-green">Rent Now</h3>
                 <?php if ($this->session->userdata('loginData')): ?>
-                <form action="" method="post" class="cnt-full-form" id="rent-form" data-base-price="<?= $equipment[0]['eqpPrice'] ?>" data-base-unit="<?= $equipment[0]['eqpRentalType'] == 1 ? 'Per Day' : ($equipment[0]['eqpRentalType'] == 2 ? 'Per Week' : ($equipment[0]['eqpRentalType'] == 3 ? 'Per Month' : 'Per Year')) ?>">
+                <form action="" method="post" class="cnt-full-form detail-request-form" id="rent-form" data-base-price="<?= $equipment[0]['eqpPrice'] ?>" data-base-unit="<?= $equipment[0]['eqpRentalType'] == 1 ? 'Per Day' : ($equipment[0]['eqpRentalType'] == 2 ? 'Per Week' : ($equipment[0]['eqpRentalType'] == 3 ? 'Per Month' : 'Per Year')) ?>">
                   <!-- SECURITY FIX: Add CSRF token to form -->
                   <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
 
-                  <div class="form-group">
+                  <div class="form-group quantity-group">
                     <label for="rental_quantity">Quantity <span style="color: #ff3434;">*</span></label>
+                    <?php
+                      // Calculate available rental quantity: equipRentalTotalQuantity - equipRentalLockedQuantity
+                      $availableRentalQty = max(0, intval($equipment[0]['equipRentalTotalQuantity'] ?? 0) - intval($equipment[0]['equipRentalLockedQuantity'] ?? 0));
+                      // Fallback to equipQty if rental quantities not set
+                      if ($availableRentalQty == 0 && isset($equipment[0]['equipQty'])) {
+                        $availableRentalQty = intval($equipment[0]['equipQty']);
+                      }
+                    ?>
                     <input
                       type="number"
                       id="rental_quantity"
                       name="quantity"
                       min="1"
-                      max="<?= $equipment[0]['equipQty'] ?>"
+                      max="<?= $availableRentalQty ?>"
                       value="1"
                       required />
-                    <small class="stock-info" style="color: #333; font-size: 14px; font-weight: 600; margin-top: 6px; display: block;">Available: <?= $equipment[0]['equipQty'] ?> units</small>
+                    <small class="stock-info" style="color: #333; font-size: 14px; font-weight: 600; margin-top: 6px; display: block;">Available: <?= $availableRentalQty ?> units</small>
                   </div>
 
                   <!-- Hidden fields for Calculator -->
@@ -1013,26 +1197,28 @@ replacement.</span>';
                   <input type="hidden" id="itemType" value="1" /> <!-- 1 = Equipment -->
 
                   <!-- Dates are selected via the calendar -->
-                  <div class="form-group">
-                    <label for="rental_start">Start Date <span style="color: #ff3434;">*</span></label>
-                    <input
-                      type="text"
-                      id="rental_start"
-                      name="startDate"
-                      placeholder="Select from calendar..."
-                      readonly
-                      required />
-                  </div>
+                  <div class="date-grid">
+                    <div class="form-group">
+                      <label for="rental_start">Start Date <span style="color: #ff3434;">*</span></label>
+                      <input
+                        type="text"
+                        id="rental_start"
+                        name="startDate"
+                        placeholder="Select from calendar..."
+                        readonly
+                        required />
+                    </div>
 
-                  <div class="form-group">
-                    <label for="rental_end">End Date <span style="color: #ff3434;">*</span></label>
-                    <input
-                      type="text"
-                      id="rental_end"
-                      name="endDate"
-                      placeholder="Select from calendar..."
-                      readonly
-                      required />
+                    <div class="form-group">
+                      <label for="rental_end">End Date <span style="color: #ff3434;">*</span></label>
+                      <input
+                        type="text"
+                        id="rental_end"
+                        name="endDate"
+                        placeholder="Select from calendar..."
+                        readonly
+                        required />
+                    </div>
                   </div>
 
                   <div id="rental-loading" style="display:none; background: #f0f9f4; padding: 16px; border-radius: 8px; margin-bottom: 16px; text-align: center;">
@@ -1055,7 +1241,7 @@ replacement.</span>';
                   <div id="rental-calc-error" style="display:none; color: red; margin-bottom: 15px; text-align: center;"></div>
 
                   <div class="form-submit">
-                    <button type="button" onclick="proceedToCheckoutEquipment('rent')" class="btn-dark-green w-full">Proceed to Checkout</button>
+                    <button type="submit" id="submit-rental" class="btn-dark-green w-full">SUBMIT RENTAL REQUEST</button>
                   </div>
                 </form>
                 <?php else: ?>
@@ -1067,65 +1253,58 @@ replacement.</span>';
               </div>
             </div>
           </div>
-      </div>
-    </div>
-  </section>
-<?php endif; ?>
+        <?php else: ?>
+          <div class="calender-main purchase-layout">
+            <div class="booking-form purchase-form-expanded">
+              <div class="cnt-form product-form">
+                <h3 class="text-h3 text-dark-green">Request Purchase</h3>
+                <?php if ($this->session->userdata('loginData')): ?>
+                <form action="" method="post" class="cnt-full-form detail-request-form purchase-request-form" id="buy-form" data-base-price="<?= $equipment[0]['eqpPrice'] ?>">
+                  <!-- SECURITY FIX: Add CSRF token to form -->
+                  <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
 
-<?php if ($equipment[0]['saleType'] == 1): ?>
-  <!-- Purchase Form Section -->
-  <section class="product-detail" style="padding: 30px 0;">
-    <div class="container">
-      <div class="calender-main" style="width: 100%;">
-        <div class="booking-form purchase-form-expanded">
-          <div class="cnt-form product-form">
-            <h3 class="text-h3 text-dark-green">Request Purchase</h3>
-            <?php if ($this->session->userdata('loginData')): ?>
-            <form action="" method="post" class="cnt-full-form" id="buy-form" data-base-price="<?= $equipment[0]['eqpPrice'] ?>">
-              <!-- SECURITY FIX: Add CSRF token to form -->
-              <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
+                  <div class="form-group quantity-group">
+                    <label for="purchase_quantity">Quantity <span style="color: #ff3434;">*</span></label>
+                    <input
+                      type="number"
+                      id="purchase_quantity"
+                      name="quantity"
+                      min="1"
+                      max="<?= $equipment[0]['equipQty'] ?>"
+                      value="1"
+                      required />
+                    <small id="purchase-stock-info" class="stock-info" style="color: #333; font-size: 14px; font-weight: 600; margin-top: 6px; display: block;">Available: <?= $equipment[0]['equipQty'] ?> units</small>
+                  </div>
 
-              <div class="form-group">
-                <label for="purchase_quantity">Quantity <span style="color: #ff3434;">*</span></label>
-                <input
-                  type="number"
-                  id="purchase_quantity"
-                  name="quantity"
-                  min="1"
-                  max="<?= $equipment[0]['equipQty'] ?>"
-                  value="1"
-                  required />
-                <small id="purchase-stock-info" class="stock-info" style="color: #333; font-size: 14px; font-weight: 600; margin-top: 6px; display: block;">Available: <?= $equipment[0]['equipQty'] ?> units</small>
+                  <!-- Hidden fields for Calculator (Purchase) -->
+                  <input type="hidden" id="itemId" value="<?= $equipment[0]['itemID'] ?>" />
+                  <input type="hidden" id="itemType" value="1" />
+
+                  <div id="purchase-total-display" class="total-cost-display" style="background: #f0f9f4; padding: 16px; border-radius: 8px; margin-bottom: 16px; text-align: center; display: none;">
+                    <div class="label" style="font-size: 14px; color: #526464; margin-bottom: 4px;">Total Purchase Cost</div>
+                    <div id="purchase-total-amount" class="amount" style="font-size: 28px; font-weight: bold; color: #0f2f2c;">$0.00</div>
+                    <div id="purchase-breakdown" class="details" style="font-size: 12px; color: #666; margin-top: 8px;">Price per unit: $<?= number_format((float)$equipment[0]['eqpPrice'], 2) ?></div>
+                  </div>
+
+                  <div id="purchase-calc-error" style="display:none; color: red; margin-bottom: 15px; text-align: center;"></div>
+
+                  <div class="form-submit">
+                    <button type="button" onclick="sendPurchaseRequest('buy')" id="submit-buy" class="btn-dark-green w-full">SEND PURCHASE REQUEST</button>
+                  </div>
+                </form>
+                <?php else: ?>
+                <div style="background: #f0f9f4; padding: 24px; border-radius: 8px; text-align: center;">
+                  <p style="font-size: 16px; color: #0f2f2c; margin-bottom: 16px;">Please log in to purchase this equipment</p>
+                  <a href="<?= base_url('login') ?>" class="btn-dark-green" style="display: inline-block; padding: 12px 24px; text-decoration: none; border-radius: 8px;">Log in to Buy</a>
+                </div>
+                <?php endif; ?>
               </div>
-
-              <!-- Hidden fields for Calculator (Purchase) -->
-              <input type="hidden" id="itemId" value="<?= $equipment[0]['itemID'] ?>" />
-              <input type="hidden" id="itemType" value="1" />
-
-              <div id="purchase-total-display" class="total-cost-display" style="background: #f0f9f4; padding: 16px; border-radius: 8px; margin-bottom: 16px; text-align: center; display: none;">
-                <div class="label" style="font-size: 14px; color: #526464; margin-bottom: 4px;">Total Purchase Cost</div>
-                <div id="purchase-total-amount" class="amount" style="font-size: 28px; font-weight: bold; color: #0f2f2c;">$0.00</div>
-                <div id="purchase-breakdown" class="details" style="font-size: 12px; color: #666; margin-top: 8px;"></div>
-              </div>
-
-              <div id="purchase-calc-error" style="display:none; color: red; margin-bottom: 15px; text-align: center;"></div>
-
-              <div class="form-submit">
-                <button type="button" onclick="sendPurchaseRequest('buy')" id="submit-buy" class="btn-dark-green w-full">Send Purchase Request</button>
-              </div>
-            </form>
-            <?php else: ?>
-            <div style="background: #f0f9f4; padding: 24px; border-radius: 8px; text-align: center;">
-              <p style="font-size: 16px; color: #0f2f2c; margin-bottom: 16px;">Please log in to purchase this equipment</p>
-              <a href="<?= base_url('login') ?>" class="btn-dark-green" style="display: inline-block; padding: 12px 24px; text-decoration: none; border-radius: 8px;">Log in to Buy</a>
             </div>
-            <?php endif; ?>
           </div>
-        </div>
+        <?php endif; ?>
       </div>
     </div>
   </section>
-<?php endif; ?>
 
 <!-- footer section -->
 <footer class="footer">
@@ -1400,11 +1579,13 @@ replacement.</span>';
   window.equipmentAvailability = {
     startDate: '<?= $equipment[0]['eqpAvailableStart'] ?? '' ?>',
     endDate: '<?= $equipment[0]['eqpAvailableEnd'] ?? '' ?>',
+    todayDate: '<?= date('Y-m-d') ?>',
     saleType: <?= $equipment[0]['saleType'] ?? 1 ?>
   };
   window.APP_BASE_URL = '<?= site_url('/') ?>';
 </script>
 <script src="<?= base_url() ?>assets/toastr/toastr.min.js"></script>
+<script src="<?= base_url() ?>assets/js/theme-toastr.js"></script>
 <script>
   // Configure toastr options
   toastr.options = {
@@ -1434,18 +1615,8 @@ replacement.</span>';
    * Checkout Redirect for Equipment Rental/Purchase
    * Validates form data and redirects to secure checkout page
    */
-  // Global variable to store purchase request data for confirmation
-  let pendingPurchaseRequest = null;
-
   function showPurchaseConfirmation(mode) {
     console.log('📦 Showing purchase confirmation - Mode:', mode);
-    
-    // Ensure toastr is working
-    if (typeof toastr === 'undefined') {
-      alert('Toast notifications library failed to load. Please refresh the page.');
-      console.error('❌ toastr not loaded');
-      return;
-    }
     
     let form, itemId, quantity, startDate, endDate, saleType, itemName = 'Equipment';
     
@@ -1467,204 +1638,92 @@ replacement.</span>';
     
     // ===== VALIDATION =====
     if (!itemId || itemId === '') {
-      toastr.error('Item ID missing. Please refresh the page.');
+      AppToast.error('Item ID missing. Please refresh the page.');
       console.error('❌ Item ID missing');
       return;
     }
     
     quantity = parseInt(quantity);
     if (!quantity || quantity < 1) {
-      toastr.error('Please enter a valid quantity (minimum 1)');
+      AppToast.error('Please enter a valid quantity (minimum 1)');
       console.error('❌ Invalid quantity:', quantity);
       return;
     }
     
     if (saleType === 0) {  // Rental requires dates
       if (!startDate || startDate === '') {
-        toastr.error('⚠️ Please select a start date from the calendar');
+        AppToast.error('Please select a start date from the calendar');
         return;
       }
       if (!endDate || endDate === '') {
-        toastr.error('⚠️ Please select an end date from the calendar');
+        AppToast.error('Please select an end date from the calendar');
         return;
       }
       
       // Validate date format (YYYY-MM-DD)
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
       if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
-        toastr.error('❌ Invalid date format. Please use the calendar to select dates.');
+        AppToast.error('Invalid date format. Please use the calendar to select dates.');
         return;
       }
       
       // Validate dates are not swapped
       const start = new Date(startDate);
       const end = new Date(endDate);
+      const todayStr = (window.equipmentAvailability && window.equipmentAvailability.todayDate) ? window.equipmentAvailability.todayDate : null;
+      const today = todayStr ? new Date(todayStr) : new Date();
+      today.setHours(0, 0, 0, 0);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
       if (start >= end) {
-        toastr.error('❌ End date must be after start date');
+        AppToast.error('End date must be after start date');
+        return;
+      }
+      if (start < today || end < today) {
+        AppToast.error('Past dates are not allowed for rental bookings');
         return;
       }
     }
     
-    // Store the data in global variable for confirmation
-    pendingPurchaseRequest = {
-      mode: mode,
-      itemId: itemId,
+    // Build payload matching the expected structure for confirmRentalRequest()
+    const itemNameText = document.querySelector('.product-name-head') ? document.querySelector('.product-name-head').textContent : 'Equipment';
+    
+    const payload = {
+      item_id: parseInt(itemId),
+      quantity: quantity,
+      sale_type: saleType,
+      start_date: startDate,
+      end_date: endDate,
+      customer_email: document.querySelector('input[name="customer_email"]')?.value || '',
+      customer_phone: document.querySelector('input[name="customer_phone"]')?.value || '',
+      delivery_method: 1,
+      delivery_name: '',
+      delivery_street: '',
+      delivery_city: '',
+      delivery_postal: '',
+      delivery_country: '',
+      delivery_notes: ''
+    };
+    
+    // Store the data in global window variable for confirmation (matches rental-purchase-handler.js structure)
+    window.pendingRentalRequest = {
+      payload: payload,
+      itemName: itemNameText,
       quantity: quantity,
       startDate: startDate,
-      endDate: endDate,
-      saleType: saleType
+      endDate: endDate
     };
+    
+    console.log('✅ Purchase request prepared:', window.pendingRentalRequest);
     
     // Populate and show confirmation modal
-    updateConfirmationModal(pendingPurchaseRequest);
-  }
-
-  function updateConfirmationModal(requestData) {
-    const modal = document.getElementById('purchase-confirmation-overlay');
-    const itemNameEl = document.getElementById('confirmation-item-name');
-    const quantityEl = document.getElementById('confirmation-quantity');
-    const typeEl = document.getElementById('confirmation-type');
-    const datesEl = document.getElementById('confirmation-dates');
-    const datesSectionEl = document.getElementById('confirmation-dates-section');
-    
-    // Get item name from page (you may need to adjust this selector based on your HTML)
-    const itemNameText = document.querySelector('.product-name-head') ? document.querySelector('.product-name-head').textContent : 'Equipment';
-    itemNameEl.textContent = itemNameText;
-    quantityEl.textContent = requestData.quantity + ' unit' + (requestData.quantity > 1 ? 's' : '');
-    typeEl.textContent = requestData.saleType === 0 ? 'Rental' : 'Purchase';
-    
-    // Show/hide dates based on sale type
-    if (requestData.saleType === 0) {
-      const startDate = new Date(requestData.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-      const endDate = new Date(requestData.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-      datesEl.textContent = startDate + ' to ' + endDate;
-      datesSectionEl.style.display = 'flex';
-    } else {
-      datesSectionEl.style.display = 'none';
-    }
-    
-    // Show modal
-    modal.classList.add('active');
-  }
-
-  function confirmPurchaseRequest() {
-    if (!pendingPurchaseRequest) {
-      console.error('❌ No pending purchase request');
-      return;
-    }
-    
-    const requestData = pendingPurchaseRequest;
-    const mode = requestData.mode;
-    const submitBtn = mode === 'rent' ? document.getElementById('submit-rent') : document.getElementById('submit-buy');
-    const originalText = submitBtn.innerHTML;
-    
-    console.log('📤 Confirming purchase request');
-    
-    // Close modal
-    closePurchaseConfirmation();
-    
-    // Send actual request to backend
-    const payload = {
-      item_id: requestData.itemId,
-      quantity: requestData.quantity,
-      sale_type: requestData.saleType
-    };
-    
-    if (requestData.saleType === 0) {
-      payload.start_date = requestData.startDate;
-      payload.end_date = requestData.endDate;
-    }
-    
-    console.log('📤 Sending request data:', payload);
-    
-    // Disable button and show loading
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
-    
-    // Send request to backend
-    fetch('<?= site_url('checkout/create_purchase_request') ?>', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...payload,
-        [window.CSRF_TOKEN_NAME]: window.CSRF_TOKEN_VALUE
-      })
-    })
-    .then(response => {
-      console.log('📡 Response status:', response.status);
-      return response.json();
-    })
-    .then(data => {
-      console.log('📥 Response data:', data);
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
-      
-      if (data.success) {
-        console.log('✅ Success! Request ID:', data.request_id, 'Chat ID:', data.chat_id);
-        // Show success page modal with chat and shop buttons
-        showSuccessPage({
-          request_id: data.request_id,
-          chat_id: data.chat_id,
-          status: data.status
-        });
-      } else {
-        console.error('❌ Backend error:', data.message);
-        toastr.error('❌ ' + (data.message || 'Failed to send purchase request. Please try again.'));
-      }
-    })
-    .catch(error => {
-      console.error('❌ Network/Parse error:', error);
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
-      toastr.error('🚫 Network error. Please check your connection and try again.');
-    });
-  }
-
-  function closePurchaseConfirmation() {
-    const modal = document.getElementById('purchase-confirmation-overlay');
-    modal.classList.remove('active');
-    pendingPurchaseRequest = null;
+    showRentalConfirmation();
   }
 
   function showSuccessPage(orderData) {
     console.log('✅ Showing success page with data:', orderData);
-    const successOverlay = document.getElementById('success-overlay');
-    const successChatId = document.getElementById('success-chat-id');
-    
-    // Store chat ID for button handlers
-    successChatId.value = orderData.chat_id || '';
-    
-    // Update success page with order details
-    const requestIdEl = document.getElementById('success-request-id');
-    if (requestIdEl) {
-      requestIdEl.textContent = '#' + orderData.request_id;
-    }
-    
-    // Show success modal
-    successOverlay.classList.add('active');
-  }
-
-  function goToChat() {
-    const chatId = document.getElementById('success-chat-id').value;
-    if (!chatId) {
-      toastr.error('❌ Chat ID not found. Please refresh the page.');
-      console.error('❌ Chat ID missing');
-      return;
-    }
-    console.log('💬 Navigating to chat:', chatId);
-    window.location.href = '<?= site_url('chat/') ?>' + chatId;
-  }
-
-  function backToShop() {
-    console.log('🏪 Navigating back to shop');
-    window.location.href = '<?= site_url('marketplace') ?>';
-  }
-
-  function closeSuccessPage() {
-    const successOverlay = document.getElementById('success-overlay');
-    successOverlay.classList.remove('active');
+    // This is now handled by the global showSuccessModal() function in rental-purchase-handler.js
+    window.showSuccessModal(orderData);
   }
 
   // Maintain backward compatibility - old function name calls new one
@@ -1672,35 +1731,173 @@ replacement.</span>';
     showPurchaseConfirmation(mode);
   }
 
+  // EQUIPMENT RENTAL CHECKOUT - Direct to checkout (bypasses purchase request modal)
+  function proceedToCheckoutEquipment(mode) {
+    console.log('🛒 Proceeding to equipment checkout - Mode:', mode);
+    
+    if (mode === 'rent') {
+      const itemIdEl = document.getElementById('itemId');
+      const quantityEl = document.getElementById('rental_quantity');
+      const startDateEl = document.getElementById('rental_start');
+      const endDateEl = document.getElementById('rental_end');
+      
+      const itemId = itemIdEl ? itemIdEl.value : '';
+      const quantity = quantityEl ? quantityEl.value : '';
+      const startDate = startDateEl ? startDateEl.value : '';
+      const endDate = endDateEl ? endDateEl.value : '';
+      
+      // Validation
+      if (!itemId) {
+        toastr.error('Item ID missing. Please refresh the page.');
+        return;
+      }
+      
+      if (!quantity || parseInt(quantity) < 1) {
+        toastr.error('Please enter a valid quantity');
+        return;
+      }
+      
+      if (!startDate) {
+        toastr.error('⚠️ Please select a start date from the calendar');
+        return;
+      }
+      
+      if (!endDate) {
+        toastr.error('⚠️ Please select an end date from the calendar');
+        return;
+      }
+      
+      // Validate date format
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+        toastr.error('❌ Invalid date format. Please use the calendar to select dates.');
+        return;
+      }
+      
+      // Validate dates not swapped
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const todayStr = (window.equipmentAvailability && window.equipmentAvailability.todayDate) ? window.equipmentAvailability.todayDate : null;
+      const today = todayStr ? new Date(todayStr) : new Date();
+      today.setHours(0, 0, 0, 0);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+      if (start >= end) {
+        toastr.error('❌ End date must be after start date');
+        return;
+      }
+      if (start < today || end < today) {
+        toastr.error('❌ Past dates are not allowed for rental bookings');
+        return;
+      }
+      
+      // Build checkout URL
+      const checkoutUrl = window.APP_BASE_URL + 'checkout?item_id=' + itemId + '&quantity=' + quantity + '&start_date=' + startDate + '&end_date=' + endDate;
+      
+      console.log('✅ Checkout URL:', checkoutUrl);
+      console.log('📦 Params:', { itemId, quantity, startDate, endDate });
+      
+      // Redirect to checkout
+      window.location.href = checkoutUrl;
+    }
+  }
+
+  // ===== MODAL CONTROL FUNCTIONS =====
+  // These functions are provided by rental-purchase-handler.js as window.goToChat and window.backToShop
+  // The onclick handlers in the success modal buttons call these global functions directly
+
   document.addEventListener('DOMContentLoaded', function() {
     // Determine if we are in Rental or Purchase mode based on what elements exist
     if (document.getElementById('rent-form')) {
       // RENTAL MODE
-      const rentalCalculator = new PriceCalculator({
-        itemId: document.getElementById('itemId').value,
-        itemType: 1, // Equipment
-        saleType: 0, // Rental
-        baseUrl: '<?= site_url('/') ?>',
-        basePrice: <?= $equipment[0]['eqpPrice'] ?>,
-        baseUnit: '<?= $equipment[0]['eqpRentalType'] == 1 ? 'Per Day' : ($equipment[0]['eqpRentalType'] == 2 ? 'Per Week' : ($equipment[0]['eqpRentalType'] == 3 ? 'Per Month' : 'Per Year')) ?>',
-        elementIds: {
-          quantity: 'rental_quantity',
-          startDate: 'rental_start',
-          endDate: 'rental_end',
-          totalDisplay: 'rental-total-display',
-          totalAmount: 'rental-total-amount',
-          breakdown: 'rental-breakdown',
-          stockInfo: 'stock-info',
-          submitButton: 'submit-rental', // Ensure your button has this ID or update here
-          errorDisplay: 'rental-calc-error'
+      const errorEl = document.getElementById('rental-calc-error');
+      
+      // Ensure itemId input exists before initializing calculator
+      const itemIdEl = document.getElementById('itemId');
+      if (itemIdEl && itemIdEl.value) {
+        const rentalCalculator = new PriceCalculator({
+          itemId: itemIdEl.value,
+          itemType: 1, // Equipment
+          saleType: 0, // Rental
+          baseUrl: '<?= site_url('/') ?>',
+          basePrice: <?= $equipment[0]['eqpPrice'] ?>,
+          baseUnit: <?= json_encode($equipmentRentalUnitLabel) ?>,
+          elementIds: {
+            quantity: 'rental_quantity',
+            startDate: 'rental_start',
+            endDate: 'rental_end',
+            totalDisplay: 'rental-total-display',
+            totalAmount: 'rental-total-amount',
+            breakdown: 'rental-breakdown',
+            stockInfo: 'stock-info',
+            submitButton: null,
+            errorDisplay: 'rental-calc-error'
+          }
+        });
+        console.log('✅ Price calculator initialized for equipment rental');
+        
+        // Intercept error display to ensure it only shows persistent errors, not transient calculation states
+        const originalErrorEl = document.getElementById('rental-calc-error');
+        const originalSetAttribute = originalErrorEl.setAttribute.bind(originalErrorEl);
+        const originalStyle = originalErrorEl.style;
+        let errorTimeoutId = null;
+        
+        // Override style.display setter to catch when calculator tries to show error
+        Object.defineProperty(originalErrorEl.style, 'display', {
+          set: function(value) {
+            if (value === 'block' || value === 'inline' || value === 'flex') {
+              // Don't show error immediately - wait to see if calculation completes
+              if (errorTimeoutId) clearTimeout(errorTimeoutId);
+              
+              // Only show error if it's still set to display after 300ms
+              errorTimeoutId = setTimeout(() => {
+                originalErrorEl.classList.add('show-error');
+              }, 300);
+            } else {
+              // Clear the timeout if calculator is hiding the error
+              if (errorTimeoutId) {
+                clearTimeout(errorTimeoutId);
+                errorTimeoutId = null;
+              }
+              originalErrorEl.classList.remove('show-error');
+            }
+          },
+          get: function() {
+            return originalErrorEl.classList.contains('show-error') ? 'block' : 'none';
+          }
+        });
+        
+        // When quantity changes, briefly suppress error display
+        const quantityInput = document.getElementById('rental_quantity');
+        if (quantityInput) {
+          quantityInput.addEventListener('change', function() {
+            originalErrorEl.classList.remove('show-error');
+          });
+          quantityInput.addEventListener('input', function() {
+            originalErrorEl.classList.remove('show-error');
+          });
         }
-      });
+        
+        // When dates change, suppress error display
+        const startDateInput = document.getElementById('rental_start');
+        const endDateInput = document.getElementById('rental_end');
+        if (startDateInput) {
+          startDateInput.addEventListener('change', function() {
+            originalErrorEl.classList.remove('show-error');
+          });
+        }
+        if (endDateInput) {
+          endDateInput.addEventListener('change', function() {
+            originalErrorEl.classList.remove('show-error');
+          });
+        }
+      } else {
+        console.warn('⚠️ Item ID not found or empty, calculator initialization skipped');
+      }
     }
 
     if (document.getElementById('buy-form')) {
       // PURCHASE MODE - handled by rental-purchase-handler.js initBuyForm()
-      // No additional initialization needed here
-      // The form will be initialized when the rental-purchase-handler.js runs
       console.log('✅ Buy form detected - will be initialized by rental-purchase-handler.js');
     }
   });
@@ -1709,56 +1906,193 @@ replacement.</span>';
 <!-- PURCHASE REQUEST CONFIRMATION MODAL -->
 <div id="purchase-confirmation-overlay" class="purchase-confirmation-overlay">
   <div class="purchase-confirmation-modal">
-    <h2>Confirm Purchase Request</h2>
+    <h2>Confirm Rental Request</h2>
     <p class="confirmation-subtitle">Please review your request details before sending</p>
     
     <div class="confirmation-details">
       <div class="confirmation-detail-row">
-        <span class="confirmation-detail-label">Equipment:</span>
-        <span class="confirmation-detail-value" id="confirmation-item-name">-</span>
+        <span class="confirmation-detail-label">Item</span>
+        <span class="confirmation-detail-value" id="confirmation-item-name">—</span>
       </div>
       <div class="confirmation-detail-row">
-        <span class="confirmation-detail-label">Quantity:</span>
-        <span class="confirmation-detail-value" id="confirmation-quantity">-</span>
+        <span class="confirmation-detail-label">Quantity</span>
+        <span class="confirmation-detail-value" id="confirmation-quantity">—</span>
       </div>
       <div class="confirmation-detail-row">
-        <span class="confirmation-detail-label">Type:</span>
-        <span class="confirmation-detail-value" id="confirmation-type">-</span>
+        <span class="confirmation-detail-label">Type</span>
+        <span class="confirmation-detail-value" id="confirmation-type">—</span>
       </div>
       <div class="confirmation-detail-row" id="confirmation-dates-section" style="display: none;">
-        <span class="confirmation-detail-label">Dates:</span>
-        <span class="confirmation-detail-value" id="confirmation-dates">-</span>
+        <span class="confirmation-detail-label">Dates</span>
+        <span class="confirmation-detail-value" id="confirmation-dates">—</span>
       </div>
     </div>
 
     <div class="confirmation-note">
       <div>
-        <strong>Ready to send?</strong>
-        Once confirmed, the seller will be notified of your request. You can discuss details with the seller through the chat feature.
+        <strong>ℹ️ Note:</strong>
+        <span>Your rental request will be sent to the seller. They will review and approve/reject it within 24 hours.</span>
       </div>
     </div>
 
     <div class="confirmation-actions">
-      <button type="button" class="btn-cancel" onclick="closePurchaseConfirmation()">
-        Cancel
-      </button>
-      <button type="button" class="btn-confirm" onclick="confirmPurchaseRequest()">
-        Confirm & Send
-      </button>
+      <button type="button" class="btn-confirm" onclick="confirmRentalRequest()">Confirm & Send</button>
+      <button type="button" class="btn-cancel" onclick="cancelRentalConfirmation()">Cancel</button>
     </div>
   </div>
 </div>
 
 <!-- SUCCESS PAGE MODAL -->
+<style>
+  .success-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10001;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .success-overlay.active {
+    display: flex;
+  }
+
+  .success-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 48px 32px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    text-align: center;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .success-checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background-color: #34FF67;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #0f2f2c;
+    font-weight: 700;
+    animation: scaleIn 0.5s ease-out;
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .success-modal h2 {
+    color: #0f2f2c;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .success-modal .success-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .success-details {
+    background-color: #f0f9f4;
+    border: 1px solid rgba(52, 255, 103, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .success-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    font-size: 14px;
+    color: #0f2f2c;
+  }
+
+  .success-detail-row:not(:last-child) {
+    border-bottom: 1px solid rgba(52, 255, 103, 0.1);
+  }
+
+  .success-detail-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .success-detail-value {
+    color: #0f2f2c;
+    font-weight: 500;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .success-actions button {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-go-chat {
+    background-color: #34FF67;
+    color: #0f2f2c;
+  }
+
+  .btn-go-chat:hover {
+    background-color: #2ae050;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 255, 103, 0.3);
+  }
+
+  .btn-back-shop {
+    background-color: #f0f0f0;
+    color: #0f2f2c;
+    border: 1px solid #ddd;
+  }
+
+  .btn-back-shop:hover {
+    background-color: #e8e8e8;
+  }
+</style>
+
 <div id="success-overlay" class="success-overlay">
   <div class="success-modal">
     <div class="success-checkmark">✓</div>
     <h2>Request Confirmed!</h2>
-    <p class="success-subtitle">Your purchase request has been sent successfully to the seller. They will review it shortly and get back to you.</p>
+    <p class="success-subtitle">Your request has been sent successfully to the seller. They will review it shortly and get back to you.</p>
     
     <div class="success-details">
       <div class="success-detail-row">
-        <span class="success-detail-label">Request ID:</span>
+        <span class="success-detail-label">Order ID:</span>
         <span class="success-detail-value" id="success-request-id">#-</span>
       </div>
       <div class="success-detail-row">
@@ -1772,17 +2106,32 @@ replacement.</span>';
     </div>
 
     <div class="success-actions">
-      <button type="button" class="btn-go-chat" onclick="goToChat()">
+      <button type="button" class="btn-go-chat" onclick="window.goToChat()">
         Go to Chat
       </button>
-      <button type="button" class="btn-back-shop" onclick="backToShop()">
+      <button type="button" class="btn-back-shop" onclick="window.backToShop()">
         Back to Shop
       </button>
     </div>
   </div>
 </div>
 
-<input type="hidden" id="success-chat-id" value="">
+<?php if (!empty($item_reviews)) : ?>
+<section style="max-width:1200px;margin:24px auto;padding:0 16px;">
+  <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px;">
+    <h3 style="margin:0 0 10px 0;">Customer Reviews</h3>
+    <?php foreach ($item_reviews as $rv) : ?>
+      <div style="padding:10px 0;border-top:1px solid #f1f5f9;">
+        <strong><?= html_escape($rv->reviewerName ?: 'User') ?></strong> - <?= (int)$rv->rating ?>/5
+        <div><?= nl2br(html_escape($rv->reviewText)) ?></div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+</section>
+<?php endif; ?>
+
+<!-- Hidden input to store order ID for chat navigation (chat route uses order_id) -->
+<input type="hidden" id="success-order-id" value="" />
 
 </body>
 </html>

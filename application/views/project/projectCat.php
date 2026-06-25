@@ -149,7 +149,7 @@
                         href="<?=base_url('delet-project-cat/'.$cat['pCatID'])?>"
                         class="text-danger"
                         data-bs-toggle="tooltip"
-                        onclick="return confirm('Are you sure you want to delete this category?');"
+                        onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this category?');"
                         data-bs-placement="bottom"
                         title="Delete"><i class="bi bi-trash-fill"></i></a>
                          <!-- Modal -->

@@ -483,10 +483,10 @@
                         <tbody>
                             <?php if (!empty($orders)): ?>
                                 <?php foreach ($orders as $order): ?>
-                                    <tr data-id="<?= htmlspecialchars($order->equipmentPaymentID) ?>" 
+                                    <tr data-id="<?= htmlspecialchars($order->orderID) ?>" 
                                         data-date="<?= htmlspecialchars($order->createdAt) ?>" 
                                         data-amount="<?= htmlspecialchars($order->grossAmount) ?>">
-                                        <td class="order-id">#<?= htmlspecialchars($order->equipmentPaymentID) ?></td>
+                                        <td class="order-id">#<?= htmlspecialchars($order->orderID) ?></td>
                                         <td>
                                             <div class="buyer-info"><?= htmlspecialchars($order->buyerFirstName) ?></div>
                                             <div class="buyer-email"><?= htmlspecialchars($order->buyerEmail) ?></div>
@@ -496,25 +496,58 @@
                                         <td><span class="text-success">$<?= number_format($order->commission ?? 0, 2) ?></span></td>
                                         <td>
                                             <?php 
-                                                $status_map = [
-                                                    'requested' => 'badge-pending',
-                                                    'payment_pending' => 'badge-payment',
-                                                    'payment_secured' => 'badge-secured',
-                                                    'shipped' => 'badge-shipped',
-                                                    'pickup_ready' => 'badge-secured',
-                                                    'completed' => 'badge-completed',
-                                                    'rejected' => 'badge-rejected'
+                                                $raw_order_status = strtolower((string)($order->orderStatus ?? 'requested'));
+                                                $display_status = $raw_order_status;
+                                                $sale_type = strtolower((string)($order->saleType ?? ''));
+                                                $is_equipment_order = (($order->orderType ?? 'equipment') === 'equipment');
+                                                $is_rental_order = (($order->orderType ?? 'equipment') === 'workforce') || ($is_equipment_order && ($sale_type === 'rental' || $sale_type === '0'));
+                                                if ($raw_order_status === 'payment_pending') {
+                                                    $display_status = 'payment_pending';
+                                                } elseif ($is_rental_order && !empty($order->rentalRequestStatus)) {
+                                                    $display_status = strtolower((string)$order->rentalRequestStatus);
+                                                }
+
+                                                $has_active_issue = intval($order->hasActiveIssue ?? 0) === 1;
+                                                if ($has_active_issue && !in_array($raw_order_status, ['completed', 'cancelled', 'rejected', 'refunded'], true)) {
+                                                    $display_status = 'under_review';
+                                                }
+
+                                                $status_badges = [
+                                                    'requested' => ['badge-pending', 'Pending Approval'],
+                                                    'payment_pending' => ['badge-payment', 'Awaiting Payment'],
+                                                    'payment_secured' => ['badge-secured', 'Payment Secured'],
+                                                    'shipped' => ['badge-shipped', 'Shipped'],
+                                                    'pickup_ready' => ['badge-secured', 'Ready for Pickup'],
+                                                    'delivered' => ['badge-shipped', 'Delivered'],
+                                                    'completed' => ['badge-completed', 'Completed'],
+                                                    'rejected' => ['badge-rejected', 'Rejected'],
+                                                    'cancelled' => ['badge-rejected', 'Cancelled'],
+                                                    'request_pending' => ['badge-pending', 'Pending Approval'],
+                                                    'request_approved' => ['badge-secured', 'Approved'],
+                                                    'awaiting_handover' => ['badge-secured', 'Awaiting Handover'],
+                                                    'request_rejected' => ['badge-rejected', 'Rejected'],
+                                                    'rental_active' => ['', 'Rental Period Started'],
+                                                    'return_requested' => ['badge-payment', 'Pending Return (72h)'],
+                                                    'rental_overdue' => ['badge-rejected', 'Overdue'],
+                                                    'returned_by_renter' => ['badge-secured', 'Awaiting Return Confirmation'],
+                                                    'received_by_owner' => ['badge-secured', 'Received By Owner'],
+                                                    'under_review' => ['badge-pending', 'Under Review'],
+                                                    'rental_completed' => ['badge-completed', 'Completed'],
+                                                    'rental_cancelled' => ['badge-rejected', 'Cancelled']
                                                 ];
-                                                $badge_class = $status_map[$order->status] ?? 'badge-pending';
+
+                                                $badge = $status_badges[$display_status] ?? ['badge-pending', ucwords(str_replace('_', ' ', $display_status))];
+                                                $badge_class = $badge[0];
+                                                $badge_text = $badge[1];
                                             ?>
-                                            <span class="badge-custom <?= $badge_class ?>">
-                                                <?= ucfirst(str_replace('_', ' ', htmlspecialchars($order->status))) ?>
+                                            <span class="badge-custom <?= $badge_class ?>" <?= $display_status === 'rental_active' ? 'style="background-color: #e0f0ff; color: #0057b8;"' : '' ?>>
+                                                <?= htmlspecialchars($badge_text) ?>
                                             </span>
                                         </td>
                                         <td><?= date('M d, Y', strtotime($order->createdAt)) ?></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <a href="<?= base_url('super-admin-orders/view/' . $order->equipmentPaymentID) ?>" class="btn-action btn-view">
+                                                <a href="<?= base_url('super-admin-orders/view/' . $order->orderID) ?>" class="btn-action btn-view">
                                                     <i class="bi bi-eye"></i> View
                                                 </a>
                                             </div>

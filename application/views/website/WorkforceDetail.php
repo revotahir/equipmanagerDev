@@ -62,6 +62,100 @@
       width: 100%;
       max-width: 400px;
     }
+
+    .owner-contact-link {
+      color: inherit;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .owner-contact-icon {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #FF9500;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #FF9500;
+      flex-shrink: 0;
+      font-size: 1.15rem;
+    }
+
+    .owner-chat-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.42rem 0.9rem;
+      border-radius: 999px;
+      background: #13372E;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-decoration: none;
+      line-height: 1;
+      border: 1px solid #13372E;
+    }
+
+    .owner-chat-btn:hover {
+      background: #0f2f2c;
+      border-color: #0f2f2c;
+      color: #ffffff;
+    }
+
+    .owner-chat-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .workforce-review-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .workforce-review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 138px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .workforce-review-item {
+      background: #f8faf9;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+
+    .workforce-review-meta {
+      display: block;
+      font-family: "Manrope", sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #13372e;
+      margin-bottom: 2px;
+    }
+
+    .workforce-review-text {
+      display: block;
+      font-family: "Manrope", sans-serif;
+      font-size: 12px;
+      color: #526464;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .workforce-review-empty {
+      font-family: "Manrope", sans-serif;
+      font-size: 13px;
+      color: #6b7280;
+    }
   </style>
 </head>
 
@@ -117,58 +211,97 @@
         <div class="product-img-showcase">
           <!-- product main img -->
           <div class="product-showcase-main-img">
-            <!-- <img
-              src="<?= base_url() ?>assets/website/images/<?= $equipment[0]['eqpimg1'] ?>"
-              alt="Product Image" /> -->
+            <img
+              src="<?= base_url() ?>assets/website/img/093a3bc92eb728eeb1a7faebbf711ec10715cabc.webp"
+              alt="Workforce Image" />
+            <button type="button" class="gallery-nav gallery-nav-prev" aria-label="Previous image">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <button type="button" class="gallery-nav gallery-nav-next" aria-label="Next image">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
           </div>
 
           <!-- product sub imgs -->
           <div class="product-showcase-sub-img">
-            <!-- <?php
-                  for ($i = 1; $i <= 10; $i++) {
-                    $imgColumn = 'eqpimg' . $i;
-                    if (isset($equipment[0][$imgColumn]) && !empty($equipment[0][$imgColumn])) {
-                  ?>
-                <img
-                  src="<?= base_url() ?>assets/website/images/<?= $equipment[0][$imgColumn] ?>"
-                  alt="Product Image"
-                  data-index="1" />
-            <?php
-                    }
-                  }
-            ?> -->
+            <img src="<?= base_url() ?>assets/website/img/16fb6ac02ec32d408b1e2a37b4a78c241610b23b.webp" alt="Workforce Image" data-index="1" />
+            <img src="<?= base_url() ?>assets/website/img/266c9e79fed8c531bd0e4827a8ade06a9b9a2298.webp" alt="Workforce Image" data-index="2" />
+            <img src="<?= base_url() ?>assets/website/img/2ec4e13b3ea6d0bc854445327b832844c4ccfe6e.webp" alt="Workforce Image" data-index="3" />
+            <img src="<?= base_url() ?>assets/website/img/3eb0df2ad59770f6c9e0df37622b7ec8c3295330.webp" alt="Workforce Image" data-index="4" />
           </div>
         </div>
 
         <!-- heavy duty -->
+        <?php
+          $mapWorkforceRentalUnitLabel = static function ($rawType) {
+            $value = strtolower(trim((string)$rawType));
+            if ($value === '' || $value === '0') {
+              return 'Per Day';
+            }
+            $directMap = [
+              '1' => 'Per Day',
+              '2' => 'Per Week',
+              '3' => 'Per Month',
+              '4' => 'Per Year',
+              'day' => 'Per Day',
+              'daily' => 'Per Day',
+              'week' => 'Per Week',
+              'weekly' => 'Per Week',
+              'month' => 'Per Month',
+              'monthly' => 'Per Month',
+              'year' => 'Per Year',
+              'yearly' => 'Per Year',
+              'annually' => 'Per Year',
+            ];
+            if (isset($directMap[$value])) {
+              return $directMap[$value];
+            }
+            if (strpos($value, 'day') !== false) {
+              return 'Per Day';
+            }
+            if (strpos($value, 'week') !== false) {
+              return 'Per Week';
+            }
+            if (strpos($value, 'month') !== false) {
+              return 'Per Month';
+            }
+            if (strpos($value, 'year') !== false || strpos($value, 'annual') !== false) {
+              return 'Per Year';
+            }
+            return 'Per Day';
+          };
+          $workforceSaleTypeRaw = strtolower(trim((string)($workforce[0]['saleType'] ?? '')));
+          $isWorkforceRental = in_array($workforceSaleTypeRaw, ['0', 'rental', 'rent', 'for_rent'], true);
+          $workforceRentalUnitLabel = $mapWorkforceRentalUnitLabel($workforce[0]['workforceRentalType'] ?? '');
+        ?>
         <div class="heavy-duty-main">
           <div class="heavy-duty">
             <h2 class="text-h2">
               <?= $workforce[0]['personName'] ?>
             </h2>
-            <p class="text-para text-dark-green">
-              Price:
-              <span>$<?= $workforce[0]['workforcePrice'] ?>
-                <?php
-                if ($workforce[0]['saleType'] == 0) {
-                  echo ' /';
-                  if ($workforce[0]['workforceRentalType'] == 1) {
-                    echo 'Per Day';
-                  } else if ($workforce[0]['workforceRentalType'] == 2) {
-                    echo 'Per Week';
-                  } else if ($workforce[0]['workforceRentalType'] == 3) {
-                    echo 'Per Month';
-                  } else {
-                    echo 'Per Year';
-                  }
-                } else {
-                  echo '(For Sale)';
-                }
-                ?>
-              </span>
+            <p class="text-para text-dark-green detail-price-line">
+              <span class="detail-price-label">Price</span>
+              <span class="detail-price-value">$<?= $workforce[0]['workforcePrice'] ?><?= $isWorkforceRental ? (' / ' . $workforceRentalUnitLabel) : '' ?></span>
             </p>
+            <h3 class="detail-subtitle">Qualified Workforce Ready for Your Projects</h3>
+            <?php
+              $contactCompanyID = isset($workforce[0]['companyID']) ? (int)$workforce[0]['companyID'] : 0;
+              $directChatUrl = $contactCompanyID > 0 ? base_url('chat/start-company/' . $contactCompanyID) : '';
+              $companyProfileUrl = $contactCompanyID > 0 ? base_url('company-profile/' . $contactCompanyID . '#reviews') : '';
+              $companyAvg = isset($company_rating_summary['avg']) ? (float)$company_rating_summary['avg'] : 0.0;
+              $companyTotalReviews = isset($company_rating_summary['total']) ? (int)$company_rating_summary['total'] : 0;
+              $companyStarsFilled = (int)round($companyAvg);
+              $companyStars = str_repeat('&#9733;', max(0, min(5, $companyStarsFilled))) . str_repeat('&#9734;', 5 - max(0, min(5, $companyStarsFilled)));
+              $workforceAvg = isset($workforce_rating_summary['avg']) ? (float)$workforce_rating_summary['avg'] : 0.0;
+              $workforceTotalReviews = isset($workforce_rating_summary['total']) ? (int)$workforce_rating_summary['total'] : 0;
+              $workforceRecentReviews = !empty($workforce_reviews) && is_array($workforce_reviews) ? $workforce_reviews : [];
+            ?>
             <!-- owner info -->
-            <div class="owner-info-main">
+            <div class="owner-info-main owner-info-inline">
               <h4 class="text-h4-blog text-dark-green">Owner Information</h4>
               <div class="owner-info">
                 <!-- single owner info -->
@@ -194,8 +327,8 @@
                     </defs>
                   </svg>
                   <div>
-                    <span class="owner-para-fat">Verified Landlord Profile</span>
-                    <span class="owner-para-thin">John workforce Rentals</span>
+                    <span class="owner-para-fat">Verified Profile Name</span>
+                    <span class="owner-para-thin"><?= htmlspecialchars(!empty($workforce[0]['companyName']) ? $workforce[0]['companyName'] : (!empty($workforce[0]['userName']) ? $workforce[0]['userName'] : 'N/A'), ENT_QUOTES, 'UTF-8') ?></span>
                   </div>
                 </div>
                 <!-- single owner info -->
@@ -213,25 +346,26 @@
                   </svg>
                   <div>
                     <span class="owner-para-fat">Rating</span>
-                    <span class="owner-para-thin">0 / 5 (0 reviews)</span>
+                    <span class="owner-para-thin">
+                      <?php if (!empty($companyProfileUrl)): ?>
+                        <a href="<?= $companyProfileUrl ?>" class="owner-contact-link"><?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?></a>
+                      <?php else: ?>
+                        <?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?>
+                      <?php endif; ?>
+                    </span>
                   </div>
                 </div>
                 <!-- single owner info -->
                 <div class="single-owner-info">
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M7.66667 1.5C4.26091 1.5 1.5 4.26091 1.5 7.66667V12.6C1.5 26.9042 13.0958 38.5 27.4 38.5H32.3333C35.7391 38.5 38.5 35.7391 38.5 32.3333V28.9245C38.5 27.523 37.7082 26.2419 36.4547 25.6151L30.4954 22.6355C28.4815 21.6285 26.0426 22.6387 25.3306 24.7748L24.5961 26.9783C24.317 27.8155 23.4582 28.3139 22.5928 28.1408C17.1764 27.0575 12.9425 22.8236 11.8592 17.4072C11.6861 16.5418 12.1845 15.683 13.0217 15.4039L15.7564 14.4924C17.5905 13.881 18.6448 11.9605 18.1758 10.0849L16.7303 4.30262C16.3185 2.6555 14.8386 1.5 13.1408 1.5H7.66667Z"
-                      stroke="#FF9500"
-                      stroke-width="3" />
-                  </svg>
+                  <span class="owner-contact-icon"><i class="bi bi-chat-dots"></i></span>
                   <div>
-                    <span class="owner-para-fat">Contact options</span>
-                    <span class="owner-para-thin">Message </span>
+                    <span class="owner-para-thin">
+                      <?php if (!empty($directChatUrl)): ?>
+                        <a href="<?= $directChatUrl ?>" class="owner-chat-btn">Chat Now</a>
+                      <?php else: ?>
+                        <span class="owner-chat-btn disabled">Unavailable</span>
+                      <?php endif; ?>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -241,6 +375,44 @@
             <h3 class="text-h4-blog text-dark-green">
               Specifications & Features
             </h3>
+            <div class="single-feature">
+              <div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L14.78 8.63L22 9.27L16.5 14.14L18.18 21.02L12 17.27L5.82 21.02L7.5 14.14L2 9.27L9.22 8.63L12 2Z" fill="white"/>
+                </svg>
+              </div>
+              <div class="workforce-review-content">
+                <span class="text-para">
+                  <strong>Workforce Reviews:</strong>
+                  <?php if ($workforceTotalReviews > 0): ?>
+                    <?php if (!empty($companyProfileUrl)): ?>
+                      <a href="<?= $companyProfileUrl ?>" class="owner-contact-link"><?= number_format($workforceAvg, 1) ?> / 5 (<?= $workforceTotalReviews ?> reviews)</a>
+                    <?php else: ?>
+                      <?= number_format($workforceAvg, 1) ?> / 5 (<?= $workforceTotalReviews ?> reviews)
+                    <?php endif; ?>
+                  <?php else: ?>
+                    No reviews yet.
+                  <?php endif; ?>
+                </span>
+
+                <?php if (!empty($workforceRecentReviews)): ?>
+                  <div class="workforce-review-list">
+                    <?php foreach (array_slice($workforceRecentReviews, 0, 3) as $wf_review): ?>
+                      <?php
+                        $reviewText = trim((string)($wf_review->reviewText ?? ''));
+                        if (strlen($reviewText) > 110) {
+                          $reviewText = substr($reviewText, 0, 110) . '...';
+                        }
+                      ?>
+                      <div class="workforce-review-item">
+                        <span class="workforce-review-meta"><?= html_escape($wf_review->reviewerName ?: 'User') ?> - <?= (int)($wf_review->rating ?? 0) ?>/5</span>
+                        <span class="workforce-review-text"><?= nl2br(html_escape($reviewText)) ?></span>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+                <?php endif; ?>
+              </div>
+            </div>
             <!-- single feature -->
             <div class="single-feature">
               <div>
@@ -338,7 +510,78 @@
               ?>
               <span class="text-para"><strong>City : </strong><?= $workforce[0]['workforceCity'] ?></span>
             </div>
+            <!-- Delivery Information Feature -->
+            <div class="single-feature">
+              <div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M9 18.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <span class="text-para"><strong>Delivery Available:</strong>
+                  <?= ($workforce[0]['workforceDeliveryOpt'] == 1) ? 'Yes' : 'No' ?>
+                </span>
+              </div>
+            </div>
+
+            <?php if ($workforce[0]['workforceDeliveryOpt'] == 1): ?>
+            <div class="single-feature">
+              <div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <span class="text-para"><strong>Delivery Price:</strong>
+                  <?php
+                    $deliveryChargeRaw = isset($workforce[0]['deliveryCharge']) ? trim((string)$workforce[0]['deliveryCharge']) : '';
+                    $isNumericCharge = $deliveryChargeRaw !== '' && is_numeric($deliveryChargeRaw);
+                    echo $isNumericCharge ? ('$' . number_format((float)$deliveryChargeRaw, 2)) : 'Free';
+                  ?>
+                </span>
+              </div>
+            </div>
+            <?php endif; ?>
           </div>
+          <div class="owner-sidebar-card">
+            <h4 class="text-h4-blog text-dark-green owner-sidebar-title">Owner Information</h4>
+            <div class="owner-sidebar-list">
+              <div class="owner-sidebar-item">
+                <span class="owner-sidebar-icon"><i class="bi bi-patch-check"></i></span>
+                <div class="owner-sidebar-copy">
+                  <span class="owner-para-fat">Verified Profile Name</span>
+                  <span class="owner-para-thin"><?= htmlspecialchars(!empty($workforce[0]['companyName']) ? $workforce[0]['companyName'] : (!empty($workforce[0]['userName']) ? $workforce[0]['userName'] : 'N/A'), ENT_QUOTES, 'UTF-8') ?></span>
+                </div>
+              </div>
+              <div class="owner-sidebar-item">
+                <span class="owner-sidebar-icon"><i class="bi bi-star"></i></span>
+                <div class="owner-sidebar-copy">
+                  <span class="owner-para-fat">Rating</span>
+                  <span class="owner-para-thin">
+                    <?php if (!empty($companyProfileUrl)): ?>
+                      <a href="<?= $companyProfileUrl ?>" class="owner-contact-link"><?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?></a>
+                    <?php else: ?>
+                      <?= number_format($companyAvg, 1) ?> / 5 (<?= $companyTotalReviews ?> reviews) <?= $companyStars ?>
+                    <?php endif; ?>
+                  </span>
+                </div>
+              </div>
+              <div class="owner-sidebar-item">
+                <span class="owner-sidebar-icon"><i class="bi bi-chat-dots"></i></span>
+                <div class="owner-sidebar-copy">
+                  <span class="owner-para-thin">
+                    <?php if (!empty($directChatUrl)): ?>
+                      <a href="<?= $directChatUrl ?>" class="owner-chat-btn">Chat Now</a>
+                    <?php else: ?>
+                      <span class="owner-chat-btn disabled">Unavailable</span>
+                    <?php endif; ?>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- calender and booking form -->
@@ -476,33 +719,40 @@
             <div class="cnt-form product-form">
               <h3 class="text-h3 text-dark-green">Rent Now</h3>
               <?php if ($this->session->userdata('loginData')): ?>
-              <form action="" method="post" class="cnt-full-form" id="rent-form" data-base-price="<?= $workforce[0]['workforcePrice'] ?>">
+              <form action="" method="post" class="cnt-full-form detail-request-form" id="rent-form" data-base-price="<?= $workforce[0]['workforcePrice'] ?>">
                 <!-- SECURITY FIX: Add CSRF token to form -->
                 <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>" />
-                <!-- Workforce Quantity is always 1 (Hidden) -->
+                <div class="form-group quantity-group">
+                  <label for="quantity_display">Quantity <span style="color: #ff3434;">*</span></label>
+                  <input type="number" id="quantity_display" value="1" readonly />
+                  <small class="stock-info" style="color: #333; font-size: 14px; font-weight: 600; margin-top: 6px; display: block;">Available: 1 units</small>
+                </div>
+                <!-- Workforce quantity remains fixed at 1 for logic -->
                 <input type="hidden" id="quantity" name="quantity" value="1" />
 
                 <!-- Dates are selected via the calendar -->
-                <div class="form-group">
-                  <label for="startDate">Start Date <span style="color: #ff3434;">*</span></label>
-                  <input
-                    type="text"
-                    id="startDate"
-                    name="startDate"
-                    placeholder="Select from calendar..."
-                    readonly
-                    required />
-                </div>
+                <div class="date-grid">
+                  <div class="form-group">
+                    <label for="startDate">Start Date <span style="color: #ff3434;">*</span></label>
+                    <input
+                      type="text"
+                      id="startDate"
+                      name="startDate"
+                      placeholder="Select from calendar..."
+                      readonly
+                      required />
+                  </div>
 
-                <div class="form-group">
-                  <label for="endDate">End Date <span style="color: #ff3434;">*</span></label>
-                  <input
-                    type="text"
-                    id="endDate"
-                    name="endDate"
-                    placeholder="Select from calendar..."
-                    readonly
-                    required />
+                  <div class="form-group">
+                    <label for="endDate">End Date <span style="color: #ff3434;">*</span></label>
+                    <input
+                      type="text"
+                      id="endDate"
+                      name="endDate"
+                      placeholder="Select from calendar..."
+                      readonly
+                      required />
+                  </div>
                 </div>
 
                 <input type="hidden" id="itemType" value="2" /> <!-- 2 = Workforce -->
@@ -530,7 +780,7 @@
                 <div id="calc-error" style="display:none; color: red; margin-bottom: 15px; text-align: center;"></div>
 
                 <div class="form-submit">
-                  <button type="button" onclick="proceedToCheckoutWorkforce()" class="btn-dark-green w-full">Proceed to Checkout</button>
+                  <button type="submit" id="submit-rental" class="btn-dark-green w-full">SUBMIT RENTAL REQUEST</button>
                 </div>
               </form>
               <?php else: ?>
@@ -816,6 +1066,7 @@
   window.workforceAvailability = {
     startDate: '<?= $workforce[0]['workforceAvailableStart'] ?? '' ?>',
     endDate: '<?= $workforce[0]['workforceAvailableEnd'] ?? '' ?>',
+    todayDate: '<?= date('Y-m-d') ?>',
     itemType: 2 // 2 = Workforce
   };
 
@@ -871,8 +1122,17 @@
     // Validate dates are not swapped
     const start = new Date(startDate);
     const end = new Date(endDate);
+    const todayStr = (window.workforceAvailability && window.workforceAvailability.todayDate) ? window.workforceAvailability.todayDate : null;
+    const today = todayStr ? new Date(todayStr) : new Date();
+    today.setHours(0, 0, 0, 0);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
     if (start >= end) {
       toastr.error('❌ End date must be after start date');
+      return;
+    }
+    if (start < today || end < today) {
+      toastr.error('❌ Past dates are not allowed for rental bookings');
       return;
     }
     
@@ -894,7 +1154,7 @@
       saleType: 0, // Workforce is always rental
       baseUrl: '<?= site_url('/') ?>',
       basePrice: <?= $workforce[0]['workforcePrice'] ?>,
-      baseUnit: '<?= $workforce[0]['workforceRentalType'] == 1 ? 'Per Day' : ($workforce[0]['workforceRentalType'] == 2 ? 'Per Week' : ($workforce[0]['workforceRentalType'] == 3 ? 'Per Month' : 'Per Year')) ?>',
+      baseUnit: <?= json_encode($workforceRentalUnitLabel) ?>,
       elementIds: {
         quantity: 'quantity', // Workforce always has quantity 1 (hidden)
         startDate: 'startDate',
@@ -902,13 +1162,383 @@
         totalDisplay: 'total-cost-display',
         totalAmount: 'total-amount',
         breakdown: 'cost-breakdown',
-        submitButton: 'submit-rental',
+        submitButton: null,
         errorDisplay: 'calc-error'
       }
     });
     
     console.log('✅ Price calculator initialized for workforce rental');
   });
+
+  // ===== MODAL CONTROL FUNCTIONS =====
+  // These functions are provided by rental-purchase-handler.js as window.goToChat and window.backToShop
+  // The onclick handlers in the success modal buttons call these global functions directly
 </script>
+
+<!-- PURCHASE REQUEST CONFIRMATION MODAL -->
+<style>
+  .purchase-confirmation-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .purchase-confirmation-overlay.active {
+    display: flex;
+  }
+
+  .purchase-confirmation-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .purchase-confirmation-modal h2 {
+    color: #0f2f2c;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .purchase-confirmation-modal .confirmation-subtitle {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .confirmation-details {
+    background-color: #f0f9f4;
+    border: 1px solid rgba(52, 255, 103, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .confirmation-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #0f2f2c;
+  }
+
+  .confirmation-detail-row:not(:last-child) {
+    border-bottom: 1px solid rgba(52, 255, 103, 0.1);
+  }
+
+  .confirmation-detail-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .confirmation-detail-value {
+    color: #0f2f2c;
+    font-weight: 500;
+  }
+
+  .confirmation-note {
+    background-color: #f0f9f4;
+    border-left: 4px solid #34FF67;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #0f2f2c;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .confirmation-note strong {
+    color: #0f2f2c;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .confirmation-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .confirmation-actions button {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-confirm {
+    background-color: #34FF67;
+    color: #0f2f2c;
+  }
+
+  .btn-confirm:hover {
+    background-color: #2ae050;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 255, 103, 0.3);
+  }
+
+  .btn-confirm:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-cancel {
+    background-color: #f0f0f0;
+    color: #0f2f2c;
+    border: 1px solid #ddd;
+  }
+
+  .btn-cancel:hover {
+    background-color: #e8e8e8;
+  }
+</style>
+
+<div id="purchase-confirmation-overlay" class="purchase-confirmation-overlay">
+  <div class="purchase-confirmation-modal">
+    <h2>Confirm Rental Request</h2>
+    <p class="confirmation-subtitle">Please review your request details before sending</p>
+    
+    <div class="confirmation-details">
+      <div class="confirmation-detail-row">
+        <span class="confirmation-detail-label">Item</span>
+        <span class="confirmation-detail-value" id="confirmation-item-name">—</span>
+      </div>
+      <div class="confirmation-detail-row">
+        <span class="confirmation-detail-label">Quantity</span>
+        <span class="confirmation-detail-value" id="confirmation-quantity">—</span>
+      </div>
+      <div class="confirmation-detail-row">
+        <span class="confirmation-detail-label">Type</span>
+        <span class="confirmation-detail-value" id="confirmation-type">—</span>
+      </div>
+      <div class="confirmation-detail-row" id="confirmation-dates-section" style="display: none;">
+        <span class="confirmation-detail-label">Dates</span>
+        <span class="confirmation-detail-value" id="confirmation-dates">—</span>
+      </div>
+    </div>
+
+    <div class="confirmation-note">
+      <div>
+        <strong>ℹ️ Note:</strong>
+        <span>Your rental request will be sent to the seller. They will review and approve/reject it within 24 hours.</span>
+      </div>
+    </div>
+
+    <div class="confirmation-actions">
+      <button type="button" class="btn-confirm" onclick="confirmRentalRequest()">Confirm & Send</button>
+      <button type="button" class="btn-cancel" onclick="cancelRentalConfirmation()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS PAGE MODAL -->
+<style>
+  .success-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10001;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .success-overlay.active {
+    display: flex;
+  }
+
+  .success-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 48px 32px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    text-align: center;
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .success-checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background-color: #34FF67;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #0f2f2c;
+    font-weight: 700;
+    animation: scaleIn 0.5s ease-out;
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .success-modal h2 {
+    color: #0f2f2c;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .success-modal .success-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .success-details {
+    background-color: #f0f9f4;
+    border: 1px solid rgba(52, 255, 103, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .success-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    font-size: 14px;
+    color: #0f2f2c;
+  }
+
+  .success-detail-row:not(:last-child) {
+    border-bottom: 1px solid rgba(52, 255, 103, 0.1);
+  }
+
+  .success-detail-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .success-detail-value {
+    color: #0f2f2c;
+    font-weight: 500;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .success-actions button {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-go-chat {
+    background-color: #34FF67;
+    color: #0f2f2c;
+  }
+
+  .btn-go-chat:hover {
+    background-color: #2ae050;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 255, 103, 0.3);
+  }
+
+  .btn-back-shop {
+    background-color: #f0f0f0;
+    color: #0f2f2c;
+    border: 1px solid #ddd;
+  }
+
+  .btn-back-shop:hover {
+    background-color: #e8e8e8;
+  }
+</style>
+
+<div id="success-overlay" class="success-overlay">
+  <div class="success-modal">
+    <div class="success-checkmark">✓</div>
+    <h2>Request Confirmed!</h2>
+    <p class="success-subtitle">Your rental request has been sent successfully to the seller. They will review it shortly and get back to you.</p>
+    
+    <div class="success-details">
+      <div class="success-detail-row">
+        <span class="success-detail-label">Order ID:</span>
+        <span class="success-detail-value" id="success-request-id">#-</span>
+      </div>
+      <div class="success-detail-row">
+        <span class="success-detail-label">Status:</span>
+        <span class="success-detail-value">Pending Seller Review</span>
+      </div>
+      <div class="success-detail-row">
+        <span class="success-detail-label">Next Step:</span>
+        <span class="success-detail-value">Wait for seller approval</span>
+      </div>
+    </div>
+
+    <div class="success-actions">
+      <button type="button" class="btn-go-chat" onclick="window.goToChat()">
+        Go to Chat
+      </button>
+      <button type="button" class="btn-back-shop" onclick="window.backToShop()">
+        Back to Shop
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden input to store order ID for chat navigation (chat route uses order_id) -->
+<input type="hidden" id="success-order-id" value="" />
 
 </html>

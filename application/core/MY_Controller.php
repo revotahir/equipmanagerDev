@@ -7,6 +7,9 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
         
+        // Set default timezone to Denmark (Europe/Copenhagen) for consistency across the system
+        date_default_timezone_set('Europe/Copenhagen');
+        
         // Load chat system configuration
         require_once(APPPATH . 'config/chat_config.php');
         
@@ -70,13 +73,37 @@ class MY_Controller extends CI_Controller
                 error_log("[MY_CONTROLLER REDIRECT] Redirecting to login from $current_page - Session missing!");
                 redirect(base_url('login')); // Redirect to the login page or home page
             }
-            $this->load->library('email');
             $this->config->load('email'); // Load SMTP settings
+            $this->load->library('email');
         }
+    }
+    private function getEmailConfig()
+    {
+        return array(
+            'protocol'     => $this->config->item('protocol'),
+            'smtp_host'    => $this->config->item('smtp_host'),
+            'smtp_user'    => $this->config->item('smtp_user'),
+            'smtp_pass'    => $this->config->item('smtp_pass'),
+            'smtp_port'    => $this->config->item('smtp_port'),
+            'smtp_crypto'  => $this->config->item('smtp_crypto'),
+            'smtp_timeout' => $this->config->item('smtp_timeout') ?: 15,
+            'mailtype'     => $this->config->item('mailtype') ?: 'html',
+            'charset'      => $this->config->item('charset') ?: 'utf-8',
+            'wordwrap'     => $this->config->item('wordwrap') !== null ? $this->config->item('wordwrap') : TRUE,
+            'newline'      => $this->config->item('newline') ?: "\r\n",
+            'crlf'         => $this->config->item('crlf') ?: "\r\n",
+        );
     }
     public function send_email($to, $subject, $message)
     {
-        $this->email->from('info@nexphi.com', 'Equip Manager');
+        $this->config->load('email');
+        $this->email->clear(TRUE);
+        $this->email->initialize($this->getEmailConfig());
+
+        $fromEmail = $this->config->item('from_email') ?: $this->config->item('smtp_user');
+        $fromName = $this->config->item('from_name') ?: 'Equip Manager';
+
+        $this->email->from($fromEmail, $fromName);
         $this->email->to($to);
         $this->email->subject($subject);
         $this->email->message($message);
@@ -84,7 +111,9 @@ class MY_Controller extends CI_Controller
         if ($this->email->send()) {
             return true;
         } else {
-            return $this->email->print_debugger(); // For debugging errors
+            $debug = $this->email->print_debugger(array('headers', 'subject'));
+            log_message('error', 'SMTP send failed to ' . $to . ' | Subject: ' . $subject . ' | Debug: ' . $debug);
+            return false;
         }
     }
 }

@@ -2,37 +2,109 @@
 .header {
   display: flex;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: clamp(14px, 2vw, 30px);
   position: relative;
   z-index: 4;
 }
+
+.header .container {
+  width: min(96%, 1600px);
+}
+
 .navbar {
   background-color: var(--white);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: nowrap;
   border: 1px solid var(--primary-dark-green);
   border-radius: 12px;
-  padding: 22px 20px;
+  padding: clamp(15px, 1.5vw, 24px) clamp(18px, 1.9vw, 28px);
+  gap: clamp(14px, 1.4vw, 22px);
 }
+
+.logo {
+  flex: 0 0 auto;
+}
+
+.logo a,
+.logo svg {
+  display: block;
+}
+
+.logo svg {
+  width: clamp(158px, 11.6vw, 210px);
+  height: auto;
+}
+
 .navigation {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 20px;
+  justify-content: stretch;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: clamp(12px, 1.4vw, 20px);
 }
+
 .navigation ul {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  min-width: 0;
+  justify-self: center;
+  gap: clamp(12px, 1.4vw, 20px);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: clamp(12px, 1.4vw, 20px);
 }
 
 .navigation ul li a {
   color: var(--primary-dark-green);
   font-family: "ClashGrotesk", sans-serif;
   font-weight: 500;
-  font-size: 16px;
+  font-size: clamp(15px, 1.02vw, 18px);
+  line-height: 1.15;
+  white-space: nowrap;
 }
 .navigation ul li a:hover {
   color: var(--black);
+}
+
+.navigation .btn-white,
+.navigation .btn-dark-green,
+.navigation > a {
+  white-space: nowrap;
+}
+
+.navigation .btn-white,
+.navigation .btn-dark-green {
+  font-size: clamp(15px, 1.02vw, 18px);
+  padding: clamp(12px, 1.15vw, 18px) clamp(20px, 2.2vw, 36px);
+  border-radius: 10px;
+}
+
+.header-profile-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(38px, 2.7vw, 44px);
+  height: clamp(38px, 2.7vw, 44px);
+  background: #34ff67;
+  border-radius: 50%;
+  margin-right: clamp(8px, 0.95vw, 14px);
+  text-decoration: none;
+  color: #000;
+  flex: 0 0 auto;
+}
+
+.header-profile-link i {
+  font-size: clamp(16px, 1.3vw, 20px);
 }
 /* =========================
    DROPDOWN (DESKTOP + MOBILE)
@@ -50,7 +122,7 @@
 .dropdown-head {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .dropdown-toggle {

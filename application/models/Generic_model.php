@@ -21,7 +21,7 @@ class Generic_model extends CI_Model
         // if($like){
         //     $this->db->like($like);
         // }
-        if ($like) {
+        if (is_array($like) && !empty($like)) {
             $this->db->group_start();
             foreach ($like as $column => $keyword) {
                 if (!empty($keyword)) {
@@ -98,10 +98,13 @@ class Generic_model extends CI_Model
     }
     function GetWorkforcewithSkill($filters, $where = false)
     {
-        $this->db->select('w.*, GROUP_CONCAT(s.skillName SEPARATOR ", ") as skillNames');
+        $this->db->select('w.*, GROUP_CONCAT(s.skillName SEPARATOR ", ") as skillNames, ucwl.userID as employeeUserID, u.userStatus as employeeUserStatus, u.userPass as employeeUserPass, ua.authCode as employeeAuthCode, ua.authTocken as employeeAuthToken, ua.authStatus as employeeAuthStatus');
         $this->db->from('workforce as w');
         $this->db->join('workforceskilllink as wsl', 'w.workforceID = wsl.workforceID', 'left');
         $this->db->join('skills as s', 'wsl.skillID = s.skillID', 'left');
+        $this->db->join('usercompanyworkforcelink as ucwl', 'ucwl.workforceID = w.workforceID', 'left');
+        $this->db->join('users as u', 'u.userID = ucwl.userID', 'left');
+        $this->db->join('userauth as ua', 'ua.userID = u.userID', 'left');
         $this->db->order_by('w.workforceID', 'DESC');
         $this->db->group_by('w.workforceID');
 
@@ -429,14 +432,26 @@ class Generic_model extends CI_Model
 
 
     //listing module 
+    public function delistExpiredMarketplaceRentals()
+    {
+        // Equipment rentals: delist when availability window has ended.
+        $this->db->query("\n            UPDATE shopitem si\n            INNER JOIN shopequipments se ON se.itemID = si.itemID\n            SET si.liveStatus = 0\n            WHERE si.itemType = 1\n              AND si.saleType = 0\n              AND si.liveStatus = 1\n              AND se.eqpAvailableEnd IS NOT NULL\n              AND se.eqpAvailableEnd <> '0000-00-00'\n              AND DATE(se.eqpAvailableEnd) < CURDATE()\n        ");
+
+        // Workforce rentals: delist when availability window has ended.
+        $this->db->query("\n            UPDATE shopitem si\n            INNER JOIN shopworkforce sw ON sw.itemID = si.itemID\n            SET si.liveStatus = 0\n            WHERE si.itemType = 2\n              AND si.liveStatus = 1\n              AND sw.workforceAvailableEnd IS NOT NULL\n              AND sw.workforceAvailableEnd <> '0000-00-00'\n              AND DATE(sw.workforceAvailableEnd) < CURDATE()\n        ");
+    }
+
     public function GetMarketPlaceListingData($where = false)
     {
+        $this->delistExpiredMarketplaceRentals();
+
         // 1️⃣ Equipment items (itemType = 1)
         $equipmentItems = $this->db
-            ->select('*')
+            ->select('si.*, se.*, wc.*, e.*, u.userName, c.companyName, eu.userEmail as employeeCreatorEmail')
             ->from('shopitem si')
             ->join('users u', 'u.userID = si.userID ','inner')
             ->join('companydetail c', 'c.companyID = si.companyID ','inner')
+            ->join('users eu', 'eu.userID = si.employeeID', 'left')
             ->join('shopequipments se', 'si.itemID = se.itemID','inner')
             ->join('web_cat wc', 'wc.web_catID = se.web_catID  ','inner')
             ->join('equipment e', 'e.equipmentID = se.equipmentID ','inner')
@@ -447,10 +462,11 @@ class Generic_model extends CI_Model
 
         // 2️⃣ Workforce items (itemType = 2)
         $workforceItems = $this->db
-            ->select('*')
+            ->select('si.*, sw.*, wc.*, w.*, u.userName, c.companyName, eu.userEmail as employeeCreatorEmail')
             ->from('shopitem si')
             ->join('users u', 'u.userID = si.userID ','inner')
             ->join('companydetail c', 'c.companyID = si.companyID ','inner')
+            ->join('users eu', 'eu.userID = si.employeeID', 'left')
             ->join('shopworkforce sw', 'si.itemID = sw.itemID','inner')
             ->join('web_cat wc', 'wc.web_catID = sw.web_catID  ','inner')
             ->join('workforce w', 'w.workforceID= sw.workforceID ','inner')
@@ -464,7 +480,7 @@ class Generic_model extends CI_Model
     }
     public function GetMarketPlaceWorkforceData($where = false)
     {
-        
+        $this->delistExpiredMarketplaceRentals();
 
         // 2️⃣ Workforce items (itemType = 2)
         $workforceItems = $this->db
@@ -477,6 +493,26 @@ class Generic_model extends CI_Model
             ->join('workforce w', 'w.workforceID= sw.workforceID ','inner')
             ->where('si.itemType', 2)
             ->where($where)
+            // Do not expose workforce listings with fully expired availability windows.
+            ->where('DATE(sw.workforceAvailableEnd) >= CURDATE()', null, false)
+            // Hide workforce from marketplace when rental is approved (before or after payment).
+            // Workforce becomes unavailable as soon as company admin approves the rental request.
+            ->where("NOT EXISTS (
+                SELECT 1
+                FROM workforce_payments wp
+                WHERE wp.workforceID = sw.workforceID
+                  AND wp.rentalRequestStatus IN (
+                      'request_approved',
+                      'awaiting_handover',
+                      'rental_active',
+                      'rental_overdue',
+                      'return_requested',
+                      'returned_by_renter',
+                      'received_by_owner',
+                      'under_review'
+                  )
+                  AND wp.orderStatus NOT IN ('cancelled', 'rejected', 'refunded')
+            )", null, false)
             ->get()
             ->result_array();
 //    die($this->db->last_query());
@@ -485,7 +521,7 @@ class Generic_model extends CI_Model
     }
     public function GetMarketPlaceEquipmentData($where = false)
     {
-        
+        $this->delistExpiredMarketplaceRentals();
 
        // 1️⃣ Equipment items (itemType = 1)
         $equipmentItems = $this->db
@@ -498,6 +534,11 @@ class Generic_model extends CI_Model
             ->join('equipment e', 'e.equipmentID = se.equipmentID ','inner')
             ->where('si.itemType', 1)
             ->where($where)
+            // Rental listings must still have an active availability window.
+            ->where('(si.saleType = 1 OR (se.eqpAvailableEnd IS NOT NULL AND DATE(se.eqpAvailableEnd) >= CURDATE()))', null, false)
+            // For rental listings, prefer rental inventory fields, but fall back to listing quantity
+            // so legacy/newly-approved rental listings still appear correctly.
+            ->where('(si.saleType = 1 OR ((COALESCE(e.equipRentalTotalQuantity, 0) - COALESCE(e.equipRentalLockedQuantity, 0)) > 0 OR COALESCE(se.equipQty, 0) > 0))', null, false)
             ->get()
             ->result_array();
 //    die($this->db->last_query());

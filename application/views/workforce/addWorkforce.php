@@ -135,14 +135,28 @@
                       id="personEmail"
                       placeholder="Enter Email Address" />
                   </div>
-                  <!-- <div class="col-12">
-                      <label class="form-label">Password</label>
+                  <div class="col-6">
+                      <label class="form-label">Employee Login Password</label>
                       <input
                         type="password"
                         class="form-control"
-                        placeholder="Enter Password"
+                        name="accountPassword"
+                        id="accountPassword"
+                        minlength="6"
+                        placeholder="Leave blank to send setup invite"
                       />
-                    </div> -->
+                  </div>
+                  <div class="col-6">
+                      <label class="form-label">Confirm Password</label>
+                      <input
+                        type="password"
+                        class="form-control"
+                        name="accountPasswordConfirm"
+                        id="accountPasswordConfirm"
+                        minlength="6"
+                        placeholder="Confirm login password"
+                      />
+                  </div>
                   <div class="col-12">
                     <label class="form-label">Additional Note</label>
                     <textarea
@@ -362,6 +376,38 @@
         "hideMethod": "fadeOut"
       }
       toastr.success('Person Added!');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  $inviteLink = $this->session->flashdata('employeeInviteLink');
+  $inviteCode = $this->session->flashdata('employeeInviteCode');
+  if ($inviteLink && $inviteCode) {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "timeOut": 0,
+        "extendedTimeOut": 0,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.info('Employee setup link: <?= h($inviteLink) ?><br>Verification code: <?= h($inviteCode) ?>');
+    </script>
+  <?php
+  }
+  ?>
+  <?php
+  if ($this->session->flashdata('passwordError') != '') {
+  ?>
+    <script type="text/javascript">
+      toastr.options = {
+        "closeButton": true,
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+      toastr.error('Employee password must be at least 6 characters and match the confirmation.');
     </script>
   <?php
   }

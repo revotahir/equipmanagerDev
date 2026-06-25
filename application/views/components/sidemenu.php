@@ -90,6 +90,15 @@
                   </a>
               </li>
 
+              <!-- Rental Issues (NEW March 2026) -->
+              <li>
+                  <a href="<?= base_url('superadmin/issues') ?>">
+                      <div class="parent-icon">
+                          <i class="bi bi-exclamation-circle"></i>
+                      </div>
+                      <div class="menu-title font-clash">Rental Issues</div>
+                  </a>
+              </li>
               <li>
                   <a class="has-arrow" href="javascript:;">
                       <div class="parent-icon">
@@ -176,6 +185,13 @@
                     } else if ($this->session->userdata('loginData')['userType'] == 3) {
                     ?>
                       <a href="<?= base_url('manager-dashboard') ?>">
+                          <div class="parent-icon"><i class="bi bi-house-door"></i></div>
+                          <div class="menu-title font-clash">Dashboard</div>
+                      </a>
+                  <?php
+                    } else if ($this->session->userdata('loginData')['userType'] == 4) {
+                    ?>
+                      <a href="<?= base_url('employee/dashboard') ?>">
                           <div class="parent-icon"><i class="bi bi-house-door"></i></div>
                           <div class="menu-title font-clash">Dashboard</div>
                       </a>
@@ -267,6 +283,9 @@
                           <li>
                               <a href="<?= base_url('company-orders') ?>"><i class="bi bi-arrow-right-short"></i>Orders</a>
                           </li>
+                          <li>
+                              <a href="<?= base_url('company-reviews') ?>"><i class="bi bi-arrow-right-short"></i>Reviews</a>
+                          </li>
                           <?php } ?>
                       </ul>
                   </li>
@@ -274,6 +293,39 @@
               <?php
                 }
                 ?>
+              <?php if ($this->session->userdata('loginData')['userType'] == 4) { ?>
+                  <li>
+                      <a href="<?= base_url('employee/projects') ?>">
+                          <div class="parent-icon"><i class="bi bi-kanban"></i></div>
+                          <div class="menu-title font-clash">My Projects</div>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="<?= base_url('employee/equipment') ?>">
+                          <div class="parent-icon"><i class="bi bi-tools"></i></div>
+                          <div class="menu-title font-clash">My Equipment</div>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="<?= base_url('notifications') ?>">
+                          <div class="parent-icon"><i class="bi bi-bell"></i></div>
+                          <div class="menu-title font-clash">Notifications</div>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="<?= base_url('employee/profile') ?>">
+                          <div class="parent-icon"><i class="bi bi-person-badge"></i></div>
+                          <div class="menu-title font-clash">My Profile</div>
+                      </a>
+                  </li>
+                  <li>
+                      <a href="<?= base_url('employee/messages') ?>">
+                          <div class="parent-icon"><i class="bi bi-headset"></i></div>
+                          <div class="menu-title font-clash">Contact Admin</div>
+                      </a>
+                  </li>
+              <?php } ?>
+              <?php if ($this->session->userdata('loginData')['userType'] != 4) { ?>
               <!-- My Chats menu -->
               <li>
                   <a href="<?= base_url('chats') ?>">
@@ -281,6 +333,8 @@
                       <div class="menu-title font-clash">My Chats</div>
                   </a>
               </li>
+              <?php } ?>
+              <?php if ($this->session->userdata('loginData')['userType'] != 4) { ?>
               <!-- support menu  -->
               <li>
                   <a class="has-arrow" href="javascript:;">
@@ -299,6 +353,7 @@
                       </li>
                   </ul>
               </li>
+              <?php } ?>
           </ul>
           <!--end navigation-->
       </aside>

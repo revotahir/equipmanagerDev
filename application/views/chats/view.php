@@ -1,3 +1,7 @@
+<?php
+$orders_count = isset($chat->ordersCount) ? (int)$chat->ordersCount : (isset($chat_orders) ? count($chat_orders) : 0);
+?>
+<div class="chat-view-root">
 <!-- Chat Header -->
 <div class="chat-header">
     <button class="back-button" onclick="goBack()">
@@ -6,7 +10,7 @@
         </svg>
     </button>
     
-    <div class="chat-header-info">
+    <a class="chat-header-info" href="<?= !empty($counterparty_profile_url) ? $counterparty_profile_url : 'javascript:void(0);' ?>">
         <div class="user-avatar" style="background-color: var(--primary-brand);"></div>
         <div class="user-details">
             <div class="user-name">
@@ -16,14 +20,38 @@
                     <?= htmlspecialchars($chat->buyerFirstName . ' ' . $chat->buyerLastName) ?>
                 <?php endif; ?>
             </div>
-            <div class="user-status">Order #<?= $chat->equipmentPaymentID ?> • $<?= number_format($chat->grossAmount, 2) ?></div>
+            <?php if ($orders_count > 0): ?>
+                <div class="user-status">
+                    <?= $orders_count ?> linked order<?= $orders_count > 1 ? 's' : '' ?>
+                    <?php if (!empty($chat->orderID)): ?>
+                        - latest #<?= (int)$chat->orderID ?>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <div class="user-status">Direct inquiry chat</div>
+            <?php endif; ?>
         </div>
-    </div>
+    </a>
 
     <div class="status-badge <?= htmlspecialchars($chat->chatStatus) ?>">
         <?= ucfirst(htmlspecialchars($chat->chatStatus)) ?>
     </div>
 </div>
+
+<?php if (!empty($chat_orders)): ?>
+<div class="chat-orders-strip">
+    <div class="chat-orders-title">Orders in this conversation</div>
+    <div class="chat-orders-list">
+        <?php foreach (array_slice($chat_orders, 0, 6) as $order_item): ?>
+            <?php $order_url = ($user_role === 'seller') ? base_url('company-orders/view/' . (int)$order_item->orderID) : base_url('orders/' . (int)$order_item->orderID); ?>
+            <a href="<?= $order_url ?>" class="chat-order-chip">
+                <span>#<?= (int)$order_item->orderID ?></span>
+                <small><?= htmlspecialchars(ucfirst(str_replace('_', ' ', (string)($order_item->orderStatus ?? 'open')))) ?></small>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- Messages Area -->
 <div class="messages-area" id="messagesArea">
@@ -32,8 +60,7 @@
         $last_date = null;
         foreach ($messages as $message): 
             $message_date = date('M j, Y', strtotime($message->createdAt));
-            
-            // Show date separator if date changed
+
             if ($last_date !== $message_date):
                 $last_date = $message_date;
         ?>
@@ -41,12 +68,11 @@
                 <span><?= $message_date ?></span>
             </div>
         <?php endif; 
-            
+
             $is_outgoing = ($message->senderUserID == $current_user_id);
             $message_class = $is_outgoing ? 'outgoing' : 'incoming';
             $timestamp = date('g:i A', strtotime($message->createdAt));
         ?>
-            
             <div class="message-wrapper <?= $message_class ?>">
                 <?php if ($is_outgoing): ?>
                     <div class="message-options">
@@ -57,7 +83,7 @@
                         </svg>
                     </div>
                 <?php endif; ?>
-                
+
                 <div class="message-content">
                     <div class="message-bubble <?= $message_class ?>">
                         <?= htmlspecialchars($message->messageText) ?>
@@ -65,10 +91,10 @@
                     <div class="message-timestamp">
                         <?= $timestamp ?>
                         <?php if (!$is_outgoing && !empty($message->firstName)): ?>
-                            • <?= htmlspecialchars($message->firstName) ?>
+                            - <?= htmlspecialchars($message->firstName) ?>
                         <?php endif; ?>
                     </div>
-                    
+
                     <?php if ($is_outgoing): ?>
                         <div class="read-receipt">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2">
@@ -78,7 +104,7 @@
                         </div>
                     <?php endif; ?>
                 </div>
-                
+
                 <?php if (!$is_outgoing): ?>
                     <div class="message-options">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" cursor="pointer">
@@ -101,15 +127,15 @@
 </div>
 
 <!-- Input Area -->
-<?php if (isset($chat->orderStatus) && $chat->orderStatus === 'completed'): ?>
+<?php if (($chat->chatStatus ?? 'open') === 'locked'): ?>
 <div class="order-completed-banner">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
         <polyline points="22 4 12 14.01 9 11.01"/>
     </svg>
     <div class="order-completed-text">
-        <strong>Order Completed</strong>
-        <span>This order has been completed successfully. No further messages can be sent.</span>
+        <strong>Chat Locked</strong>
+        <span>This conversation is currently locked. No further messages can be sent.</span>
     </div>
 </div>
 <?php else: ?>
@@ -120,14 +146,14 @@
             <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
     </button>
-    
+
     <input 
         type="text" 
         class="message-input" 
         id="messageInput"
         placeholder="Type a message here"
     >
-    
+
     <button class="input-button send-button" id="sendButton">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
@@ -135,9 +161,19 @@
     </button>
 </div>
 <?php endif; ?>
+</div>
 
 <style>
-    * {
+    .chat-view-root {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .chat-view-root * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
@@ -178,6 +214,8 @@
         align-items: center;
         gap: 12px;
         flex: 1;
+        text-decoration: none;
+        color: inherit;
     }
 
     .user-avatar {
@@ -229,6 +267,47 @@
         border-color: rgba(13, 122, 44, 0.2);
     }
 
+    .chat-orders-strip {
+        border-bottom: 1px solid var(--border-color);
+        background: #f8faf9;
+        padding: 10px 18px 12px;
+        max-height: 104px;
+        overflow-y: auto;
+    }
+
+    .chat-orders-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .chat-orders-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .chat-order-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: 999px;
+        padding: 6px 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+        font-size: 12px;
+        background: #fff;
+    }
+
+    .chat-order-chip small {
+        color: var(--text-secondary);
+        font-size: 11px;
+    }
+
     .status-badge.locked {
         background: #fff5f5;
         color: #d32f2f;
@@ -245,7 +324,8 @@
         flex-direction: column;
         gap: 16px;
         background: var(--card-bg);
-        min-height: 300px;
+        min-height: 0;
+        height: 0;
     }
 
     /* Custom Scrollbar */
@@ -300,6 +380,8 @@
         align-items: flex-start;
         gap: 12px;
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         flex-shrink: 0;
     }
 
@@ -332,16 +414,21 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
-        max-width: 70%;
+        max-width: min(78%, 780px);
+        min-width: 0;
     }
 
     .message-bubble {
         padding: 12px 16px;
         border-radius: 12px;
         word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        white-space: normal;
         font-size: 15px;
         line-height: 1.4;
         min-width: 0;
+        max-width: 100%;
     }
 
     .message-bubble.incoming {
@@ -414,6 +501,9 @@
         display: flex;
         gap: 12px;
         align-items: flex-end;
+        visibility: visible;
+        opacity: 1;
+        min-height: 72px;
     }
 
     .input-button {
@@ -485,7 +575,7 @@
         cursor: not-allowed;
     }
 
-    /* Order Completed Banner */
+    /* Chat Locked Banner */
     .order-completed-banner {
         padding: 18px 32px;
         border-top: 1px solid #D1FAE5;
@@ -545,7 +635,7 @@
         }
 
         .message-content {
-            max-width: 85%;
+            max-width: 90%;
         }
 
         .chat-input-area {
@@ -631,14 +721,11 @@
     // Configuration - Auto-detect Socket.IO server
     const protocol = window.location.protocol === 'https:' ? 'https' : 'http';
     const hostname = window.location.hostname;
-    const port = window.location.port ? ':' + window.location.port : '';
-    
+    const isLocalHost = (hostname === 'localhost' || hostname === '127.0.0.1');
+
     // Default Socket.IO server URL
-    let SOCKET_SERVER_URL = 'http://localhost:3000';
-    
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-        SOCKET_SERVER_URL = protocol + '://' + hostname + ':3000';
-    }
+    // Local dev uses :3000, production defaults to same host over 80/443.
+    let SOCKET_SERVER_URL = protocol + '://' + hostname + (isLocalHost ? ':3000' : '');
     
     // PHP-injected values (override defaults)
     const PHP_CONFIGURED_NODE_URL = '<?= defined('CHAT_NODE_SERVER_URL') ? CHAT_NODE_SERVER_URL : '' ?>';
@@ -669,12 +756,12 @@
         console.log('[Chat] User ID:', CURRENT_USER_ID);
         
         if (!JWT_TOKEN) {
-            console.error('[Chat] ❌ JWT Token is missing! Cannot connect to socket.');
+            console.error('[Chat]  JWT Token is missing! Cannot connect to socket.');
             return;
         }
 
         if (!CHAT_ID || !CURRENT_USER_ID) {
-            console.error('[Chat] ❌ Missing Chat ID or User ID');
+            console.error('[Chat]  Missing Chat ID or User ID');
             return;
         }
         
@@ -691,7 +778,7 @@
         });
 
         socket.on('connect', () => {
-            console.log('[Chat] ✓ Connected to chat server (Socket ID:', socket.id + ')');
+            console.log('[Chat]  Connected to chat server (Socket ID:', socket.id + ')');
             isConnected = true;
 
             // Join the chat room
@@ -702,30 +789,30 @@
         });
 
         socket.on('joined_chat', (data) => {
-            console.log('[Chat] ✓ Successfully joined chat room:', data);
+            console.log('[Chat]  Successfully joined chat room:', data);
         });
 
         socket.on('disconnect', () => {
-            console.log('[Chat] ❌ Disconnected from chat server');
+            console.log('[Chat]  Disconnected from chat server');
             isConnected = false;
         });
 
         socket.on('connect_error', (error) => {
-            console.error('[Chat] ❌ Connection error:', error);
+            console.error('[Chat]  Connection error:', error);
         });
 
         socket.on('new_message', (data) => {
-            console.log('[Chat] ✓ New message received:', data);
+            console.log('[Chat]  New message received:', data);
             appendMessageToDOM(data);
         });
 
         socket.on('chat_locked', () => {
-            console.log('[Chat] ℹ️ Chat has been locked');
+            console.log('[Chat]  Chat has been locked');
             lockChatUI();
         });
 
         socket.on('error', (error) => {
-            console.error('[Chat] ❌ Socket error:', error);
+            console.error('[Chat]  Socket error:', error);
         });
     }
 
@@ -735,8 +822,12 @@
         }
 
         if (!isConnected) {
-            console.warn('[Chat] ⚠️ Not connected to socket server yet. Try again in a moment...');
-            alert('Chat connection in progress. Please wait a moment and try again.');
+            console.warn('[Chat]  Not connected to socket server yet. Try again in a moment...');
+            if (window.AppToast && typeof AppToast.warning === 'function') {
+                AppToast.warning('Chat connection in progress. Please wait a moment and try again.');
+            } else {
+                alert('Chat connection in progress. Please wait a moment and try again.');
+            }
             return;
         }
 
@@ -795,7 +886,7 @@
                     </div>
                     <div class="message-timestamp">
                         ${timeStr}
-                        ${!isOwnMessage && data.sender_name ? ' • ' + escapeHtml(data.sender_name) : ''}
+                        ${!isOwnMessage && data.sender_name ? ' - ' + escapeHtml(data.sender_name) : ''}
                     </div>
                     ${isOwnMessage ? `
                         <div class="read-receipt">
@@ -892,7 +983,7 @@
             console.log('[Chat] Chat is open, initializing socket...');
             initSocket();
         } else {
-            console.log('[Chat] ℹ️ Chat is locked, not initializing socket');
+            console.log('[Chat]  Chat is locked, not initializing socket');
             lockChatUI();
         }
     });

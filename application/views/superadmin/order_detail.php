@@ -389,7 +389,7 @@
                         <ol class="breadcrumb mb-0 p-0">
                             <li class="breadcrumb-item"><a href="<?= base_url('admin-dashboard') ?>"><i class="bx bx-home-alt"></i></a></li>
                             <li class="breadcrumb-item"><a href="<?= base_url('super-admin-orders') ?>">All Orders</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Order #<?= htmlspecialchars($order->equipmentPaymentID) ?></li>
+                            <li class="breadcrumb-item active" aria-current="page">Order #<?= htmlspecialchars((string)$order->orderID) ?></li>
                         </ol>
                     </nav>
                 </div>
@@ -401,18 +401,31 @@
                 <span>Back to Orders</span>
             </a>
 
+            <?php
+            $is_workforce_order = !empty($order->workforcePaymentID) || (($order->orderType ?? '') === 'workforce');
+            $item_label = $is_workforce_order ? 'Workforce' : 'Equipment';
+            $item_name = $is_workforce_order
+                ? ($order->workforceName ?? $order->itemName ?? 'Workforce')
+                : ($order->equipmentName ?? $order->itemName ?? 'Equipment');
+            $item_id_value = $is_workforce_order ? ($order->workforceID ?? null) : ($order->equipmentID ?? null);
+            ?>
+
             <!-- Page Header with Status -->
             <div class="detail-section" style="margin-bottom: 32px;">
                 <div class="detail-section-content">
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
                         <div>
-                            <div class="order-id-badge">#<?= htmlspecialchars($order->equipmentPaymentID) ?></div>
+                            <div class="order-id-badge">#<?= htmlspecialchars((string)$order->orderID) ?></div>
                             <p style="margin: 12px 0 0 0; color: #666; font-size: 14px;">
                                 Order placed on <?= date('F d, Y \a\t g:i A', strtotime($order->createdAt)) ?>
                             </p>
                         </div>
                         <div>
                             <?php 
+                                $display_status = strtolower((string)($order->orderStatus ?? 'requested'));
+                                if (intval($order->hasActiveIssue ?? 0) === 1 && !in_array($display_status, ['completed', 'cancelled', 'rejected', 'refunded'], true)) {
+                                    $display_status = 'under_review';
+                                }
                                 $status_class_map = [
                                     'requested' => 'status-pending',
                                     'payment_pending' => 'status-payment',
@@ -420,12 +433,13 @@
                                     'shipped' => 'status-shipped',
                                     'pickup_ready' => 'status-secured',
                                     'completed' => 'status-completed',
-                                    'rejected' => 'status-rejected'
+                                    'rejected' => 'status-rejected',
+                                    'under_review' => 'status-payment',
                                 ];
-                                $status_class = $status_class_map[$order->orderStatus] ?? 'status-pending';
+                                $status_class = $status_class_map[$display_status] ?? 'status-pending';
                             ?>
                             <span class="status-badge-large <?= $status_class ?>">
-                                <?= ucfirst(str_replace('_', ' ', htmlspecialchars($order->orderStatus))) ?>
+                                <?= ucfirst(str_replace('_', ' ', htmlspecialchars($display_status))) ?>
                             </span>
                         </div>
                     </div>
@@ -450,7 +464,7 @@
                     <div class="detail-row">
                         <div class="detail-item">
                             <span class="detail-label">Buyer Name</span>
-                            <span class="detail-value"><?= htmlspecialchars($order->buyerName) ?></span>
+                            <span class="detail-value"><?= htmlspecialchars((string)($order->buyerName ?? 'N/A')) ?></span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Phone Number</span>
@@ -460,7 +474,7 @@
                     <div class="detail-row">
                         <div class="detail-item">
                             <span class="detail-label">Account Email</span>
-                            <span class="detail-value email" style="font-size: 13px;"><?= htmlspecialchars($order->buyerEmail) ?></span>
+                            <span class="detail-value email" style="font-size: 13px;"><?= htmlspecialchars((string)($order->buyerEmail ?? 'N/A')) ?></span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Billing Email</span>
@@ -503,7 +517,7 @@
                 <div class="detail-section-header">
                     <h3 class="detail-section-title">
                         <i class="bi bi-box"></i>
-                        Equipment Information
+                        <?= $item_label ?> Information
                     </h3>
                 </div>
                 <div class="detail-section-content">
@@ -547,9 +561,15 @@
                         </div>
                         <?php endif; ?>
                         <div class="equipment-info">
-                            <h4><?= htmlspecialchars($order->equipmentName) ?></h4>
-                            <p class="equipment-brand">Equipment ID: #<?= htmlspecialchars($order->equipmentID) ?></p>
-                            <p><?= htmlspecialchars(substr($order->equipDesc, 0, 200)) ?><?= strlen($order->equipDesc) > 200 ? '...' : '' ?></p>
+                            <h4><?= htmlspecialchars((string)$item_name) ?></h4>
+                            <p class="equipment-brand"><?= $item_label ?> ID: <?= $item_id_value ? ('#' . htmlspecialchars((string)$item_id_value)) : 'N/A' ?></p>
+                            <p>
+                                <?php if ($is_workforce_order): ?>
+                                    Service rental request.
+                                <?php else: ?>
+                                    <?= htmlspecialchars(substr((string)($order->equipDesc ?? ''), 0, 200)) ?><?= strlen((string)($order->equipDesc ?? '')) > 200 ? '...' : '' ?>
+                                <?php endif; ?>
+                            </p>
                             <p style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0;">
                                 <strong>Quantity Ordered:</strong> <?= htmlspecialchars($order->quantity) ?> unit<?= $order->quantity > 1 ? 's' : '' ?>
                             </p>
@@ -628,12 +648,12 @@
                         <div class="detail-item">
                             <span class="detail-label">Sale Type</span>
                             <span class="detail-value" style="text-transform: capitalize;">
-                                <?= htmlspecialchars($order->saleType) ?>
+                                <?= htmlspecialchars($order->saleType ?? 'N/A') ?>
                             </span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Currency</span>
-                            <span class="detail-value"><?= htmlspecialchars($order->currency) ?></span>
+                            <span class="detail-value"><?= htmlspecialchars($order->currency ?? 'USD') ?></span>
                         </div>
                     </div>
                 </div>
@@ -709,6 +729,70 @@
             </div>
             <?php endif; ?>
 
+            <?php if (!empty($order_issues)): ?>
+            <div class="detail-section">
+                <div class="detail-section-header">
+                    <h3 class="detail-section-title">
+                        <i class="bi bi-flag"></i>
+                        Issue Escalation History:
+                    </h3>
+                </div>
+                <div class="detail-section-content">
+                    <?php
+                    $issue_type_labels = [
+                        'late_delivery' => 'Late Delivery',
+                        'late_return' => 'Late Return',
+                        'damaged' => 'Damaged Equipment',
+                        'missing_parts' => 'Missing Parts',
+                        'malfunction' => 'Operational Malfunction',
+                        'other' => 'Other Issue',
+                    ];
+                    $resolution_labels = [
+                        'no_action' => 'No Action Needed',
+                        'refund_partial' => 'Partial Refund',
+                        'refund_full' => 'Full Refund',
+                        'compensation' => 'Compensation Provided',
+                        'insurance_claim' => 'Insurance Claim Processed',
+                    ];
+                    ?>
+                    <?php foreach ($order_issues as $issue): ?>
+                        <?php
+                        $issue_status = strtolower((string)($issue->issueStatus ?? 'reported'));
+                        $issue_type = strtolower((string)($issue->issueType ?? 'other'));
+                        $reported_at_raw = $issue->reportedAt ?? $issue->createdAt ?? null;
+                        $resolved_at_raw = $issue->resolvedAt ?? null;
+                        $reporter_label = ucfirst((string)($issue->reporterType ?? 'unknown'));
+                        if (!empty($issue->reporterName)) {
+                            $reporter_label .= ' (' . (string)$issue->reporterName . ')';
+                        }
+                        ?>
+                        <div style="border:1px solid #edf0f3;border-radius:10px;background:#ffffff;padding:14px 16px;margin-bottom:12px;">
+                            <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+                                <div style="font-size:15px;font-weight:700;color:#0f2f2c;"><?= htmlspecialchars($issue_type_labels[$issue_type] ?? ucwords(str_replace('_', ' ', $issue_type))) ?></div>
+                                <span style="font-size:11px;padding:4px 10px;border-radius:999px;<?= in_array($issue_status, ['resolved','closed'], true) ? 'background:#dcfce7;color:#166534;' : 'background:#fef3c7;color:#92400e;' ?>">
+                                    <?= in_array($issue_status, ['resolved','closed'], true) ? 'Resolved' : 'Under Review' ?>
+                                </span>
+                            </div>
+                            <div style="font-size:12px;color:#6b7280;margin-top:4px;">Reported by <?= htmlspecialchars($reporter_label) ?><?= $reported_at_raw ? ' on ' . date('d M Y H:i', strtotime((string)$reported_at_raw)) : '' ?>.</div>
+                            <?php if (!empty($issue->issueTitle)): ?>
+                                <div style="font-size:13px;color:#111827;margin-top:8px;"><strong><?= htmlspecialchars((string)$issue->issueTitle) ?></strong></div>
+                            <?php endif; ?>
+                            <?php if (!empty($issue->issueDescription)): ?>
+                                <div style="font-size:13px;color:#374151;margin-top:2px;"><?= nl2br(htmlspecialchars((string)$issue->issueDescription)) ?></div>
+                            <?php endif; ?>
+                            <?php if (in_array($issue_status, ['resolved','closed'], true)): ?>
+                                <div style="margin-top:8px;padding:8px;border-radius:6px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:12px;color:#14532d;">
+                                    <strong>Resolution:</strong> <?= htmlspecialchars($resolution_labels[strtolower((string)($issue->resolutionOutcome ?? 'no_action'))] ?? ucwords(str_replace('_', ' ', (string)($issue->resolutionOutcome ?? 'No Action')))) ?>
+                                    <?php if (!empty($issue->resolutionNotes)): ?><br><?= nl2br(htmlspecialchars((string)$issue->resolutionNotes)) ?><?php endif; ?>
+                                    <?php if (!empty($issue->resolvedByName) || !empty($resolved_at_raw)): ?><br><span style="color:#166534;">Handled<?= !empty($issue->resolvedByName) ? ' by ' . htmlspecialchars((string)$issue->resolvedByName) : '' ?><?= !empty($resolved_at_raw) ? ' on ' . date('d M Y H:i', strtotime((string)$resolved_at_raw)) : '' ?>.</span><?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- Action Section -->
             <div class="detail-section">
                 <div class="detail-section-content">
@@ -717,8 +801,13 @@
                             <i class="bi bi-arrow-left"></i> Back to Orders
                         </a>
                         <?php if (!empty($order->chatID)): ?>
-                        <a href="<?= base_url('chat/' . $order->equipmentPaymentID) ?>" class="btn-action btn-primary">
+                        <a href="<?= base_url('chat/' . $order->orderID) ?>" class="btn-action btn-primary">
                             <i class="bi bi-chat-dots"></i> View Chat
+                        </a>
+                        <?php endif; ?>
+                        <?php if (!empty($can_download_invoice)): ?>
+                        <a href="<?= base_url('super-admin-orders/invoice/' . intval($order->orderID)) ?>" class="btn-action btn-secondary">
+                            <i class="bi bi-file-earmark-arrow-down"></i> Download Invoice (PDF)
                         </a>
                         <?php endif; ?>
                     </div>

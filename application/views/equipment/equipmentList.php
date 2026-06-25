@@ -337,7 +337,7 @@
                               <a
                                 href="<?= base_url('delet-equipment/') . $equip['equipmentID'] ?>"
                                 class="text-danger"
-                                onclick="return confirm('Are you sure you want to delete this equipment?');"
+                                onclick="return AppDialog.confirmAction(event, this, 'Are you sure you want to delete this equipment?');"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 title="Delete"><i class="bi bi-trash-fill"></i></a>

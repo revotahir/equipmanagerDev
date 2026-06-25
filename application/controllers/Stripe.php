@@ -233,27 +233,21 @@ class Stripe extends CI_Controller
             // ===== CREATE CHAT FOR ORDER =====
             // Automatically create chat between buyer and seller
             $this->load->model('Chat_model');
+            $order_id = $this->resolve_order_id($payment_id, $payment_type);
 
             $chatID = null;
-            if ($payment_type === 'equipment') {
+            if ($order_id > 0) {
                 $chatID = $this->Chat_model->create_chat(
-                    $payment_id,
-                    $payment['buyerUserID'],
-                    $payment['sellerCompanyID']
-                );
-            } else {
-                // Workforce payments also get chat
-                $chatID = $this->Chat_model->create_chat(
-                    $payment_id,
+                    $order_id,
                     $payment['buyerUserID'],
                     $payment['sellerCompanyID']
                 );
             }
 
             if ($chatID) {
-                log_message('info', "Chat created for {$payment_type} payment {$payment_id}: Chat ID {$chatID}");
+                log_message('info', "Chat resolved for order {$order_id} ({$payment_type} payment {$payment_id}): Chat ID {$chatID}");
             } else {
-                log_message('error', "Failed to create chat for {$payment_type} payment {$payment_id}");
+                log_message('error', "Failed to resolve chat for {$payment_type} payment {$payment_id} (order {$order_id})");
             }
 
 
@@ -435,11 +429,14 @@ class Stripe extends CI_Controller
         $this->load->helper('payment');
         $this->load->model('Chat_model');
 
-        $chat = $this->Chat_model->get_chat_by_order($payment_id);
+        $order_id = $this->resolve_order_id($payment_id, $payment_type);
+        $chat = $order_id > 0 ? $this->Chat_model->get_chat_by_order($order_id) : null;
         if ($chat && $chat->chatStatus === 'open') {
             $this->Chat_model->lock_chat($chat->chatID);
-            notify_node_chat_locked($chat->chatID);
-            log_message('info', "Chat {$chat->chatID} locked due to refund for payment {$payment_id}");
+            if (($chat->chatType ?? 'standard') !== 'standard') {
+                notify_node_chat_locked($chat->chatID);
+            }
+            log_message('info', "Chat {$chat->chatID} updated due to refund for order {$order_id} / payment {$payment_id}");
         }
 
         log_message('info', "Payment {$payment_id} ({$payment_type}) refunded successfully");
@@ -451,16 +448,64 @@ class Stripe extends CI_Controller
     private function send_email($to, $subject, $message)
     {
         try {
-            $this->load->library('email');
             $this->config->load('email');
+            $this->load->library('email');
 
-            $this->email->from('info@nexphi.com', 'Equip Manager');
+            $emailConfig = array(
+                'protocol'     => $this->config->item('protocol'),
+                'smtp_host'    => $this->config->item('smtp_host'),
+                'smtp_user'    => $this->config->item('smtp_user'),
+                'smtp_pass'    => $this->config->item('smtp_pass'),
+                'smtp_port'    => $this->config->item('smtp_port'),
+                'smtp_crypto'  => $this->config->item('smtp_crypto'),
+                'smtp_timeout' => $this->config->item('smtp_timeout') ?: 15,
+                'mailtype'     => $this->config->item('mailtype') ?: 'html',
+                'charset'      => $this->config->item('charset') ?: 'utf-8',
+                'wordwrap'     => $this->config->item('wordwrap') !== null ? $this->config->item('wordwrap') : TRUE,
+                'newline'      => $this->config->item('newline') ?: "\r\n",
+                'crlf'         => $this->config->item('crlf') ?: "\r\n",
+            );
+
+            $this->email->clear(TRUE);
+            $this->email->initialize($emailConfig);
+
+            $fromEmail = $this->config->item('from_email') ?: $this->config->item('smtp_user');
+            $fromName = $this->config->item('from_name') ?: 'Equip Manager';
+            $this->email->from($fromEmail, $fromName);
             $this->email->to($to);
             $this->email->subject($subject);
             $this->email->message($message);
-            $this->email->send();
+            if (!$this->email->send()) {
+                $debug = $this->email->print_debugger(array('headers', 'subject'));
+                log_message('error', 'Stripe SMTP send failed to ' . $to . ' | Subject: ' . $subject . ' | Debug: ' . $debug);
+            }
         } catch (Exception $e) {
             log_message('error', "Email send failed: " . $e->getMessage());
         }
+    }
+
+    /**
+     * Resolve unified orderID from a payment record.
+     *
+     * @param int $payment_id
+     * @param string $payment_type equipment|workforce
+     * @return int
+     */
+    private function resolve_order_id($payment_id, $payment_type)
+    {
+        $payment_id = (int)$payment_id;
+        if ($payment_id <= 0) {
+            return 0;
+        }
+
+        $order_key = ($payment_type === 'equipment') ? 'equipmentPaymentID' : 'workforcePaymentID';
+        $order = $this->db->select('orderID')
+            ->from('orders')
+            ->where($order_key, $payment_id)
+            ->limit(1)
+            ->get()
+            ->row();
+
+        return $order ? (int)$order->orderID : 0;
     }
 }

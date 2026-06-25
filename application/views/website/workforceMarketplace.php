@@ -480,8 +480,47 @@
         <div class="equipment-grid">
 
           <?php
+          $getWorkforceRentalUnitLabel = static function ($rawType) {
+            $value = strtolower(trim((string)$rawType));
+            if ($value === '' || $value === '0') {
+              return 'Per Day';
+            }
+            $directMap = [
+              '1' => 'Per Day',
+              '2' => 'Per Week',
+              '3' => 'Per Month',
+              '4' => 'Per Year',
+              'day' => 'Per Day',
+              'daily' => 'Per Day',
+              'week' => 'Per Week',
+              'weekly' => 'Per Week',
+              'month' => 'Per Month',
+              'monthly' => 'Per Month',
+              'year' => 'Per Year',
+              'yearly' => 'Per Year',
+              'annually' => 'Per Year',
+            ];
+            if (isset($directMap[$value])) {
+              return $directMap[$value];
+            }
+            if (strpos($value, 'day') !== false) {
+              return 'Per Day';
+            }
+            if (strpos($value, 'week') !== false) {
+              return 'Per Week';
+            }
+            if (strpos($value, 'month') !== false) {
+              return 'Per Month';
+            }
+            if (strpos($value, 'year') !== false || strpos($value, 'annual') !== false) {
+              return 'Per Year';
+            }
+            return 'Per Day';
+          };
+
           if ($workforcelisting) {
             foreach ($workforcelisting as $row) {
+              $workforceRentalUnitLabel = $getWorkforceRentalUnitLabel($row['workforceRentalType'] ?? '');
           ?>
               <!-- single equipment grid -->
               <div class="single-equipment-grid">
@@ -512,18 +551,7 @@
                     <span class="prod-name"><?= $row['personName'] ?></span>
                     <div class="prod-price">
                       <span>Price</span>
-                      <span>$<?= $row['workforcePrice'] ?> /
-                        <?php 
-                          if($row['workforceRentalType']==1){
-                            echo 'Per Day';
-                          }else if($row['workforceRentalType']==2){
-                            echo 'Per Week';
-                          }else if($row['workforceRentalType']==3){
-                            echo 'Per Month';
-                          }else{
-                            echo 'Per Year';
-                          }
-                        ?>
+                      <span>$<?= $row['workforcePrice'] ?> / <?= $workforceRentalUnitLabel ?>
                       </span>
                     </div>
                   </div>
